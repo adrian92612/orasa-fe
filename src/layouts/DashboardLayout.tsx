@@ -1,8 +1,5 @@
 import { useUser } from "@/context/UserContext";
-import { type ReactNode } from "react";
 import AppSidebar from "@/components/features/dashboard/Sidebar";
-import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
 import {
   SidebarInset,
   SidebarProvider,
@@ -11,14 +8,10 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { NAV_ITEMS } from "@/constants/navigation";
 import { useLocation } from "react-router";
+import { Outlet } from "react-router";
 
-type DashboardLayoutProps = {
-  children: ReactNode;
-};
-
-const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-  const { user, logout } = useUser();
-  const isOwner = user?.role === "OWNER";
+const DashboardLayout = () => {
+  const { logout } = useUser();
   const location = useLocation();
 
   const currentItem = NAV_ITEMS.find((item) => location.pathname === item.url);
@@ -45,20 +38,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 })}
               </div>
             </div>
-
-            <div className="flex items-center gap-4">
-              {!isOwner && (
-                <Button variant="ghost" size="sm" onClick={logout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </Button>
-              )}
-            </div>
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0 bg-slate-50/50">
           <div className="min-h-dvh flex-1 rounded-xl bg-background/50 md:min-h-min p-4">
-            {children}
+            <Outlet />
           </div>
         </div>
       </SidebarInset>

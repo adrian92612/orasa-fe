@@ -31,27 +31,12 @@ const onboardingSchema = z.object({
   branchPhone: z.string().min(1, "Branch phone number is required"),
 });
 
+import {
+  type BusinessResponse,
+  type CreateBusinessRequest,
+} from "@/types/business";
+
 type OnboardingValues = z.infer<typeof onboardingSchema>;
-
-type BusinessResponse = {
-  id: string;
-  name: string;
-  slug: string;
-  freeSmsCredits: number;
-  paidSmsCredits: number;
-  subscriptionStatus: string;
-  createdAt: string;
-  firstBranchId: string;
-};
-
-type CreateBusinessRequest = {
-  name: string;
-  branch: {
-    name: string;
-    address: string;
-    phoneNumber: string;
-  };
-};
 
 type BusinessOnboardingFormProps = {
   onSuccess: (firstBranchId: string) => void;

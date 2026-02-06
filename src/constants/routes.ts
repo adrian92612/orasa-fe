@@ -3,6 +3,7 @@ import { ENV } from "./config";
 export const API_ROUTES = {
   AUTH: {
     LOGIN_OWNER: `${ENV.API_URL}/auth/google`,
+    LOGIN_STAFF: `${ENV.API_URL}/auth/staff/login`,
     LOGOUT: `${ENV.API_URL}/auth/logout`,
     REGISTER: `${ENV.API_URL}/auth/register`,
     FORGOT_PASSWORD: `${ENV.API_URL}/auth/forgot-password`,

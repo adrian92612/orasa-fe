@@ -42,12 +42,12 @@ const AppSidebar = ({ onLogout, ...props }: AppSidebarProps) => {
                   ? user.businessName.charAt(0).toUpperCase()
                   : "O"}
               </div>
-              <div className="flex flex-col gap-0.5 leading-none">
+              <div className="flex flex-col gap-0.5 leading-none ">
                 <span className="font-semibold text-sm tracking-tight line-clamp-1 break-all">
                   {user?.businessName || "Orasa"}
                 </span>
-                <span className="text-xs text-muted-foreground">
-                  {user?.role === "OWNER" ? "Owner" : "Staff"}
+                <span className="text-xs text-muted-foreground truncate max-w-[160px] block">
+                  {user?.role === "OWNER" ? "Owner" : "Staff"} {user?.username}
                 </span>
               </div>
             </div>
@@ -94,8 +94,6 @@ const AppSidebar = ({ onLogout, ...props }: AppSidebarProps) => {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <div className="text-sm text-gray-500">{user?.username}</div>
-
             <SidebarMenuButton
               onClick={onLogout}
               className="text-red-500 hover:text-red-600 hover:bg-red-50 hover:cursor-pointer"

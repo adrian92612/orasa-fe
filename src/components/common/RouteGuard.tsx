@@ -1,7 +1,9 @@
 import { APP_ROUTES } from "@/constants/routes";
 import { useUser } from "@/context/UserContext";
 import type { ReactNode } from "react";
-import { Navigate } from "react-router";
+import { Navigate, useLocation } from "react-router";
+
+const STAFF_ALLOWED_ROUTES = [APP_ROUTES.DASHBOARD.APPOINTMENTS];
 
 type RouteGuardProps = {
   children: ReactNode;
@@ -10,31 +12,49 @@ type RouteGuardProps = {
 
 const RouteGuard = ({ children, variant = "private" }: RouteGuardProps) => {
   const { user, isLoading } = useUser();
+  const location = useLocation();
 
-  if (isLoading)
+  const staffInAllowedRoute = STAFF_ALLOWED_ROUTES.some((route) =>
+    location.pathname.startsWith(route),
+  );
+
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
+  }
 
   const getRedirect = () => {
     switch (variant) {
       case "private":
         if (!user) return APP_ROUTES.LOGIN;
         if (!user.businessId) return APP_ROUTES.ONBOARDING;
+        if (user.role === "STAFF" && !staffInAllowedRoute)
+          return APP_ROUTES.DASHBOARD.APPOINTMENTS;
         break;
+
       case "public":
-        if (user)
-          return user.businessId
-            ? APP_ROUTES.DASHBOARD.ANALYTICS
-            : APP_ROUTES.ONBOARDING;
-        break;
+        if (!user) break;
+
+        if (!user.businessId) return APP_ROUTES.ONBOARDING;
+
+        if (user.role === "STAFF") return APP_ROUTES.DASHBOARD.APPOINTMENTS;
+
+        return APP_ROUTES.DASHBOARD.ANALYTICS;
+
       case "onboarding":
         if (!user) return APP_ROUTES.LOGIN;
-        if (user.businessId) return APP_ROUTES.DASHBOARD.ANALYTICS;
+
+        if (user.businessId) {
+          return user.role === "STAFF"
+            ? APP_ROUTES.DASHBOARD.APPOINTMENTS
+            : APP_ROUTES.DASHBOARD.ANALYTICS;
+        }
         break;
     }
+
     return null;
   };
 
