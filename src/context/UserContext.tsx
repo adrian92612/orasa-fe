@@ -1,7 +1,7 @@
 import { API_ROUTES } from "@/constants/routes";
 import { apiClient } from "@/lib/api-client";
 import { useQuery } from "@tanstack/react-query";
-import { createContext, type ReactNode, useContext } from "react";
+import { createContext, type ReactNode, useContext, useState } from "react";
 
 export type UserRole = "OWNER" | "STAFF" | "ADMIN";
 
@@ -11,6 +11,11 @@ export type User = {
   role: UserRole;
   businessId: string | null;
   branchIds: string[];
+  businessName?: string;
+  branches: {
+    id: string;
+    name: string;
+  }[];
 };
 
 type UserContextType = {
@@ -18,6 +23,9 @@ type UserContextType = {
   isLoading: boolean;
   error: Error | null;
   refetchUser: () => void;
+  logout: () => void;
+  selectedBranchId: string | null;
+  setSelectedBranchId: (id: string | null) => void;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -46,6 +54,20 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     staleTime: 5 * 60 * 1000,
   });
 
+  const logout = async () => {
+    try {
+      await apiClient.post(API_ROUTES.AUTH.LOGOUT, {});
+      await refetch();
+      // Force reload to clear any other state if needed, or just navigate
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  };
+
+  // State for branch switcher (defaults to null = "All Branches")
+  const [selectedBranchId, setSelectedBranchId] = useState<string | null>(null);
+
   return (
     <UserContext.Provider
       value={{
@@ -53,6 +75,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         isLoading,
         error: error as Error | null,
         refetchUser: refetch,
+        logout,
+        selectedBranchId,
+        setSelectedBranchId,
       }}
     >
       {children}
