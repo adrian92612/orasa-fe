@@ -4,10 +4,27 @@ import { UserProvider } from "@/context/UserContext";
 import { APP_ROUTES } from "@/constants/routes";
 import LoginPage from "@/pages/LoginPage";
 import OnboardingPage from "@/pages/OnboardingPage";
-import DashboardPage from "./pages/DashboardPage";
+import AnalyticsPage from "./pages/dashboard/AnalyticsPage";
+import AppointmentsPage from "./pages/dashboard/AppointmentsPage";
+import ServicesPage from "./pages/dashboard/ServicesPage";
+import StaffPage from "./pages/dashboard/StaffPage";
+import ActivityLogsPage from "./pages/dashboard/ActivityLogsPage";
+import SmsLogsPage from "./pages/dashboard/SmsLogsPage";
+import SettingsPage from "./pages/dashboard/SettingsPage";
+import { useUser } from "./context/UserContext";
 import RouteGuard from "./components/common/RouteGuard";
+import DashboardLayout from "./layouts/DashboardLayout";
 
 const queryClient = new QueryClient();
+
+const DashboardRedirect = () => {
+  const { user } = useUser();
+
+  if (user?.role === "STAFF") {
+    return <Navigate to={APP_ROUTES.DASHBOARD.APPOINTMENTS} replace />;
+  }
+  return <Navigate to={APP_ROUTES.DASHBOARD.ANALYTICS} replace />;
+};
 
 function App() {
   return (
@@ -34,12 +51,80 @@ function App() {
             />
             <Route
               path={APP_ROUTES.DASHBOARD.BASE}
-              element={<Navigate to={APP_ROUTES.DASHBOARD.ANALYTICS} />}
+              element={
+                <RouteGuard variant="private">
+                  <DashboardRedirect />
+                </RouteGuard>
+              }
             />
             <Route
               path={APP_ROUTES.DASHBOARD.ANALYTICS}
               element={
-                <RouteGuard variant="private" children={<DashboardPage />} />
+                <RouteGuard variant="private">
+                  <DashboardLayout>
+                    <AnalyticsPage />
+                  </DashboardLayout>
+                </RouteGuard>
+              }
+            />
+            <Route
+              path={APP_ROUTES.DASHBOARD.APPOINTMENTS}
+              element={
+                <RouteGuard variant="private">
+                  <DashboardLayout>
+                    <AppointmentsPage />
+                  </DashboardLayout>
+                </RouteGuard>
+              }
+            />
+            <Route
+              path={APP_ROUTES.DASHBOARD.SERVICES}
+              element={
+                <RouteGuard variant="private">
+                  <DashboardLayout>
+                    <ServicesPage />
+                  </DashboardLayout>
+                </RouteGuard>
+              }
+            />
+            <Route
+              path={APP_ROUTES.DASHBOARD.STAFF}
+              element={
+                <RouteGuard variant="private">
+                  <DashboardLayout>
+                    <StaffPage />
+                  </DashboardLayout>
+                </RouteGuard>
+              }
+            />
+            <Route
+              path={APP_ROUTES.DASHBOARD.ACTIVITY_LOGS}
+              element={
+                <RouteGuard variant="private">
+                  <DashboardLayout>
+                    <ActivityLogsPage />
+                  </DashboardLayout>
+                </RouteGuard>
+              }
+            />
+            <Route
+              path={APP_ROUTES.DASHBOARD.SMS_LOGS}
+              element={
+                <RouteGuard variant="private">
+                  <DashboardLayout>
+                    <SmsLogsPage />
+                  </DashboardLayout>
+                </RouteGuard>
+              }
+            />
+            <Route
+              path={APP_ROUTES.DASHBOARD.SETTINGS}
+              element={
+                <RouteGuard variant="private">
+                  <DashboardLayout>
+                    <SettingsPage />
+                  </DashboardLayout>
+                </RouteGuard>
               }
             />
           </Routes>
