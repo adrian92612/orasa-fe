@@ -8,6 +8,17 @@ export const API_ROUTES = {
     FORGOT_PASSWORD: `${ENV.API_URL}/auth/forgot-password`,
     RESET_PASSWORD: `${ENV.API_URL}/auth/reset-password`,
     CHANGE_PASSWORD: `${ENV.API_URL}/auth/change-password`,
+    ME: `${ENV.API_URL}/auth/me`,
+  },
+  BUSINESSES: {
+    CREATE: `${ENV.API_URL}/businesses`,
+    COMPLETE_ONBOARDING: `${ENV.API_URL}/businesses/onboarding/complete`,
+  },
+  SERVICES: {
+    CREATE: `${ENV.API_URL}/services`,
+  },
+  STAFF: {
+    CREATE: `${ENV.API_URL}/staff`,
   },
 } as const;
 
@@ -15,7 +26,15 @@ export const APP_ROUTES = {
   HOME: "/",
   LOGIN: "/login",
   ONBOARDING: "/onboarding",
-  DASHBOARD: "/dashboard",
+  DASHBOARD: {
+    BASE: "/dashboard",
+    ANALYTICS: "/dashboard/analytics",
+    APPOINTMENTS: "/dashboard/appointments",
+    CLIENTS: "/dashboard/clients",
+    SERVICES: "/dashboard/services",
+    STAFF: "/dashboard/staff",
+    SETTINGS: "/dashboard/settings",
+  },
   REGISTER: "/register",
   FORGOT_PASSWORD: "/forgot-password",
   RESET_PASSWORD: "/reset-password",
