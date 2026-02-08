@@ -28,6 +28,7 @@ export const API_ROUTES = {
   SERVICES: {
     BASE: `${ENV.API_URL}/services`,
     CREATE: `${ENV.API_URL}/services`,
+    BY_ID: (id: string) => `${ENV.API_URL}/services/${id}`,
   },
   STAFF: {
     BASE: `${ENV.API_URL}/staff`,
