@@ -5,10 +5,20 @@ export type ServiceResponse = {
   description?: string;
   basePrice: number;
   durationMinutes: number;
-  isAvailableGlobally: boolean;
+  availableGlobally: boolean; // Changed from isAvailableGlobally to match backend JSON default
   createdAt: string;
   updatedAt: string;
 };
+
+export type CreateServiceRequest = {
+  name: string;
+  description?: string;
+  basePrice: number;
+  durationMinutes: number;
+  availableGlobally?: boolean;
+};
+
+export type UpdateServiceRequest = Partial<CreateServiceRequest>;
 
 export type BranchServiceResponse = {
   id: string;

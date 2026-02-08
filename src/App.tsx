@@ -22,6 +22,8 @@ const ActivityLogsPage = lazy(
 const SmsLogsPage = lazy(() => import("./pages/dashboard/SmsLogsPage"));
 const SettingsPage = lazy(() => import("./pages/dashboard/SettingsPage"));
 
+import { Toaster } from "@/components/ui/sonner";
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -73,6 +75,7 @@ function App() {
               </Route>
             </Routes>
           </Suspense>
+          <Toaster position="top-right" />
         </BrowserRouter>
       </UserProvider>
     </QueryClientProvider>

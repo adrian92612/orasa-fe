@@ -1,17 +1,99 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { branchService } from "@/services/branch.service";
 import { Q_KEYS } from "@/constants/queryKeys";
+import type {
+  CreateBranchRequest,
+  UpdateBranchRequest,
+  BranchResponse,
+} from "@/types/branch";
+import { useUser } from "@/context/UserContext";
 
 export const useBranches = () => {
   return useQuery({
     queryKey: [Q_KEYS.BRANCHES],
-    queryFn: async () => {
-      const response = await branchService.getAllBranches();
-      if (response.success && response.data) {
-        return response.data;
-      }
-      return [];
-    },
+    queryFn: branchService.getAllBranches,
     staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useCreateBranch = () => {
+  const queryClient = useQueryClient();
+  const { refetchUser } = useUser();
+
+  return useMutation({
+    mutationFn: (data: CreateBranchRequest) => branchService.createBranch(data),
+    onSuccess: (newBranch) => {
+      if (newBranch) {
+        queryClient.setQueryData<BranchResponse[]>(
+          [Q_KEYS.BRANCHES],
+          (old = []) => [...old, newBranch],
+        );
+        toast.success("Branch created", {
+          description: `${newBranch.name} has been created successfully.`,
+        });
+      }
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.STAFFS] });
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.SERVICES] });
+      refetchUser();
+    },
+    onError: (error) => {
+      toast.error("Failed to create branch", {
+        description: error.message || "An unexpected error occurred.",
+      });
+    },
+  });
+};
+
+export const useUpdateBranch = () => {
+  const queryClient = useQueryClient();
+  const { refetchUser } = useUser();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdateBranchRequest }) =>
+      branchService.updateBranch(id, data),
+    onSuccess: (updatedBranch) => {
+      if (updatedBranch) {
+        queryClient.setQueryData<BranchResponse[]>(
+          [Q_KEYS.BRANCHES],
+          (old = []) =>
+            old.map((b) => (b.id === updatedBranch.id ? updatedBranch : b)),
+        );
+        toast.success("Branch updated", {
+          description: `${updatedBranch.name} has been updated successfully.`,
+        });
+      }
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.STAFFS] });
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.SERVICES] });
+      refetchUser();
+    },
+    onError: (error) => {
+      toast.error("Failed to update branch", {
+        description: error.message || "An unexpected error occurred.",
+      });
+    },
+  });
+};
+
+export const useDeleteBranch = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => branchService.deleteBranch(id),
+    onSuccess: (_, deletedId) => {
+      queryClient.setQueryData<BranchResponse[]>(
+        [Q_KEYS.BRANCHES],
+        (old = []) => old.filter((b) => b.id !== deletedId),
+      );
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.STAFFS] });
+      toast.success("Branch deleted", {
+        description: "Branch has been deleted successfully.",
+      });
+    },
+    onError: (error) => {
+      toast.error("Failed to delete branch", {
+        description: error.message || "An unexpected error occurred.",
+      });
+    },
   });
 };

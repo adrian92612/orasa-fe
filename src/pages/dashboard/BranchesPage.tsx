@@ -3,9 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-import { branchService } from "@/services/branch.service";
 import { staffService } from "@/services/staff.service";
-import { serviceService } from "@/services/service.service";
 
 import BranchList from "@/components/features/branches/BranchList";
 import BranchDialog from "@/components/features/branches/BranchDialog";
@@ -13,6 +11,8 @@ import BranchDialog from "@/components/features/branches/BranchDialog";
 import type { BranchResponse } from "@/types/branch";
 
 import { Q_KEYS } from "@/constants/queryKeys";
+import { useBranches } from "@/hooks/useBranches";
+import { useServices } from "@/hooks/useServices";
 
 const BranchesPage = () => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -20,13 +20,7 @@ const BranchesPage = () => {
     null,
   );
 
-  const { data: branches, isLoading: isLoadingBranches } = useQuery({
-    queryKey: [Q_KEYS.BRANCHES],
-    queryFn: async () => {
-      const res = await branchService.getAllBranches();
-      return res.data || [];
-    },
-  });
+  const { data: branches, isLoading: isLoadingBranches } = useBranches();
 
   const { data: staffList = [], isLoading: isLoadingStaff } = useQuery({
     queryKey: [Q_KEYS.STAFFS],
@@ -37,14 +31,8 @@ const BranchesPage = () => {
     staleTime: Infinity,
   });
 
-  const { data: serviceList = [], isLoading: isLoadingServices } = useQuery({
-    queryKey: [Q_KEYS.SERVICES],
-    queryFn: async () => {
-      const res = await serviceService.getServices();
-      return res.data || [];
-    },
-    staleTime: Infinity,
-  });
+  const { data: serviceList = [], isLoading: isLoadingServices } =
+    useServices();
 
   const handleCreate = () => {
     setSelectedBranch(null);

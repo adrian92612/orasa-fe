@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Field,
   FieldLabel,
-  FieldContent,
+  FieldError,
   FieldGroup,
+  FieldSet,
 } from "@/components/ui/field";
 
 import {
@@ -33,15 +33,11 @@ import {
 
 import LoadingButton from "@/components/common/LoadingButton";
 import BranchDeleteDialog from "./BranchDeleteDialog";
-
-import { branchService } from "@/services/branch.service";
-
 import type { BranchResponse } from "@/types/branch";
 import type { StaffResponse } from "@/types/staff";
 import type { ServiceResponse } from "@/types/service";
-
-import { Q_KEYS } from "@/constants/queryKeys";
-import { useUser } from "@/context/UserContext";
+import { useCreateBranch, useUpdateBranch } from "@/hooks/useBranches";
+import { arraysEqual } from "@/lib/utils";
 
 const schema = z.object({
   name: z.string().min(1),
@@ -72,8 +68,9 @@ const BranchDialog = ({
   isLoadingStaff,
   isLoadingServices,
 }: Props) => {
-  const queryClient = useQueryClient();
-  const { refetchUser } = useUser();
+  const createMutation = useCreateBranch();
+  const updateMutation = useUpdateBranch();
+
   const isEditing = !!branchToEdit;
 
   const { control, handleSubmit, reset } = useForm<FormValues>({
@@ -87,7 +84,42 @@ const BranchDialog = ({
     },
   });
 
+  const watchedValues = useWatch({ control });
+
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const hasFormChanged = () => {
+    if (!isEditing || !branchToEdit) return false;
+
+    const currentValues = watchedValues;
+
+    if ((currentValues.name || "").trim() !== (branchToEdit.name || "").trim())
+      return true;
+    if (
+      (currentValues.address || "").trim() !==
+      (branchToEdit.address || "").trim()
+    )
+      return true;
+    if (
+      (currentValues.phoneNumber || "").trim() !==
+      (branchToEdit.phoneNumber || "").trim()
+    )
+      return true;
+
+    if (!arraysEqual(currentValues.staffIds || [], branchToEdit.staffIds || []))
+      return true;
+    if (
+      !arraysEqual(
+        currentValues.serviceIds || [],
+        branchToEdit.activeServiceIds || [],
+      )
+    )
+      return true;
+
+    return false;
+  };
+
+  const isFormUnchanged = isEditing && !hasFormChanged();
 
   useEffect(() => {
     if (!open) return;
@@ -111,43 +143,35 @@ const BranchDialog = ({
     }
   }, [open, branchToEdit, reset]);
 
-  const mutation = useMutation({
-    mutationFn: async (data: FormValues) => {
-      let res;
+  const onSubmit = (data: FormValues) => {
+    const trimmedData: FormValues = {
+      ...data,
+      name: data.name.trim(),
+      address: data.address?.trim(),
+      phoneNumber: data.phoneNumber?.trim(),
+    };
 
-      if (isEditing && branchToEdit) {
-        res = await branchService.updateBranch(branchToEdit.id, data);
-      } else {
-        res = await branchService.createBranch(data);
-      }
-
-      return res.data!;
-    },
-
-    onSuccess: (branch: BranchResponse) => {
-      queryClient.setQueryData(
-        [Q_KEYS.BRANCHES],
-        (old: BranchResponse[] | undefined) => {
-          if (!old) return [branch];
-
-          if (isEditing) {
-            return old.map((b) => (b.id === branch.id ? branch : b));
-          }
-
-          return [...old, branch];
+    if (isEditing && branchToEdit) {
+      updateMutation.mutate(
+        { id: branchToEdit.id, data: trimmedData },
+        {
+          onSuccess: () => {
+            onOpenChange(false);
+            reset();
+          },
         },
       );
+    } else {
+      createMutation.mutate(trimmedData, {
+        onSuccess: () => {
+          onOpenChange(false);
+          reset();
+        },
+      });
+    }
+  };
 
-      queryClient.invalidateQueries({ queryKey: [Q_KEYS.STAFFS] });
-      queryClient.invalidateQueries({ queryKey: [Q_KEYS.SERVICES] });
-      refetchUser();
-
-      onOpenChange(false);
-      reset();
-    },
-  });
-
-  const onSubmit = (data: FormValues) => mutation.mutate(data);
+  const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -162,17 +186,22 @@ const BranchDialog = ({
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4">
-          <fieldset disabled={mutation.isPending} className="space-y-5">
+          <FieldSet disabled={isPending} className="space-y-5">
             <FieldGroup>
               <Controller
                 name="name"
                 control={control}
-                render={({ field }) => (
-                  <Field>
-                    <FieldLabel>Branch Name</FieldLabel>
-                    <FieldContent>
-                      <Input {...field} />
-                    </FieldContent>
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={field.name}>Branch Name</FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
                   </Field>
                 )}
               />
@@ -180,12 +209,18 @@ const BranchDialog = ({
               <Controller
                 name="address"
                 control={control}
-                render={({ field }) => (
-                  <Field>
-                    <FieldLabel>Address</FieldLabel>
-                    <FieldContent>
-                      <Input {...field} value={field.value || ""} />
-                    </FieldContent>
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={field.name}>Address</FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      value={field.value || ""}
+                      aria-invalid={fieldState.invalid}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
                   </Field>
                 )}
               />
@@ -193,16 +228,19 @@ const BranchDialog = ({
               <Controller
                 name="phoneNumber"
                 control={control}
-                render={({ field }) => (
-                  <Field>
-                    <FieldLabel>Phone Number</FieldLabel>
-                    <FieldContent>
-                      <Input
-                        {...field}
-                        value={field.value || ""}
-                        placeholder="e.g. 09123456789"
-                      />
-                    </FieldContent>
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={field.name}>Phone Number</FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      value={field.value || ""}
+                      placeholder="e.g. 09123456789"
+                      aria-invalid={fieldState.invalid}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
                   </Field>
                 )}
               />
@@ -210,11 +248,11 @@ const BranchDialog = ({
               <Controller
                 name="staffIds"
                 control={control}
-                render={({ field }) => {
+                render={({ field, fieldState }) => {
                   const allStaffIds = staffList.map((s) => s.id);
 
                   return (
-                    <Field>
+                    <Field data-invalid={fieldState.invalid}>
                       <FieldLabel className="flex items-center gap-2">
                         Staffs
                         {isLoadingStaff && (
@@ -246,33 +284,34 @@ const BranchDialog = ({
                         </Button>
                       </div>
 
-                      <FieldContent>
-                        <MultiSelect
-                          values={field.value}
-                          onValuesChange={field.onChange}
-                          disabled={isLoadingStaff}
-                        >
-                          <MultiSelectTrigger>
-                            <MultiSelectValue
-                              placeholder={
-                                isLoadingStaff
-                                  ? "Loading staff..."
-                                  : "Select staff"
-                              }
-                            />
-                          </MultiSelectTrigger>
+                      <MultiSelect
+                        values={field.value}
+                        onValuesChange={field.onChange}
+                        disabled={isLoadingStaff}
+                      >
+                        <MultiSelectTrigger>
+                          <MultiSelectValue
+                            placeholder={
+                              isLoadingStaff
+                                ? "Loading staff..."
+                                : "Select staff"
+                            }
+                          />
+                        </MultiSelectTrigger>
 
-                          <MultiSelectContent>
-                            <MultiSelectGroup heading="Staff">
-                              {staffList.map((s) => (
-                                <MultiSelectItem key={s.id} value={s.id}>
-                                  {s.username}
-                                </MultiSelectItem>
-                              ))}
-                            </MultiSelectGroup>
-                          </MultiSelectContent>
-                        </MultiSelect>
-                      </FieldContent>
+                        <MultiSelectContent>
+                          <MultiSelectGroup heading="Staff">
+                            {staffList.map((s) => (
+                              <MultiSelectItem key={s.id} value={s.id}>
+                                {s.username}
+                              </MultiSelectItem>
+                            ))}
+                          </MultiSelectGroup>
+                        </MultiSelectContent>
+                      </MultiSelect>
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
                     </Field>
                   );
                 }}
@@ -281,11 +320,11 @@ const BranchDialog = ({
               <Controller
                 name="serviceIds"
                 control={control}
-                render={({ field }) => {
+                render={({ field, fieldState }) => {
                   const allServiceIds = serviceList.map((s) => s.id);
 
                   return (
-                    <Field>
+                    <Field data-invalid={fieldState.invalid}>
                       <FieldLabel className="flex items-center gap-2">
                         Services
                         {isLoadingServices && (
@@ -317,33 +356,34 @@ const BranchDialog = ({
                         </Button>
                       </div>
 
-                      <FieldContent>
-                        <MultiSelect
-                          values={field.value}
-                          onValuesChange={field.onChange}
-                          disabled={isLoadingServices}
-                        >
-                          <MultiSelectTrigger>
-                            <MultiSelectValue
-                              placeholder={
-                                isLoadingServices
-                                  ? "Loading services..."
-                                  : "Select services"
-                              }
-                            />
-                          </MultiSelectTrigger>
+                      <MultiSelect
+                        values={field.value}
+                        onValuesChange={field.onChange}
+                        disabled={isLoadingServices}
+                      >
+                        <MultiSelectTrigger>
+                          <MultiSelectValue
+                            placeholder={
+                              isLoadingServices
+                                ? "Loading services..."
+                                : "Select services"
+                            }
+                          />
+                        </MultiSelectTrigger>
 
-                          <MultiSelectContent>
-                            <MultiSelectGroup heading="Services">
-                              {serviceList.map((s) => (
-                                <MultiSelectItem key={s.id} value={s.id}>
-                                  {s.name}
-                                </MultiSelectItem>
-                              ))}
-                            </MultiSelectGroup>
-                          </MultiSelectContent>
-                        </MultiSelect>
-                      </FieldContent>
+                        <MultiSelectContent>
+                          <MultiSelectGroup heading="Services">
+                            {serviceList.map((s) => (
+                              <MultiSelectItem key={s.id} value={s.id}>
+                                {s.name}
+                              </MultiSelectItem>
+                            ))}
+                          </MultiSelectGroup>
+                        </MultiSelectContent>
+                      </MultiSelect>
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
                     </Field>
                   );
                 }}
@@ -363,7 +403,8 @@ const BranchDialog = ({
                 type="submit"
                 label={isEditing ? "Save Changes" : "Create Branch"}
                 loadingLabel="Saving..."
-                isLoading={mutation.isPending}
+                isLoading={isPending}
+                disabled={isEditing && isFormUnchanged}
               />
             </DialogFooter>
 
@@ -396,7 +437,7 @@ const BranchDialog = ({
                 />
               </div>
             )}
-          </fieldset>
+          </FieldSet>
         </form>
       </DialogContent>
     </Dialog>

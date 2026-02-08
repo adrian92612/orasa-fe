@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Dialog,
   DialogContent,
@@ -11,9 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import LoadingButton from "@/components/common/LoadingButton";
-import { branchService } from "@/services/branch.service";
-import { Q_KEYS } from "@/constants/queryKeys";
 import type { BranchResponse } from "@/types/branch";
+import { useDeleteBranch } from "@/hooks/useBranches";
 
 interface Props {
   open: boolean;
@@ -28,7 +26,6 @@ const BranchDeleteDialog = ({
   branch,
   onSuccess,
 }: Props) => {
-  const queryClient = useQueryClient();
   const [confirmName, setConfirmName] = useState("");
 
   const handleOpenChange = (isOpen: boolean) => {
@@ -38,21 +35,16 @@ const BranchDeleteDialog = ({
     onOpenChange(isOpen);
   };
 
-  const deleteMutation = useMutation({
-    mutationFn: async () => {
-      return branchService.deleteBranch(branch.id);
-    },
-    onSuccess: () => {
-      queryClient.setQueryData<BranchResponse[]>(
-        [Q_KEYS.BRANCHES],
-        (old = []) => old.filter((b) => b.id !== branch.id),
-      );
+  const deleteMutation = useDeleteBranch();
 
-      queryClient.invalidateQueries({ queryKey: [Q_KEYS.STAFFS] });
-      handleOpenChange(false);
-      onSuccess?.();
-    },
-  });
+  const handleDelete = () => {
+    deleteMutation.mutate(branch.id, {
+      onSuccess: () => {
+        handleOpenChange(false);
+        onSuccess?.();
+      },
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -93,7 +85,7 @@ const BranchDeleteDialog = ({
             loadingLabel="Deleting..."
             isLoading={deleteMutation.isPending}
             disabled={confirmName !== branch.name}
-            onClick={() => deleteMutation.mutate()}
+            onClick={handleDelete}
           />
         </DialogFooter>
       </DialogContent>
