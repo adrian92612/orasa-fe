@@ -9,13 +9,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useUser } from "@/context/UserContext";
 import { Check, ChevronsUpDown, Store } from "lucide-react";
+import { useBranches } from "@/hooks/useBranches";
 
 export const BranchSwitcher = () => {
   const { user, selectedBranchId, setSelectedBranchId } = useUser();
+  const { data: branches = [] } = useBranches();
 
   if (!user) return null;
 
-  const branches = user.branches || [];
   const selectedBranch = branches.find((b) => b.id === selectedBranchId);
 
   return (
@@ -35,7 +36,6 @@ export const BranchSwitcher = () => {
         <DropdownMenuLabel>Select Branch</DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        {/* All Branches Option */}
         <DropdownMenuItem
           onSelect={() => setSelectedBranchId(null)}
           className="cursor-pointer"
@@ -50,7 +50,6 @@ export const BranchSwitcher = () => {
 
         <DropdownMenuSeparator />
 
-        {/* Individual Branches */}
         {branches.map((branch) => (
           <DropdownMenuItem
             key={branch.id}

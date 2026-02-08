@@ -3,7 +3,11 @@ import { useUser } from "@/context/UserContext";
 import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router";
 
-const STAFF_ALLOWED_ROUTES = [APP_ROUTES.DASHBOARD.APPOINTMENTS];
+import { NAV_ITEMS } from "@/constants/navigation";
+
+const STAFF_ALLOWED_ROUTES = NAV_ITEMS.filter((item) =>
+  item.allowedRoles.includes("STAFF"),
+).map((item) => item.url);
 
 type RouteGuardProps = {
   children: ReactNode;

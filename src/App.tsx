@@ -1,65 +1,78 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UserProvider } from "@/context/UserContext";
 import { APP_ROUTES } from "@/constants/routes";
-
-import LoginPage from "@/pages/LoginPage";
-import OnboardingPage from "@/pages/OnboardingPage";
-
-import AnalyticsPage from "./pages/dashboard/AnalyticsPage";
-import AppointmentsPage from "./pages/dashboard/AppointmentsPage";
-import ServicesPage from "./pages/dashboard/ServicesPage";
-import StaffPage from "./pages/dashboard/StaffPage";
-import ActivityLogsPage from "./pages/dashboard/ActivityLogsPage";
-import SmsLogsPage from "./pages/dashboard/SmsLogsPage";
-import SettingsPage from "./pages/dashboard/SettingsPage";
-
 import RouteGuard from "./components/common/RouteGuard";
-import DashboardLayout from "./layouts/DashboardLayout";
 
 const queryClient = new QueryClient();
+const LoginPage = lazy(() => import("@/pages/LoginPage"));
+const OnboardingPage = lazy(() => import("@/pages/OnboardingPage"));
+const DashboardLayout = lazy(() => import("./layouts/DashboardLayout"));
+const AnalyticsPage = lazy(() => import("./pages/dashboard/AnalyticsPage"));
+const AppointmentsPage = lazy(
+  () => import("./pages/dashboard/AppointmentsPage"),
+);
+const BranchesPage = lazy(() => import("./pages/dashboard/BranchesPage"));
+const ServicesPage = lazy(() => import("./pages/dashboard/ServicesPage"));
+const StaffPage = lazy(() => import("./pages/dashboard/StaffPage"));
+const ActivityLogsPage = lazy(
+  () => import("./pages/dashboard/ActivityLogsPage"),
+);
+const SmsLogsPage = lazy(() => import("./pages/dashboard/SmsLogsPage"));
+const SettingsPage = lazy(() => import("./pages/dashboard/SettingsPage"));
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider>
         <BrowserRouter>
-          <Routes>
-            <Route
-              path={APP_ROUTES.HOME}
-              element={<Navigate to={APP_ROUTES.LOGIN} replace />}
-            />
+          <Suspense fallback={<div>Loading...</div>}>
+            <Routes>
+              <Route
+                path={APP_ROUTES.HOME}
+                element={<Navigate to={APP_ROUTES.LOGIN} replace />}
+              />
 
-            <Route
-              path={APP_ROUTES.LOGIN}
-              element={<RouteGuard variant="public" children={<LoginPage />} />}
-            />
+              {/* Public routes */}
+              <Route
+                path={APP_ROUTES.LOGIN}
+                element={
+                  <RouteGuard variant="public" children={<LoginPage />} />
+                }
+              />
+              <Route
+                path={APP_ROUTES.ONBOARDING}
+                element={
+                  <RouteGuard
+                    variant="onboarding"
+                    children={<OnboardingPage />}
+                  />
+                }
+              />
 
-            <Route
-              path={APP_ROUTES.ONBOARDING}
-              element={
-                <RouteGuard
-                  variant="onboarding"
-                  children={<OnboardingPage />}
-                />
-              }
-            />
-
-            <Route
-              path="/dashboard"
-              element={
-                <RouteGuard variant="private" children={<DashboardLayout />} />
-              }
-            >
-              <Route path="analytics" element={<AnalyticsPage />} />
-              <Route path="appointments" element={<AppointmentsPage />} />
-              <Route path="services" element={<ServicesPage />} />
-              <Route path="staff" element={<StaffPage />} />
-              <Route path="activity-logs" element={<ActivityLogsPage />} />
-              <Route path="sms-logs" element={<SmsLogsPage />} />
-              <Route path="settings" element={<SettingsPage />} />
-            </Route>
-          </Routes>
+              {/* Dashboard routes */}
+              <Route
+                path="/dashboard"
+                element={
+                  <RouteGuard
+                    variant="private"
+                    children={<DashboardLayout />}
+                  />
+                }
+              >
+                <Route index element={<Navigate to="analytics" replace />} />
+                <Route path="analytics" element={<AnalyticsPage />} />
+                <Route path="appointments" element={<AppointmentsPage />} />
+                <Route path="branches" element={<BranchesPage />} />
+                <Route path="services" element={<ServicesPage />} />
+                <Route path="staff" element={<StaffPage />} />
+                <Route path="activity-logs" element={<ActivityLogsPage />} />
+                <Route path="sms-logs" element={<SmsLogsPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+              </Route>
+            </Routes>
+          </Suspense>
         </BrowserRouter>
       </UserProvider>
     </QueryClientProvider>

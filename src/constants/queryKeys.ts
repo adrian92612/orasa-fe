@@ -1,0 +1,10 @@
+export const Q_KEYS = {
+  BRANCHES: "branches",
+  SERVICES: "services",
+  STAFFS: "staffs",
+  APPOINTMENTS: "appointments",
+  ACTIVITY_LOGS: "activity-logs",
+  SMS_LOGS: "sms-logs",
+  SETTINGS: "settings",
+  CURRENT_USER: "current-user",
+};

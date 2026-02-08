@@ -1,3 +1,4 @@
+import { Q_KEYS } from "@/constants/queryKeys";
 import { API_ROUTES } from "@/constants/routes";
 import { apiClient } from "@/lib/api-client";
 import { useQuery } from "@tanstack/react-query";
@@ -10,12 +11,7 @@ export type User = {
   username: string;
   role: UserRole;
   businessId: string | null;
-  branchIds: string[];
   businessName?: string;
-  branches: {
-    id: string;
-    name: string;
-  }[];
 };
 
 type UserContextType = {
@@ -37,7 +33,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["currentUser"],
+    queryKey: [Q_KEYS.CURRENT_USER],
     queryFn: async () => {
       try {
         const response = await apiClient.get<User>(API_ROUTES.AUTH.ME);
@@ -45,7 +41,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           return response.data;
         }
         return null;
-      } catch (err) {
+      } catch {
         // If 401/403, just return null (not logged in)
         return null;
       }
@@ -58,14 +54,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     try {
       await apiClient.post(API_ROUTES.AUTH.LOGOUT, {});
       await refetch();
-      // Force reload to clear any other state if needed, or just navigate
       window.location.href = "/login";
     } catch (error) {
       console.error("Logout failed", error);
     }
   };
 
-  // State for branch switcher (defaults to null = "All Branches")
   const [selectedBranchId, setSelectedBranchId] = useState<string | null>(null);
 
   return (
@@ -85,6 +79,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useUser = () => {
   const context = useContext(UserContext);
   if (context === undefined) {

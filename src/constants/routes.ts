@@ -15,10 +15,22 @@ export const API_ROUTES = {
     CREATE: `${ENV.API_URL}/businesses`,
     COMPLETE_ONBOARDING: `${ENV.API_URL}/businesses/onboarding/complete`,
   },
+  BRANCHES: {
+    BASE: `${ENV.API_URL}/branches`,
+    BY_ID: (id: string) => `${ENV.API_URL}/branches/${id}`,
+    SERVICES: {
+      BASE: (branchId: string) =>
+        `${ENV.API_URL}/branches/${branchId}/services`,
+      BY_ID: (branchId: string, serviceId: string) =>
+        `${ENV.API_URL}/branches/${branchId}/services/${serviceId}`,
+    },
+  },
   SERVICES: {
+    BASE: `${ENV.API_URL}/services`,
     CREATE: `${ENV.API_URL}/services`,
   },
   STAFF: {
+    BASE: `${ENV.API_URL}/staff`,
     CREATE: `${ENV.API_URL}/staff`,
   },
 } as const;
@@ -31,6 +43,7 @@ export const APP_ROUTES = {
     BASE: "/dashboard",
     ANALYTICS: "/dashboard/analytics",
     APPOINTMENTS: "/dashboard/appointments",
+    BRANCHES: "/dashboard/branches",
     SERVICES: "/dashboard/services",
     STAFF: "/dashboard/staff",
     ACTIVITY_LOGS: "/dashboard/activity-logs",

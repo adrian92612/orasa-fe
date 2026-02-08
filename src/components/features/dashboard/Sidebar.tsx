@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { BranchSwitcher } from "./BranchSwitcher";
 import { useUser } from "@/context/UserContext";
+import { useBranches } from "@/hooks/useBranches";
 import { LogOut, X } from "lucide-react";
 import { Link, useLocation } from "react-router";
 import { NAV_ITEMS } from "@/constants/navigation";
@@ -23,13 +24,15 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
 
 const AppSidebar = ({ onLogout, ...props }: AppSidebarProps) => {
   const { user } = useUser();
+  const { data: branches = [] } = useBranches();
   const location = useLocation();
   const { isMobile, setOpenMobile } = useSidebar();
 
-  const filteredNavItems =
-    user?.role === "STAFF"
-      ? NAV_ITEMS.filter((item) => item.title === "Appointments")
-      : NAV_ITEMS;
+  const filteredNavItems = NAV_ITEMS.filter(
+    (item) => user?.role && item.allowedRoles.includes(user.role),
+  );
+
+  const displayBusinessName = user?.businessName || "Orasa";
 
   return (
     <Sidebar {...props}>
@@ -38,13 +41,11 @@ const AppSidebar = ({ onLogout, ...props }: AppSidebarProps) => {
           <div className="flex items-center justify-between px-2">
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold shrink-0">
-                {user?.businessName
-                  ? user.businessName.charAt(0).toUpperCase()
-                  : "O"}
+                {displayBusinessName.charAt(0)}
               </div>
               <div className="flex flex-col gap-0.5 leading-none ">
                 <span className="font-semibold text-sm tracking-tight line-clamp-1 break-all">
-                  {user?.businessName || "Orasa"}
+                  {displayBusinessName}
                 </span>
                 <span className="text-xs text-muted-foreground truncate max-w-[160px] block">
                   {user?.role === "OWNER" ? "Owner" : "Staff"} {user?.username}
@@ -61,7 +62,7 @@ const AppSidebar = ({ onLogout, ...props }: AppSidebarProps) => {
             )}
           </div>
 
-          {(user?.role === "OWNER" || (user?.branches?.length || 0) > 1) && (
+          {(user?.role === "OWNER" || branches.length > 1) && (
             <div className="mt-2">
               <BranchSwitcher />
             </div>
