@@ -1,7 +1,9 @@
-import { Suspense, useEffect } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
 import { useBranches } from "@/hooks/useBranches";
-import AppSidebar from "@/components/features/dashboard/Sidebar";
+const AppSidebar = lazy(
+  () => import("@/components/features/dashboard/Sidebar"),
+);
 import {
   SidebarInset,
   SidebarProvider,
@@ -41,7 +43,13 @@ const DashboardLayout = () => {
 
   return (
     <SidebarProvider>
-      <AppSidebar onLogout={logout} />
+      <Suspense
+        fallback={
+          <div className="h-screen w-[270px] border-r bg-sidebar hidden md:block" />
+        }
+      >
+        <AppSidebar onLogout={logout} />
+      </Suspense>
 
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">

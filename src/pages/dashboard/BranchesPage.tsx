@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,10 @@ import { Button } from "@/components/ui/button";
 import { staffService } from "@/services/staff.service";
 
 import BranchList from "@/components/features/branches/BranchList";
-import BranchDialog from "@/components/features/branches/BranchDialog";
+
+const BranchDialog = lazy(
+  () => import("@/components/features/branches/BranchDialog"),
+);
 
 import type { BranchResponse } from "@/types/branch";
 
@@ -63,16 +66,18 @@ const BranchesPage = () => {
         onEdit={handleEdit}
       />
 
-      <BranchDialog
-        key={selectedBranch?.id || "new"}
-        open={isSheetOpen}
-        onOpenChange={setIsSheetOpen}
-        branchToEdit={selectedBranch}
-        staffList={staffList}
-        serviceList={serviceList}
-        isLoadingStaff={isLoadingStaff}
-        isLoadingServices={isLoadingServices}
-      />
+      <Suspense fallback={null}>
+        <BranchDialog
+          key={selectedBranch?.id || "new"}
+          open={isSheetOpen}
+          onOpenChange={setIsSheetOpen}
+          branchToEdit={selectedBranch}
+          staffList={staffList}
+          serviceList={serviceList}
+          isLoadingStaff={isLoadingStaff}
+          isLoadingServices={isLoadingServices}
+        />
+      </Suspense>
     </div>
   );
 };

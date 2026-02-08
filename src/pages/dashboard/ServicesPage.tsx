@@ -1,12 +1,17 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useServices } from "@/hooks/useServices";
 import ServiceList from "@/components/features/services/ServiceList";
-import ServiceDialog from "@/components/features/services/ServiceDialog";
-import ServiceDeleteDialog from "@/components/features/services/ServiceDeleteDialog";
 import ServiceSearch from "@/components/features/services/ServiceSearch";
 import ServicePagination from "@/components/features/services/ServicePagination";
+
+const ServiceDialog = lazy(
+  () => import("@/components/features/services/ServiceDialog"),
+);
+const ServiceDeleteDialog = lazy(
+  () => import("@/components/features/services/ServiceDeleteDialog"),
+);
 import type { ServiceResponse } from "@/types/service";
 
 const ServicesPage = () => {
@@ -16,7 +21,6 @@ const ServicesPage = () => {
   const [selectedService, setSelectedService] =
     useState<ServiceResponse | null>(null);
 
-  // Search and Pagination State
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -36,7 +40,6 @@ const ServicesPage = () => {
     setIsDeleteDialogOpen(true);
   };
 
-  // Filter and Paginate Logic (Simplified for React Compiler)
   const query = searchQuery.toLowerCase().trim();
   const filteredServices = services
     ? !query
@@ -54,12 +57,12 @@ const ServicesPage = () => {
 
   const handleSearchChange = (val: string) => {
     setSearchQuery(val);
-    setCurrentPage(1); // Reset to first page on search
+    setCurrentPage(1);
   };
 
   const handlePageSizeChange = (val: string) => {
     setPageSize(Number(val));
-    setCurrentPage(1); // Reset to first page when page size changes
+    setCurrentPage(1);
   };
 
   return (
@@ -94,17 +97,19 @@ const ServicesPage = () => {
         onPageSizeChange={handlePageSizeChange}
       />
 
-      <ServiceDialog
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        serviceToEdit={selectedService}
-      />
+      <Suspense fallback={null}>
+        <ServiceDialog
+          open={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+          serviceToEdit={selectedService}
+        />
 
-      <ServiceDeleteDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        service={selectedService}
-      />
+        <ServiceDeleteDialog
+          open={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+          service={selectedService}
+        />
+      </Suspense>
     </div>
   );
 };

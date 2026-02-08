@@ -2,8 +2,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
+// import { visualizer } from "rollup-plugin-visualizer";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     tailwindcss(),
@@ -12,6 +12,7 @@ export default defineConfig({
         plugins: [["babel-plugin-react-compiler"]],
       },
     }),
+    // visualizer({ open: true }),
   ],
   resolve: {
     alias: {
@@ -26,5 +27,35 @@ export default defineConfig({
     //     changeOrigin: true,
     //   },
     // },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (
+              id.includes("react") ||
+              id.includes("react-dom") ||
+              id.includes("react-router")
+            ) {
+              return "vendor";
+            }
+            if (id.includes("@tanstack")) {
+              return "tanstack";
+            }
+            if (
+              id.includes("lucide-react") ||
+              id.includes("@radix-ui") ||
+              id.includes("class-variance-authority") ||
+              id.includes("clsx") ||
+              id.includes("tailwind-merge") ||
+              id.includes("sonner")
+            ) {
+              return "ui";
+            }
+          }
+        },
+      },
+    },
   },
 });
