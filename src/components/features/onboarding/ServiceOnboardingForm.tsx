@@ -21,6 +21,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+import type { ServiceResponse } from "@/types/service";
 
 const serviceSchema = z.object({
   name: z.string().min(1, "Service name is required"),
@@ -29,7 +30,6 @@ const serviceSchema = z.object({
   durationMinutes: z.coerce
     .number()
     .min(1, "Duration must be at least 1 minute"),
-  availableGlobally: z.boolean(),
 });
 
 type ServiceValues = z.infer<typeof serviceSchema>;
@@ -50,13 +50,15 @@ const ServiceOnboardingForm = ({ onNext }: ServiceOnboardingFormProps) => {
       description: "",
       basePrice: 0,
       durationMinutes: 30,
-      availableGlobally: true,
     },
   });
 
   const { mutate: createService, isPending } = useMutation({
     mutationFn: async (data: ServiceValues) => {
-      const result = await apiClient.post(API_ROUTES.SERVICES.CREATE, data);
+      const result = await apiClient.post<ServiceResponse>(
+        API_ROUTES.SERVICES.CREATE,
+        data,
+      );
       return result;
     },
     onSuccess: (result) => {
@@ -172,28 +174,6 @@ const ServiceOnboardingForm = ({ onNext }: ServiceOnboardingFormProps) => {
                     )}
                   </FieldContent>
                 </Field>
-              )}
-            />
-
-            <Controller
-              control={control}
-              name="availableGlobally"
-              render={({ field }) => (
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="availableGlobally"
-                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                    checked={field.value}
-                    onChange={field.onChange}
-                  />
-                  <label
-                    htmlFor="availableGlobally"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Available on all branches
-                  </label>
-                </div>
               )}
             />
 

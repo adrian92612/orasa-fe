@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import { branchService } from "@/services/branch.service";
 import { Q_KEYS } from "@/constants/queryKeys";
@@ -10,11 +11,24 @@ import type {
 import { useUser } from "@/context/UserContext";
 
 export const useBranches = () => {
-  return useQuery({
+  const { selectedBranchId, setSelectedBranchId } = useUser();
+  const query = useQuery({
     queryKey: [Q_KEYS.BRANCHES],
     queryFn: branchService.getAllBranches,
     staleTime: 5 * 60 * 1000,
   });
+
+  useEffect(() => {
+    if (
+      !query.isLoading &&
+      query.data?.length === 1 &&
+      selectedBranchId !== query.data[0].id
+    ) {
+      setSelectedBranchId(query.data[0].id);
+    }
+  }, [query.data, query.isLoading, selectedBranchId, setSelectedBranchId]);
+
+  return query;
 };
 
 export const useCreateBranch = () => {

@@ -49,7 +49,7 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-interface Props {
+type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   branchToEdit?: BranchResponse | null;
@@ -57,7 +57,7 @@ interface Props {
   serviceList: ServiceResponse[];
   isLoadingStaff?: boolean;
   isLoadingServices?: boolean;
-}
+};
 
 const BranchDialog = ({
   open,
@@ -80,7 +80,8 @@ const BranchDialog = ({
       address: branchToEdit?.address || "",
       phoneNumber: branchToEdit?.phoneNumber || "",
       staffIds: branchToEdit?.staffIds || [],
-      serviceIds: branchToEdit?.activeServiceIds || [],
+      serviceIds:
+        branchToEdit?.activeServiceIds || serviceList.map((s) => s.id),
     },
   });
 
@@ -138,7 +139,7 @@ const BranchDialog = ({
         address: "",
         phoneNumber: "",
         staffIds: [],
-        serviceIds: [],
+        serviceIds: serviceList.map((s) => s.id),
       });
     }
   }, [open, branchToEdit, reset]);

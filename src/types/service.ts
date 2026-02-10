@@ -5,9 +5,13 @@ export type ServiceResponse = {
   description?: string;
   basePrice: number;
   durationMinutes: number;
-  availableGlobally: boolean; // Changed from isAvailableGlobally to match backend JSON default
   createdAt: string;
   updatedAt: string;
+  isActive?: boolean;
+  linkId?: string;
+  isOptimistic?: boolean;
+  customPrice?: number;
+  effectivePrice?: number;
 };
 
 export type CreateServiceRequest = {
@@ -15,7 +19,6 @@ export type CreateServiceRequest = {
   description?: string;
   basePrice: number;
   durationMinutes: number;
-  availableGlobally?: boolean;
 };
 
 export type UpdateServiceRequest = Partial<CreateServiceRequest>;
@@ -41,6 +44,7 @@ export type AssignServiceToBranchRequest = {
 };
 
 export type UpdateBranchServiceRequest = {
+  serviceId: string;
   customPrice?: number;
   active?: boolean;
 };

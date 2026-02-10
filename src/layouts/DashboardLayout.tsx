@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy } from "react";
 import { useUser } from "@/context/UserContext";
 import { useBranches } from "@/hooks/useBranches";
 const AppSidebar = lazy(
@@ -20,7 +20,6 @@ const DashboardLayout = () => {
     user,
     logout,
     selectedBranchId,
-    setSelectedBranchId,
     isLoading: isLoadingUser,
   } = useUser();
   const location = useLocation();
@@ -34,12 +33,6 @@ const DashboardLayout = () => {
   const branchName = currentBranch ? currentBranch.name : "All Branches";
   const isStaffNoBranches =
     !isLoading && user?.role === "STAFF" && !branches?.length;
-
-  useEffect(() => {
-    if (!isLoadingBranches && branches?.length === 1 && !selectedBranchId) {
-      setSelectedBranchId(branches[0].id);
-    }
-  }, [branches, isLoadingBranches, selectedBranchId, setSelectedBranchId]);
 
   return (
     <SidebarProvider>

@@ -13,11 +13,27 @@ import { useBranches } from "@/hooks/useBranches";
 
 export const BranchSwitcher = () => {
   const { user, selectedBranchId, setSelectedBranchId } = useUser();
-  const { data: branches = [] } = useBranches();
+  const { data: branches = [], isLoading } = useBranches();
 
   if (!user) return null;
 
   const selectedBranch = branches.find((b) => b.id === selectedBranchId);
+
+  if (!isLoading && branches.length === 1) {
+    return (
+      <Button
+        variant="outline"
+        role="combobox"
+        disabled
+        className="w-[200px] justify-between opacity-100 disabled:opacity-100 bg-muted/50"
+      >
+        <div className="flex items-center">
+          <Store className="mr-2 h-4 w-4" />
+          <span className="truncate">{branches[0].name}</span>
+        </div>
+      </Button>
+    );
+  }
 
   return (
     <DropdownMenu>
@@ -26,9 +42,14 @@ export const BranchSwitcher = () => {
           variant="outline"
           role="combobox"
           className="w-[200px] justify-between"
+          disabled={isLoading}
         >
-          <Store className="mr-2 h-4 w-4" />
-          {selectedBranch ? selectedBranch.name : "All Branches"}
+          <div className="flex items-center truncate">
+            <Store className="mr-2 h-4 w-4 shrink-0" />
+            <span className="truncate">
+              {selectedBranch ? selectedBranch.name : "All Branches"}
+            </span>
+          </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </DropdownMenuTrigger>
