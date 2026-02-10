@@ -7,10 +7,12 @@ import type {
 } from "@/types/service";
 
 export const serviceService = {
-  getAllServices: async () => {
-    const response = await apiClient.get<ServiceResponse[]>(
-      API_ROUTES.SERVICES.BASE,
-    );
+  getAllServices: async (branchId?: string | null) => {
+    let url = API_ROUTES.SERVICES.BASE;
+    if (branchId) {
+      url += `?branchId=${branchId}`;
+    }
+    const response = await apiClient.get<ServiceResponse[]>(url);
     return response.data;
   },
 

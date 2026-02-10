@@ -8,53 +8,61 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Field,
   FieldLabel,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldSet,
-  FieldContent,
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import type {
-  CreateServiceRequest,
-  ServiceResponse,
-  UpdateServiceRequest,
-} from "@/types/service";
+import type { ServiceResponse } from "@/types/service";
 import LoadingButton from "@/components/common/LoadingButton";
-import { useCreateService, useUpdateService } from "@/hooks/useServices";
-import { toast } from "sonner";
+import {
+  useCreateService,
+  useUpdateService,
+  useUpdateServiceLink,
+  useAssignServiceToBranch,
+} from "@/hooks/useServices";
 
 const serviceSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),
   description: z.string().trim().optional(),
-  basePrice: z.number().min(0, "Price must be non-negative"),
-  durationMinutes: z.number().min(1, "Duration must be positive"),
-  availableGlobally: z.boolean(),
+  basePrice: z.number().min(1, "Price must be greater than 0"),
+  durationMinutes: z.number().min(1, "Duration must be greater than 0"),
+  customPrice: z
+    .number()
+    .min(1, "Price must be greater than 0")
+    .nullable()
+    .optional(),
 });
 
 type ServiceFormValues = z.infer<typeof serviceSchema>;
 
-interface ServiceDialogProps {
+type ServiceDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   serviceToEdit?: ServiceResponse | null;
-}
+  branchId?: string | null;
+};
 
 const ServiceDialog = ({
   open,
   onOpenChange,
   serviceToEdit,
+  branchId,
 }: ServiceDialogProps) => {
   const isEditing = !!serviceToEdit;
+  const isBranchMode = !!branchId && isEditing; // Only applicable when editing existing services in a branch context
+
   const createMutation = useCreateService();
   const updateMutation = useUpdateService();
+  const updateLinkMutation = useUpdateServiceLink();
+  const assignMutation = useAssignServiceToBranch();
 
   const { control, handleSubmit, reset } = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceSchema),
@@ -62,12 +70,11 @@ const ServiceDialog = ({
       name: "",
       description: "",
       basePrice: 0,
-      durationMinutes: 30, // Default to 30 mins
-      availableGlobally: true,
+      durationMinutes: 30,
+      customPrice: null,
     },
   });
 
-  // Reset form when serviceToEdit changes
   useEffect(() => {
     if (serviceToEdit) {
       reset({
@@ -75,7 +82,7 @@ const ServiceDialog = ({
         description: serviceToEdit.description || "",
         basePrice: serviceToEdit.basePrice,
         durationMinutes: serviceToEdit.durationMinutes,
-        availableGlobally: serviceToEdit.availableGlobally,
+        customPrice: serviceToEdit.customPrice || null,
       });
     } else {
       reset({
@@ -83,51 +90,66 @@ const ServiceDialog = ({
         description: "",
         basePrice: 0,
         durationMinutes: 30,
-        availableGlobally: true,
+        customPrice: null,
       });
     }
   }, [serviceToEdit, reset]);
 
   const onSubmit = (data: ServiceFormValues) => {
-    if (isEditing && serviceToEdit) {
-      updateMutation.mutate(
-        {
-          id: serviceToEdit.id,
-          data: data as UpdateServiceRequest,
-        },
-        {
-          onSuccess: () => {
-            toast.success("Service updated", {
-              description: `${data.name} has been updated successfully.`,
-            });
-            onOpenChange(false);
+    if (isBranchMode && serviceToEdit && branchId) {
+      // Branch Override Mode
+      if (serviceToEdit.linkId) {
+        updateLinkMutation.mutate({
+          branchId,
+          linkId: serviceToEdit.linkId,
+          data: {
+            serviceId: serviceToEdit.id,
+            active: serviceToEdit.isActive, // Keep active state
+            customPrice: data.customPrice || undefined,
           },
-          onError: (error) => {
-            toast.error("Failed to update service", {
-              description: error.message,
-            });
+        });
+      } else {
+        // Assigning for the first time with custom price?
+        assignMutation.mutate({
+          branchId,
+          data: {
+            serviceId: serviceToEdit.id,
+            active: true, // Auto-activate if we are "editing" it into the branch?
+            customPrice: data.customPrice || undefined,
           },
-        },
-      );
-    } else {
-      createMutation.mutate(data as CreateServiceRequest, {
-        onSuccess: () => {
-          toast.success("Service created", {
-            description: `${data.name} has been created successfully.`,
-          });
-          onOpenChange(false);
-          reset();
-        },
-        onError: (error) => {
-          toast.error("Failed to create service", {
-            description: error.message,
-          });
+        });
+      }
+      onOpenChange(false);
+    } else if (isEditing && serviceToEdit) {
+      // Global Edit Mode
+      updateMutation.mutate({
+        id: serviceToEdit.id,
+        data: {
+          name: data.name,
+          description: data.description,
+          basePrice: data.basePrice,
+          durationMinutes: data.durationMinutes,
         },
       });
+      onOpenChange(false);
+    } else {
+      // Create Mode (Always Global)
+      createMutation.mutate({
+        name: data.name,
+        description: data.description,
+        basePrice: data.basePrice,
+        durationMinutes: data.durationMinutes,
+      });
+      onOpenChange(false);
+      reset();
     }
   };
 
-  const isPending = createMutation.isPending || updateMutation.isPending;
+  const isPending =
+    createMutation.isPending ||
+    updateMutation.isPending ||
+    updateLinkMutation.isPending ||
+    assignMutation.isPending;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -136,6 +158,13 @@ const ServiceDialog = ({
           <DialogTitle>
             {isEditing ? "Edit Service" : "Add New Service"}
           </DialogTitle>
+          <DialogDescription>
+            {isBranchMode
+              ? "This only affects this branch. Global service details cannot be changed here."
+              : isEditing
+                ? "Changes here will update the service for all branches."
+                : "Create a service that will be available across all branches. You can later override pricing per branch."}
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4">
@@ -152,8 +181,14 @@ const ServiceDialog = ({
                       id={field.name}
                       aria-invalid={fieldState.invalid}
                       placeholder="e.g. Basic Haircut"
-                      disabled={isPending}
+                      disabled={isPending || isBranchMode} // Disable name edit in branch mode
                     />
+                    {isBranchMode && (
+                      <p className="text-[10px] text-muted-foreground mt-1">
+                        Global service name cannot be changed from a branch
+                        view.
+                      </p>
+                    )}
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}
@@ -172,7 +207,7 @@ const ServiceDialog = ({
                       id={field.name}
                       aria-invalid={fieldState.invalid}
                       placeholder="Describe the service..."
-                      disabled={isPending}
+                      disabled={isPending || isBranchMode}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -188,7 +223,7 @@ const ServiceDialog = ({
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel htmlFor={field.name}>
-                        Price (PHP) *
+                        {isBranchMode ? "Base Price (Global)" : "Price (PHP) *"}
                       </FieldLabel>
                       <Input
                         {...field}
@@ -198,7 +233,7 @@ const ServiceDialog = ({
                         step="0.01"
                         aria-invalid={fieldState.invalid}
                         onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                        disabled={isPending}
+                        disabled={isPending || isBranchMode} // Disable base price in branch mode
                       />
                       {fieldState.invalid && (
                         <FieldError errors={[fieldState.error]} />
@@ -206,6 +241,37 @@ const ServiceDialog = ({
                     </Field>
                   )}
                 />
+
+                {isBranchMode && (
+                  <Controller
+                    name="customPrice"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel htmlFor={field.name}>
+                          Branch Price (Override)
+                        </FieldLabel>
+                        <Input
+                          value={field.value ?? ""}
+                          id={field.name}
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          placeholder="Same as base"
+                          aria-invalid={fieldState.invalid}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            field.onChange(val === "" ? null : Number(val));
+                          }}
+                          disabled={isPending}
+                        />
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                      </Field>
+                    )}
+                  />
+                )}
 
                 <Controller
                   name="durationMinutes"
@@ -231,38 +297,6 @@ const ServiceDialog = ({
                   )}
                 />
               </div>
-
-              <Controller
-                name="availableGlobally"
-                control={control}
-                render={({ field, fieldState }) => (
-                  <Field
-                    orientation="horizontal"
-                    data-invalid={fieldState.invalid}
-                    className="items-start gap-4"
-                  >
-                    <Checkbox
-                      id={field.name}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      disabled={isPending}
-                      className="mt-1 size-5 shrink-0"
-                    />
-                    <FieldContent>
-                      <FieldLabel htmlFor={field.name} className="font-bold">
-                        Available to all branches by default
-                      </FieldLabel>
-                      <FieldDescription>
-                        If unchecked, you'll need to manually enable this
-                        service per branch.
-                      </FieldDescription>
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </FieldContent>
-                  </Field>
-                )}
-              />
             </FieldGroup>
 
             <DialogFooter className="pt-4">

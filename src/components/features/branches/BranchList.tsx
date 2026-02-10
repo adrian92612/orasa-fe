@@ -2,11 +2,11 @@ import type { BranchResponse } from "@/types/branch";
 import { Building2, MapPin, Phone, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-interface BranchListProps {
+type BranchListProps = {
   branches: BranchResponse[];
   isLoading: boolean;
   onEdit: (branch: BranchResponse) => void;
-}
+};
 
 const BranchList = ({ branches, isLoading, onEdit }: BranchListProps) => {
   if (isLoading) {

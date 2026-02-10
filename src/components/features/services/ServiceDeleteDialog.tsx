@@ -12,11 +12,11 @@ import type { ServiceResponse } from "@/types/service";
 import { useDeleteService } from "@/hooks/useServices";
 import { toast } from "sonner";
 
-interface ServiceDeleteDialogProps {
+type ServiceDeleteDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   service: ServiceResponse | null;
-}
+};
 
 const ServiceDeleteDialog = ({
   open,

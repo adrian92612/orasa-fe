@@ -13,12 +13,12 @@ import LoadingButton from "@/components/common/LoadingButton";
 import type { BranchResponse } from "@/types/branch";
 import { useDeleteBranch } from "@/hooks/useBranches";
 
-interface Props {
+type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   branch: BranchResponse;
   onSuccess?: () => void;
-}
+};
 
 const BranchDeleteDialog = ({
   open,
