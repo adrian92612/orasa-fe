@@ -8,10 +8,10 @@ import type {
 import type { BranchResponse } from "@/types/branch";
 import { Q_KEYS } from "@/constants/queryKeys";
 
-export const useServices = () => {
+export const useServices = (branchId?: string | null) => {
   return useQuery({
-    queryKey: [Q_KEYS.SERVICES],
-    queryFn: serviceService.getAllServices,
+    queryKey: [Q_KEYS.SERVICES, { branchId }],
+    queryFn: () => serviceService.getAllServices(branchId),
   });
 };
 

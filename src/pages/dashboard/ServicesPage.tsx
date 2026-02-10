@@ -12,10 +12,12 @@ const ServiceDialog = lazy(
 const ServiceDeleteDialog = lazy(
   () => import("@/components/features/services/ServiceDeleteDialog"),
 );
+import { useUser } from "@/context/UserContext";
 import type { ServiceResponse } from "@/types/service";
 
 const ServicesPage = () => {
-  const { data: services, isLoading } = useServices();
+  const { selectedBranchId } = useUser();
+  const { data: services, isLoading } = useServices(selectedBranchId);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedService, setSelectedService] =
