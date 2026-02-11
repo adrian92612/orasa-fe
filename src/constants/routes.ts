@@ -35,6 +35,10 @@ export const API_ROUTES = {
     CREATE: `${ENV.API_URL}/staff`,
     BY_ID: (id: string) => `${ENV.API_URL}/staff/${id}`,
   },
+  REMINDER_CONFIGS: {
+    BASE: `${ENV.API_URL}/reminder-configs`,
+    BY_ID: (id: string) => `${ENV.API_URL}/reminder-configs/${id}`,
+  },
 } as const;
 
 export const APP_ROUTES = {

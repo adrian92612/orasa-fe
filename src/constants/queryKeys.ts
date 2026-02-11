@@ -8,4 +8,5 @@ export const Q_KEYS = {
   SETTINGS: "settings",
   CURRENT_USER: "current-user",
   BUSINESSES: "businesses",
+  REMINDER_CONFIGS: "reminder-configs",
 };
