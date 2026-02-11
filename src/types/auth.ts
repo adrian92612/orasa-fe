@@ -15,3 +15,8 @@ export type AuthResponse = {
     name: string;
   }[];
 };
+
+export type ChangePasswordRequest = {
+  currentPassword?: string;
+  newPassword: string;
+};

@@ -14,15 +14,15 @@ import {
   FieldLabel,
   FieldLegend,
   FieldSeparator,
+  FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { API_ROUTES } from "@/constants/routes";
-import { apiClient } from "@/lib/api-client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+
+import { useCreateBusiness } from "@/hooks/useBusiness";
 
 const onboardingSchema = z.object({
   businessName: z.string().min(1, "Business name is required"),
@@ -31,11 +31,6 @@ const onboardingSchema = z.object({
   branchPhone: z.string().min(1, "Branch phone number is required"),
 });
 
-import {
-  type BusinessResponse,
-  type CreateBusinessRequest,
-} from "@/types/business";
-
 type OnboardingValues = z.infer<typeof onboardingSchema>;
 
 type BusinessOnboardingFormProps = {
@@ -43,11 +38,7 @@ type BusinessOnboardingFormProps = {
 };
 
 const BusinessOnboardingForm = ({ onSuccess }: BusinessOnboardingFormProps) => {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<OnboardingValues>({
+  const { control, handleSubmit } = useForm<OnboardingValues>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
       businessName: "",
@@ -57,35 +48,24 @@ const BusinessOnboardingForm = ({ onSuccess }: BusinessOnboardingFormProps) => {
     },
   });
 
-  const { mutate: createBusiness, isPending } = useMutation({
-    mutationFn: async (data: OnboardingValues) => {
-      const result = await apiClient.post<
-        BusinessResponse,
-        CreateBusinessRequest
-      >(API_ROUTES.BUSINESSES.CREATE, {
+  const { mutate: createBusiness, isPending } = useCreateBusiness();
+
+  const onSubmit = (data: OnboardingValues) => {
+    createBusiness(
+      {
         name: data.businessName,
         branch: {
           name: data.branchName,
           address: data.branchAddress,
           phoneNumber: data.branchPhone,
         },
-      });
-      return result;
-    },
-    onSuccess: (result) => {
-      if (result.success && result.data) {
-        onSuccess(result.data.firstBranchId);
-      } else {
-        console.error("Onboarding failed:", result);
-      }
-    },
-    onError: (error) => {
-      console.error("Error submitting onboarding form:", error);
-    },
-  });
-
-  const onSubmit = (data: OnboardingValues) => {
-    createBusiness(data);
+      },
+      {
+        onSuccess: (result) => {
+          onSuccess(result.firstBranchId);
+        },
+      },
+    );
   };
 
   return (
@@ -97,110 +77,116 @@ const BusinessOnboardingForm = ({ onSuccess }: BusinessOnboardingFormProps) => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FieldGroup>
-            <FieldLegend>Business Details</FieldLegend>
-            <Controller
-              control={control}
-              name="businessName"
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel htmlFor="businessName">Business Name</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id="businessName"
-                      placeholder="e.g. Orasa Clinic"
-                      {...field}
-                      aria-invalid={!!errors.businessName}
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </FieldContent>
-                </Field>
-              )}
-            />
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4">
+          <FieldSet disabled={isPending}>
+            <FieldGroup>
+              <FieldLegend>Business Details</FieldLegend>
+              <Controller
+                control={control}
+                name="businessName"
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="businessName">
+                      Business Name
+                    </FieldLabel>
+                    <FieldContent>
+                      <Input
+                        id="businessName"
+                        placeholder="e.g. Orasa Clinic"
+                        {...field}
+                        aria-invalid={fieldState.invalid}
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </FieldContent>
+                  </Field>
+                )}
+              />
 
-            <FieldSeparator />
+              <FieldSeparator />
 
-            <FieldLegend>Main Branch Details</FieldLegend>
-            <Controller
-              control={control}
-              name="branchName"
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel htmlFor="branchName">Branch Name</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id="branchName"
-                      placeholder="e.g. Main Branch"
-                      {...field}
-                      aria-invalid={!!errors.branchName}
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </FieldContent>
-                </Field>
-              )}
-            />
+              <FieldLegend>Main Branch Details</FieldLegend>
+              <Controller
+                control={control}
+                name="branchName"
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="branchName">Branch Name</FieldLabel>
+                    <FieldContent>
+                      <Input
+                        id="branchName"
+                        placeholder="e.g. Main Branch"
+                        {...field}
+                        aria-invalid={fieldState.invalid}
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </FieldContent>
+                  </Field>
+                )}
+              />
 
-            <Controller
-              control={control}
-              name="branchAddress"
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel htmlFor="branchAddress">
-                    Branch Address
-                  </FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id="branchAddress"
-                      placeholder="e.g. 123 Main St, City"
-                      {...field}
-                      aria-invalid={!!errors.branchAddress}
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </FieldContent>
-                </Field>
-              )}
-            />
+              <Controller
+                control={control}
+                name="branchAddress"
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="branchAddress">
+                      Branch Address
+                    </FieldLabel>
+                    <FieldContent>
+                      <Input
+                        id="branchAddress"
+                        placeholder="e.g. 123 Main St, City"
+                        {...field}
+                        aria-invalid={fieldState.invalid}
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </FieldContent>
+                  </Field>
+                )}
+              />
 
-            <Controller
-              control={control}
-              name="branchPhone"
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel htmlFor="branchPhone">
-                    Branch Phone No.
-                  </FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id="branchPhone"
-                      placeholder="e.g. 09123456789"
-                      {...field}
-                      aria-invalid={!!errors.branchPhone}
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </FieldContent>
-                </Field>
-              )}
-            />
-            <Button className="w-full" type="submit" disabled={isPending}>
-              {isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Setting up...
-                </>
-              ) : (
-                "Next Step"
-              )}
-            </Button>
-          </FieldGroup>
+              <Controller
+                control={control}
+                name="branchPhone"
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="branchPhone">
+                      Branch Phone No.
+                    </FieldLabel>
+                    <FieldContent>
+                      <Input
+                        id="branchPhone"
+                        placeholder="e.g. 09123456789"
+                        {...field}
+                        aria-invalid={fieldState.invalid}
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </FieldContent>
+                  </Field>
+                )}
+              />
+              <div className="pt-4">
+                <Button className="w-full" type="submit" disabled={isPending}>
+                  {isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Setting up...
+                    </>
+                  ) : (
+                    "Next Step"
+                  )}
+                </Button>
+              </div>
+            </FieldGroup>
+          </FieldSet>
         </form>
       </CardContent>
     </Card>
