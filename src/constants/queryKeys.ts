@@ -7,4 +7,5 @@ export const Q_KEYS = {
   SMS_LOGS: "sms-logs",
   SETTINGS: "settings",
   CURRENT_USER: "current-user",
+  BUSINESSES: "businesses",
 };

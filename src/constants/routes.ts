@@ -8,7 +8,7 @@ export const API_ROUTES = {
     REGISTER: `${ENV.API_URL}/auth/register`,
     FORGOT_PASSWORD: `${ENV.API_URL}/auth/forgot-password`,
     RESET_PASSWORD: `${ENV.API_URL}/auth/reset-password`,
-    CHANGE_PASSWORD: `${ENV.API_URL}/auth/change-password`,
+    CHANGE_PASSWORD: `${ENV.API_URL}/profile/change-password`,
     ME: `${ENV.API_URL}/auth/me`,
   },
   BUSINESSES: {
@@ -33,6 +33,7 @@ export const API_ROUTES = {
   STAFF: {
     BASE: `${ENV.API_URL}/staff`,
     CREATE: `${ENV.API_URL}/staff`,
+    BY_ID: (id: string) => `${ENV.API_URL}/staff/${id}`,
   },
 } as const;
 

@@ -27,10 +27,7 @@ const BranchesPage = () => {
 
   const { data: staffList = [], isLoading: isLoadingStaff } = useQuery({
     queryKey: [Q_KEYS.STAFFS],
-    queryFn: async () => {
-      const res = await staffService.getAllStaff();
-      return res.data || [];
-    },
+    queryFn: () => staffService.getAll(),
     staleTime: Infinity,
   });
 
