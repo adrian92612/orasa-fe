@@ -1,5 +1,7 @@
-import ChangePasswordForm from "@/components/features/settings/ChangePasswordForm";
 import { useUser } from "@/context/UserContext";
+
+import ChangePasswordForm from "@/components/features/settings/ChangePasswordForm";
+import ReminderConfigList from "@/components/features/sms/ReminderConfigList";
 
 const SettingsPage = () => {
   const { user } = useUser();
@@ -10,10 +12,7 @@ const SettingsPage = () => {
 
   return (
     <div className="space-y-6">
-      {/* Placeholder for future business settings */}
-      <div className="rounded-lg border bg-card shadow-sm p-8 text-center text-muted-foreground italic">
-        Additional settings will be added here soon.
-      </div>
+      <ReminderConfigList />
     </div>
   );
 };

@@ -116,7 +116,7 @@ const BusinessOnboardingForm = ({ onSuccess }: BusinessOnboardingFormProps) => {
                     <FieldContent>
                       <Input
                         id="branchName"
-                        placeholder="e.g. Main Branch"
+                        placeholder="e.g. Main"
                         {...field}
                         aria-invalid={fieldState.invalid}
                       />
