@@ -11,3 +11,21 @@ export const arraysEqual = (a: string[], b: string[]) => {
   const sortedB = [...b].sort();
   return sortedA.every((val, idx) => val === sortedB[idx]);
 };
+
+export const formatDateForInput = (date: string | Date) => {
+  const d = new Date(date);
+  const tzOffset = d.getTimezoneOffset() * 60000;
+  const localISOTime = new Date(d.getTime() - tzOffset)
+    .toISOString()
+    .slice(0, 16);
+  return localISOTime;
+};
+
+export const fromDateInput = (dateStr: string) => {
+  return new Date(dateStr).toISOString();
+};
+
+export const isValidPHPhone = (value: string): boolean => {
+  // Only digits, starts with 09, exactly 11 digits
+  return /^09\d{9}$/.test(value);
+};

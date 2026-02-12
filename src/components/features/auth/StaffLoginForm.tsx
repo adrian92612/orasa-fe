@@ -98,7 +98,9 @@ const StaffLoginForm = () => {
               name="username"
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel htmlFor="username">Username</FieldLabel>
+                  <FieldLabel htmlFor="username" required>
+                    Username
+                  </FieldLabel>
                   <FieldContent>
                     <Input
                       id="username"
@@ -120,7 +122,9 @@ const StaffLoginForm = () => {
               name="password"
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
+                  <FieldLabel htmlFor="password" required>
+                    Password
+                  </FieldLabel>
                   <FieldContent>
                     <Input
                       id="password"

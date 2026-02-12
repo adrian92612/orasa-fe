@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { z } from "zod";
+import * as z from "zod";
 
 import {
   useCreateReminderConfig,
@@ -37,33 +37,6 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
-const reminderConfigSchema = z
-  .object({
-    hours: z
-      .number()
-      .int("Must be a whole number")
-      .min(0, "Cannot be negative"),
-    minutes: z
-      .number()
-      .int("Must be a whole number")
-      .min(0, "Cannot be negative")
-      .max(59, "Cannot exceed 59"),
-    messageTemplate: z.string().min(1, "Message template is required"),
-    enabled: z.boolean(),
-  })
-  .refine((data) => data.hours > 0 || data.minutes > 0, {
-    message: "At least one of hours or minutes must be greater than 0",
-    path: ["minutes"],
-  });
-
-type FormValues = z.infer<typeof reminderConfigSchema>;
-
-type ReminderConfigDialogProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  config?: ReminderConfigResponse | null;
-};
-
 const PREDEFINED_TEMPLATES = [
   {
     id: "professional",
@@ -85,6 +58,29 @@ const PREDEFINED_TEMPLATES = [
   },
 ];
 
+const reminderConfigSchema = z
+  .object({
+    hours: z.string().optional(),
+    minutes: z.string().optional(),
+    messageTemplate: z.string().min(1, "Message template is required"),
+    enabled: z.boolean(),
+  })
+  .refine(
+    (data) => Number(data.hours || 0) > 0 || Number(data.minutes || 0) > 0,
+    {
+      message: "At least one of hours or minutes must be greater than 0",
+      path: ["minutes"],
+    },
+  );
+
+type FormValues = z.infer<typeof reminderConfigSchema>;
+
+type ReminderConfigDialogProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  config?: ReminderConfigResponse | null;
+};
+
 const ReminderConfigDialog = ({
   open,
   onOpenChange,
@@ -98,8 +94,8 @@ const ReminderConfigDialog = ({
   const { control, handleSubmit, reset } = useForm<FormValues>({
     resolver: zodResolver(reminderConfigSchema),
     defaultValues: {
-      hours: 1,
-      minutes: 0,
+      hours: "1",
+      minutes: "0",
       messageTemplate: PREDEFINED_TEMPLATES[0].content,
       enabled: true,
     },
@@ -108,8 +104,8 @@ const ReminderConfigDialog = ({
   useEffect(() => {
     if (open) {
       if (config && config.leadTimeMinutes != null) {
-        const hours = Math.floor(config.leadTimeMinutes / 60);
-        const minutes = config.leadTimeMinutes % 60;
+        const hours = Math.floor(config.leadTimeMinutes / 60).toString();
+        const minutes = (config.leadTimeMinutes % 60).toString();
         const templateMatch =
           PREDEFINED_TEMPLATES.find((t) => t.content === config.messageTemplate)
             ?.content || PREDEFINED_TEMPLATES[0].content;
@@ -122,8 +118,8 @@ const ReminderConfigDialog = ({
         });
       } else {
         reset({
-          hours: 1,
-          minutes: 0,
+          hours: "1",
+          minutes: "0",
           messageTemplate: PREDEFINED_TEMPLATES[0].content,
           enabled: true,
         });
@@ -134,7 +130,8 @@ const ReminderConfigDialog = ({
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   const onSubmit = (data: FormValues) => {
-    const leadTimeMinutes = (data.hours || 0) * 60 + (data.minutes || 0);
+    const leadTimeMinutes =
+      Number(data.hours || 0) * 60 + Number(data.minutes || 0);
 
     if (isEditing && config) {
       updateMutation.mutate({
@@ -152,6 +149,7 @@ const ReminderConfigDialog = ({
         enabled: data.enabled,
       });
     }
+
     onOpenChange(false);
   };
 
@@ -188,15 +186,13 @@ const ReminderConfigDialog = ({
                       render={({ field, fieldState }) => (
                         <Input
                           id="hours"
-                          type="number"
-                          min={0}
                           placeholder="0"
                           value={field.value ?? ""}
                           onChange={(e) => {
                             const val = e.target.value;
-                            field.onChange(
-                              val === "" ? undefined : Number(val),
-                            );
+                            if (val === "" || /^\d+$/.test(val)) {
+                              field.onChange(val);
+                            }
                           }}
                           aria-invalid={!!fieldState.error}
                         />
@@ -216,16 +212,13 @@ const ReminderConfigDialog = ({
                       render={({ field, fieldState }) => (
                         <Input
                           id="minutes"
-                          type="number"
-                          min={0}
-                          max={59}
                           placeholder="0"
                           value={field.value ?? ""}
                           onChange={(e) => {
                             const val = e.target.value;
-                            field.onChange(
-                              val === "" ? undefined : Number(val),
-                            );
+                            if (val === "" || /^\d+$/.test(val)) {
+                              field.onChange(val);
+                            }
                           }}
                           aria-invalid={!!fieldState.error}
                         />

@@ -37,12 +37,18 @@ import type { BranchResponse } from "@/types/branch";
 import type { StaffResponse } from "@/types/staff";
 import type { ServiceResponse } from "@/types/service";
 import { useCreateBranch, useUpdateBranch } from "@/hooks/useBranches";
-import { arraysEqual } from "@/lib/utils";
+import { arraysEqual, isValidPHPhone } from "@/lib/utils";
 
 const schema = z.object({
-  name: z.string().min(1),
-  address: z.string().optional(),
-  phoneNumber: z.string().optional(),
+  name: z.string().trim().min(1, "Branch name is required"),
+  address: z.string().trim().optional(),
+  phoneNumber: z
+    .string()
+    .trim()
+    .optional()
+    .refine((val) => !val || isValidPHPhone(val), {
+      message: "Phone number must start with 09 and be 11 digits long",
+    }),
   staffIds: z.array(z.string()),
   serviceIds: z.array(z.string()),
 });
@@ -233,10 +239,17 @@ const BranchDialog = ({
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor={field.name}>Phone Number</FieldLabel>
                     <Input
-                      {...field}
                       id={field.name}
                       value={field.value || ""}
                       placeholder="e.g. 09123456789"
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === "" || /^\d+$/.test(val)) {
+                          if (val.length <= 11) {
+                            field.onChange(val);
+                          }
+                        }
+                      }}
                       aria-invalid={fieldState.invalid}
                     />
                     {fieldState.invalid && (

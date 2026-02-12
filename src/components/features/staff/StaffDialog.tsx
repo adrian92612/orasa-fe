@@ -156,7 +156,9 @@ const StaffDialog = ({ open, onOpenChange, staff }: StaffDialogProps) => {
               name="username"
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel htmlFor="staff-username">Username</FieldLabel>
+                  <FieldLabel htmlFor="staff-username" required>
+                    Username
+                  </FieldLabel>
                   <FieldContent>
                     <Input
                       id="staff-username"
@@ -178,7 +180,7 @@ const StaffDialog = ({ open, onOpenChange, staff }: StaffDialogProps) => {
               name={isEditing ? "newPassword" : "temporaryPassword"}
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel htmlFor="staff-password">
+                  <FieldLabel htmlFor="staff-password" required={!isEditing}>
                     {isEditing ? "New Password" : "Password"}
                     {isEditing && (
                       <span className="text-muted-foreground font-normal">
@@ -223,7 +225,10 @@ const StaffDialog = ({ open, onOpenChange, staff }: StaffDialogProps) => {
               name="confirmPassword"
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel htmlFor="staff-confirm-password">
+                  <FieldLabel
+                    htmlFor="staff-confirm-password"
+                    required={!isEditing}
+                  >
                     Confirm Password
                   </FieldLabel>
                   <FieldContent>
@@ -249,7 +254,7 @@ const StaffDialog = ({ open, onOpenChange, staff }: StaffDialogProps) => {
               name="branchIds"
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel>Assigned Branches</FieldLabel>
+                  <FieldLabel required>Assigned Branches</FieldLabel>
                   <FieldContent>
                     <div className="space-y-2 rounded-md border p-3">
                       {branches.map((branch) => (

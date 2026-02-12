@@ -39,6 +39,16 @@ export const API_ROUTES = {
     BASE: `${ENV.API_URL}/reminder-configs`,
     BY_ID: (id: string) => `${ENV.API_URL}/reminder-configs/${id}`,
   },
+  APPOINTMENTS: {
+    BASE: `${ENV.API_URL}/appointments`,
+    BY_ID: (id: string) => `${ENV.API_URL}/appointments/${id}`,
+    BY_BRANCH: (branchId: string) =>
+      `${ENV.API_URL}/appointments/branch/${branchId}`,
+    BY_BUSINESS: (businessId: string) =>
+      `${ENV.API_URL}/appointments/business/${businessId}`,
+    SEARCH: (branchId: string) =>
+      `${ENV.API_URL}/appointments/branch/${branchId}/search`,
+  },
 } as const;
 
 export const APP_ROUTES = {
