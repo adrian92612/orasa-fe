@@ -9,7 +9,7 @@ import {
 } from "@/hooks/useServices";
 import ServiceList from "@/components/features/services/ServiceList";
 import ServiceSearch from "@/components/features/services/ServiceSearch";
-import ServicePagination from "@/components/features/services/ServicePagination";
+import CommonPagination from "@/components/common/CommonPagination";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/context/UserContext";
 import { useBranches } from "@/hooks/useBranches";
@@ -223,12 +223,13 @@ const ServicesPage = () => {
                 emptyTitle="No active services"
                 emptyDescription="Select services from the 'Other' tab to activate them for this branch."
               />
-              <ServicePagination
+              <CommonPagination
                 totalItems={filteredActive.length}
                 pageSize={pageSize}
                 currentPage={currentPage}
                 onPageChange={setCurrentPage}
                 onPageSizeChange={handlePageSizeChange}
+                itemName="active services"
               />
             </TabsContent>
 
@@ -242,12 +243,13 @@ const ServicesPage = () => {
                 emptyTitle="No other services found"
                 emptyDescription="All services are currently active for this branch."
               />
-              <ServicePagination
+              <CommonPagination
                 totalItems={filteredInactive.length}
                 pageSize={pageSize}
                 currentPage={otherCurrentPage}
                 onPageChange={setOtherCurrentPage}
                 onPageSizeChange={handlePageSizeChange}
+                itemName="other services"
               />
             </TabsContent>
           </Tabs>
@@ -260,12 +262,13 @@ const ServicesPage = () => {
               onEdit={handleEdit}
               onDelete={handleDelete}
             />
-            <ServicePagination
+            <CommonPagination
               totalItems={filteredActive.length}
               pageSize={pageSize}
               currentPage={currentPage}
               onPageChange={setCurrentPage}
               onPageSizeChange={handlePageSizeChange}
+              itemName="services"
             />
           </>
         )}

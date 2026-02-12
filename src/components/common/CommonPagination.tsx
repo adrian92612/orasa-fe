@@ -14,34 +14,38 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-type ServicePaginationProps = {
+type CommonPaginationProps = {
   totalItems: number;
   pageSize: number;
   currentPage: number;
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: string) => void;
+  itemName?: string;
 };
 
-const ServicePagination = ({
+const CommonPagination = ({
   totalItems,
   pageSize,
   currentPage,
   onPageChange,
   onPageSizeChange,
-}: ServicePaginationProps) => {
+  itemName = "items",
+}: CommonPaginationProps) => {
   const totalPages = Math.ceil(totalItems / pageSize);
   const start = (currentPage - 1) * pageSize;
   const pageSizeOptions = [5, 10, 20, 50];
 
   return (
-    <div className="flex flex-col gap-4 border-t pt-4 px-2 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-4 border-t pt-4 mt-5 px-2 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-4">
         <p className="text-xs text-muted-foreground">
-          Showing <span className="font-medium">{start + 1}</span> to{" "}
+          Showing{" "}
+          <span className="font-medium">{Math.min(start + 1, totalItems)}</span>{" "}
+          to{" "}
           <span className="font-medium">
             {Math.min(currentPage * pageSize, totalItems)}
           </span>{" "}
-          of <span className="font-medium">{totalItems}</span> services
+          of <span className="font-medium">{totalItems}</span> {itemName}
         </p>
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground whitespace-nowrap">
@@ -73,11 +77,15 @@ const ServicePagination = ({
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                const targetPage =
-                  currentPage > 1 ? currentPage - 1 : totalPages;
+                const targetPage = currentPage > 1 ? currentPage - 1 : 1;
                 onPageChange(targetPage);
               }}
-              className="cursor-pointer"
+              className={
+                currentPage <= 1
+                  ? "pointer-events-none opacity-50"
+                  : "cursor-pointer"
+              }
+              aria-disabled={currentPage <= 1}
             />
           </PaginationItem>
 
@@ -111,10 +119,15 @@ const ServicePagination = ({
               onClick={(e) => {
                 e.preventDefault();
                 const targetPage =
-                  currentPage < totalPages ? currentPage + 1 : 1;
+                  currentPage < totalPages ? currentPage + 1 : totalPages;
                 onPageChange(targetPage);
               }}
-              className="cursor-pointer"
+              className={
+                currentPage >= totalPages
+                  ? "pointer-events-none opacity-50"
+                  : "cursor-pointer"
+              }
+              aria-disabled={currentPage >= totalPages}
             />
           </PaginationItem>
         </PaginationContent>
@@ -123,4 +136,4 @@ const ServicePagination = ({
   );
 };
 
-export default ServicePagination;
+export default CommonPagination;

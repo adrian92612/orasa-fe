@@ -23,12 +23,19 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useCreateBusiness } from "@/hooks/useBusiness";
+import { isValidPHPhone } from "@/lib/utils";
 
 const onboardingSchema = z.object({
   businessName: z.string().min(1, "Business name is required"),
   branchName: z.string().min(1, "Branch name is required"),
   branchAddress: z.string().min(1, "Branch address is required"),
-  branchPhone: z.string().min(1, "Branch phone number is required"),
+  branchPhone: z
+    .string()
+    .min(1, "Branch phone number is required")
+    .refine(
+      isValidPHPhone,
+      "Phone number must start with 09 and be 11 digits long",
+    ),
 });
 
 type OnboardingValues = z.infer<typeof onboardingSchema>;
@@ -86,7 +93,7 @@ const BusinessOnboardingForm = ({ onSuccess }: BusinessOnboardingFormProps) => {
                 name="businessName"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="businessName">
+                    <FieldLabel htmlFor="businessName" required>
                       Business Name
                     </FieldLabel>
                     <FieldContent>
@@ -112,7 +119,9 @@ const BusinessOnboardingForm = ({ onSuccess }: BusinessOnboardingFormProps) => {
                 name="branchName"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="branchName">Branch Name</FieldLabel>
+                    <FieldLabel htmlFor="branchName" required>
+                      Branch Name
+                    </FieldLabel>
                     <FieldContent>
                       <Input
                         id="branchName"
@@ -133,7 +142,7 @@ const BusinessOnboardingForm = ({ onSuccess }: BusinessOnboardingFormProps) => {
                 name="branchAddress"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="branchAddress">
+                    <FieldLabel htmlFor="branchAddress" required>
                       Branch Address
                     </FieldLabel>
                     <FieldContent>
@@ -156,14 +165,22 @@ const BusinessOnboardingForm = ({ onSuccess }: BusinessOnboardingFormProps) => {
                 name="branchPhone"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="branchPhone">
+                    <FieldLabel htmlFor="branchPhone" required>
                       Branch Phone No.
                     </FieldLabel>
                     <FieldContent>
                       <Input
                         id="branchPhone"
                         placeholder="e.g. 09123456789"
-                        {...field}
+                        value={field.value}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === "" || /^\d+$/.test(val)) {
+                            if (val.length <= 11) {
+                              field.onChange(val);
+                            }
+                          }
+                        }}
                         aria-invalid={fieldState.invalid}
                       />
                       {fieldState.invalid && (

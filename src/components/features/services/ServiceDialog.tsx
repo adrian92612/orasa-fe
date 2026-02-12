@@ -175,7 +175,9 @@ const ServiceDialog = ({
                 control={control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor={field.name}>Service Name *</FieldLabel>
+                    <FieldLabel htmlFor={field.name} required>
+                      Service Name
+                    </FieldLabel>
                     <Input
                       {...field}
                       id={field.name}
@@ -222,8 +224,8 @@ const ServiceDialog = ({
                   control={control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor={field.name}>
-                        {isBranchMode ? "Base Price (Global)" : "Price (PHP) *"}
+                      <FieldLabel htmlFor={field.name} required={!isBranchMode}>
+                        {isBranchMode ? "Base Price (Global)" : "Price (PHP)"}
                       </FieldLabel>
                       <Input
                         {...field}
@@ -278,8 +280,8 @@ const ServiceDialog = ({
                   control={control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor={field.name}>
-                        Duration (mins) *
+                      <FieldLabel htmlFor={field.name} required>
+                        Duration (mins)
                       </FieldLabel>
                       <Input
                         {...field}
