@@ -37,16 +37,19 @@ export const useCreateBranch = () => {
 
   return useMutation({
     mutationFn: (data: CreateBranchRequest) => branchService.createBranch(data),
-    onSuccess: (newBranch) => {
+    onSuccess: (response) => {
+      const newBranch = response.data;
       if (newBranch) {
         queryClient.setQueryData<BranchResponse[]>(
           [Q_KEYS.BRANCHES],
           (old = []) => [...old, newBranch],
         );
-        toast.success("Branch created", {
-          description: `${newBranch.name} has been created successfully.`,
-        });
       }
+      toast.success(response.message || "Branch created", {
+        description: newBranch
+          ? `${newBranch.name} has been created successfully.`
+          : undefined,
+      });
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.STAFFS] });
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.SERVICES] });
       refetchUser();
@@ -66,17 +69,20 @@ export const useUpdateBranch = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateBranchRequest }) =>
       branchService.updateBranch(id, data),
-    onSuccess: (updatedBranch) => {
+    onSuccess: (response) => {
+      const updatedBranch = response.data;
       if (updatedBranch) {
         queryClient.setQueryData<BranchResponse[]>(
           [Q_KEYS.BRANCHES],
           (old = []) =>
             old.map((b) => (b.id === updatedBranch.id ? updatedBranch : b)),
         );
-        toast.success("Branch updated", {
-          description: `${updatedBranch.name} has been updated successfully.`,
-        });
       }
+      toast.success(response.message || "Branch updated", {
+        description: updatedBranch
+          ? `${updatedBranch.name} has been updated successfully.`
+          : undefined,
+      });
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.STAFFS] });
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.SERVICES] });
       refetchUser();
@@ -94,13 +100,13 @@ export const useDeleteBranch = () => {
 
   return useMutation({
     mutationFn: (id: string) => branchService.deleteBranch(id),
-    onSuccess: (_, deletedId) => {
+    onSuccess: (response, deletedId) => {
       queryClient.setQueryData<BranchResponse[]>(
         [Q_KEYS.BRANCHES],
         (old = []) => old.filter((b) => b.id !== deletedId),
       );
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.STAFFS] });
-      toast.success("Branch deleted", {
+      toast.success(response.message || "Branch deleted", {
         description: "Branch has been deleted successfully.",
       });
     },

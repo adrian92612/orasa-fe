@@ -56,8 +56,8 @@ export const useCreateReminderConfig = () => {
       }
       toast.error("Failed to create reminder config");
     },
-    onSuccess: () => {
-      toast.success("Reminder config created");
+    onSuccess: (response) => {
+      toast.success(response.message || "Reminder config created");
     },
     onSettled: () => {
       queryClient.invalidateQueries({
@@ -117,8 +117,8 @@ export const useUpdateReminderConfig = () => {
       }
       toast.error("Failed to update reminder config");
     },
-    onSuccess: () => {
-      toast.success("Reminder config updated");
+    onSuccess: (response) => {
+      toast.success(response.message || "Reminder config updated");
     },
     onSettled: () => {
       queryClient.invalidateQueries({
@@ -155,8 +155,8 @@ export const useDeleteReminderConfig = () => {
       }
       toast.error("Failed to delete reminder config");
     },
-    onSuccess: () => {
-      toast.success("Reminder config deleted");
+    onSuccess: (response) => {
+      toast.success(response.message || "Reminder config deleted");
     },
     onSettled: () => {
       queryClient.invalidateQueries({

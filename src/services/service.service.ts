@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/api-client";
+import { apiClient, type ApiResponse } from "@/lib/api-client";
 import { API_ROUTES } from "@/constants/routes";
 import type {
   CreateServiceRequest,
@@ -23,23 +23,28 @@ export const serviceService = {
     return response.data;
   },
 
-  createService: async (data: CreateServiceRequest) => {
+  createService: async (
+    data: CreateServiceRequest,
+  ): Promise<ApiResponse<ServiceResponse>> => {
     const response = await apiClient.post<ServiceResponse>(
       API_ROUTES.SERVICES.CREATE,
       data,
     );
-    return response.data;
+    return response;
   },
 
-  updateService: async (id: string, data: UpdateServiceRequest) => {
+  updateService: async (
+    id: string,
+    data: UpdateServiceRequest,
+  ): Promise<ApiResponse<ServiceResponse>> => {
     const response = await apiClient.put<ServiceResponse>(
       API_ROUTES.SERVICES.BY_ID(id),
       data,
     );
-    return response.data;
+    return response;
   },
 
-  deleteService: async (id: string) => {
-    await apiClient.delete(API_ROUTES.SERVICES.BY_ID(id));
+  deleteService: async (id: string): Promise<ApiResponse<void>> => {
+    return await apiClient.delete(API_ROUTES.SERVICES.BY_ID(id));
   },
 };

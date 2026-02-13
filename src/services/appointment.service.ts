@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/api-client";
+import { apiClient, type ApiResponse } from "@/lib/api-client";
 
 import { API_ROUTES } from "@/constants/routes";
 import type { Page } from "@/types/common";
@@ -12,23 +12,23 @@ import type {
 export const appointmentService = {
   createAppointment: async (
     data: CreateAppointmentRequest,
-  ): Promise<AppointmentResponse> => {
+  ): Promise<ApiResponse<AppointmentResponse>> => {
     const response = await apiClient.post<AppointmentResponse>(
       API_ROUTES.APPOINTMENTS.BASE,
       data,
     );
-    return response.data!;
+    return response;
   },
 
   updateAppointment: async (
     id: string,
     data: UpdateAppointmentRequest,
-  ): Promise<AppointmentResponse> => {
+  ): Promise<ApiResponse<AppointmentResponse>> => {
     const response = await apiClient.put<AppointmentResponse>(
       API_ROUTES.APPOINTMENTS.BY_ID(id),
       data,
     );
-    return response.data!;
+    return response;
   },
 
   getAppointmentsByBranch: async (
@@ -116,15 +116,15 @@ export const appointmentService = {
   updateStatus: async (
     id: string,
     status: AppointmentStatus,
-  ): Promise<AppointmentResponse> => {
+  ): Promise<ApiResponse<AppointmentResponse>> => {
     const response = await apiClient.post<AppointmentResponse>(
       `${API_ROUTES.APPOINTMENTS.BY_ID(id)}/status`,
       { status },
     );
-    return response.data!;
+    return response;
   },
 
-  deleteAppointment: async (id: string): Promise<void> => {
-    await apiClient.delete<void>(API_ROUTES.APPOINTMENTS.BY_ID(id));
+  deleteAppointment: async (id: string): Promise<ApiResponse<void>> => {
+    return await apiClient.delete<void>(API_ROUTES.APPOINTMENTS.BY_ID(id));
   },
 };

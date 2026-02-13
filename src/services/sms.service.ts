@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/api-client";
+import { apiClient, type ApiResponse } from "@/lib/api-client";
 import { API_ROUTES } from "@/constants/routes";
 
 import type {
@@ -17,26 +17,26 @@ export const smsService = {
 
   createReminderConfig: async (
     data: CreateReminderConfigRequest,
-  ): Promise<ReminderConfigResponse> => {
+  ): Promise<ApiResponse<ReminderConfigResponse>> => {
     const response = await apiClient.post<ReminderConfigResponse>(
       API_ROUTES.REMINDER_CONFIGS.BASE,
       data,
     );
-    return response.data!;
+    return response;
   },
 
   updateReminderConfig: async (
     id: string,
     data: UpdateReminderConfigRequest,
-  ): Promise<ReminderConfigResponse> => {
+  ): Promise<ApiResponse<ReminderConfigResponse>> => {
     const response = await apiClient.put<ReminderConfigResponse>(
       API_ROUTES.REMINDER_CONFIGS.BY_ID(id),
       data,
     );
-    return response.data!;
+    return response;
   },
 
-  deleteReminderConfig: async (id: string): Promise<void> => {
-    await apiClient.delete<void>(API_ROUTES.REMINDER_CONFIGS.BY_ID(id));
+  deleteReminderConfig: async (id: string): Promise<ApiResponse<void>> => {
+    return await apiClient.delete<void>(API_ROUTES.REMINDER_CONFIGS.BY_ID(id));
   },
 };

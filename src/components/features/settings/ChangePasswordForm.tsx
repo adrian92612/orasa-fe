@@ -22,6 +22,7 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useChangePassword } from "@/hooks/useAuth";
+import { useUser } from "@/context/UserContext";
 
 const changePasswordSchema = z
   .object({
@@ -44,6 +45,7 @@ const ChangePasswordForm = () => {
   const [showConfirm, setShowConfirm] = useState(false);
 
   const { mutate: changePassword, isPending } = useChangePassword();
+  const { user } = useUser();
 
   const { control, handleSubmit, reset } = useForm<ChangePasswordValues>({
     resolver: zodResolver(changePasswordSchema),
@@ -82,6 +84,15 @@ const ChangePasswordForm = () => {
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-md">
           <FieldSet disabled={isPending}>
+            <input
+              type="text"
+              name="username"
+              value={user?.username || ""}
+              readOnly
+              autoComplete="username"
+              style={{ display: "none" }}
+              aria-hidden="true"
+            />
             <FieldGroup>
               <Controller
                 name="currentPassword"
@@ -97,6 +108,7 @@ const ChangePasswordForm = () => {
                           {...field}
                           id={field.name}
                           type={showCurrent ? "text" : "password"}
+                          autoComplete="current-password"
                           className="pr-10"
                           placeholder="••••••••"
                         />
@@ -133,6 +145,7 @@ const ChangePasswordForm = () => {
                           id={field.name}
                           type={showNew ? "text" : "password"}
                           className="pr-10"
+                          autoComplete="new-password"
                           placeholder="••••••••"
                         />
                         <button
@@ -170,6 +183,7 @@ const ChangePasswordForm = () => {
                           id={field.name}
                           type={showConfirm ? "text" : "password"}
                           className="pr-10"
+                          autoComplete="new-password"
                           placeholder="••••••••"
                         />
                         <button

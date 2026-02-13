@@ -1,8 +1,20 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { businessService } from "@/services/business.service";
 import { type CreateBusinessRequest } from "@/types/business";
 import { Q_KEYS } from "@/constants/queryKeys";
 import { toast } from "sonner";
+import { useUser } from "@/context/UserContext";
+
+export const useMyBusiness = () => {
+  const { user } = useUser();
+
+  return useQuery({
+    queryKey: [Q_KEYS.BUSINESSES, Q_KEYS.ME],
+    queryFn: () => businessService.getMyBusiness(),
+    enabled: !!user?.businessId,
+    staleTime: 5 * 60 * 1000,
+  });
+};
 
 export const useCreateBusiness = () => {
   const queryClient = useQueryClient();
@@ -10,8 +22,8 @@ export const useCreateBusiness = () => {
   return useMutation({
     mutationFn: (data: CreateBusinessRequest) =>
       businessService.createBusiness(data),
-    onSuccess: () => {
-      toast.success("Business created successfully");
+    onSuccess: (response) => {
+      toast.success(response.message || "Business created successfully");
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.BUSINESSES] });
     },
     onError: (error) => {

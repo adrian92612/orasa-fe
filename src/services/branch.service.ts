@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/api-client";
+import { apiClient, type ApiResponse } from "@/lib/api-client";
 import { API_ROUTES } from "@/constants/routes";
 import type {
   BranchResponse,
@@ -15,20 +15,22 @@ export const branchService = {
   updateBranch: async (
     id: string,
     data: UpdateBranchRequest,
-  ): Promise<BranchResponse> => {
+  ): Promise<ApiResponse<BranchResponse>> => {
     const response = await apiClient.put<BranchResponse>(
       API_ROUTES.BRANCHES.BY_ID(id),
       data,
     );
-    return response.data!;
+    return response;
   },
 
-  createBranch: async (data: CreateBranchRequest): Promise<BranchResponse> => {
+  createBranch: async (
+    data: CreateBranchRequest,
+  ): Promise<ApiResponse<BranchResponse>> => {
     const response = await apiClient.post<BranchResponse>(
       API_ROUTES.BRANCHES.BASE,
       data,
     );
-    return response.data!;
+    return response;
   },
 
   getAllBranches: async (): Promise<BranchResponse[]> => {
@@ -55,35 +57,35 @@ export const branchService = {
   assignService: async (
     branchId: string,
     data: AssignServiceToBranchRequest,
-  ): Promise<BranchServiceResponse> => {
+  ): Promise<ApiResponse<BranchServiceResponse>> => {
     const response = await apiClient.post<BranchServiceResponse>(
       API_ROUTES.BRANCHES.SERVICES.BASE(branchId),
       data,
     );
-    return response.data!;
+    return response;
   },
 
-  deleteBranch: async (id: string): Promise<void> => {
-    await apiClient.delete<void>(API_ROUTES.BRANCHES.BY_ID(id));
+  deleteBranch: async (id: string): Promise<ApiResponse<void>> => {
+    return await apiClient.delete<void>(API_ROUTES.BRANCHES.BY_ID(id));
   },
 
   updateService: async (
     branchId: string,
     serviceLinkId: string,
     data: UpdateBranchServiceRequest,
-  ): Promise<BranchServiceResponse> => {
+  ): Promise<ApiResponse<BranchServiceResponse>> => {
     const response = await apiClient.put<BranchServiceResponse>(
       API_ROUTES.BRANCHES.SERVICES.BY_ID(branchId, serviceLinkId),
       data,
     );
-    return response.data!;
+    return response;
   },
 
   removeService: async (
     branchId: string,
     serviceLinkId: string,
-  ): Promise<void> => {
-    await apiClient.delete<void>(
+  ): Promise<ApiResponse<void>> => {
+    return await apiClient.delete<void>(
       API_ROUTES.BRANCHES.SERVICES.BY_ID(branchId, serviceLinkId),
     );
   },

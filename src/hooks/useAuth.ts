@@ -7,8 +7,8 @@ export const useChangePassword = () => {
   return useMutation({
     mutationFn: (data: ChangePasswordRequest) =>
       authService.changePassword(data),
-    onSuccess: () => {
-      toast.success("Password changed successfully");
+    onSuccess: (response) => {
+      toast.success(response.message || "Password changed successfully");
     },
     onError: (error: any) => {
       console.error("Error changing password:", error);

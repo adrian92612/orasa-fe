@@ -60,7 +60,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown, CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
+import { format, sub } from "date-fns";
 
 const formatDuration = (minutes: number) => {
   const days = Math.floor(minutes / 1440);
@@ -506,7 +506,9 @@ const AppointmentDialog = ({
                                 field.onChange(newDate);
                               }
                             }}
-                            disabled={(date) => date < new Date()}
+                            disabled={(date) =>
+                              date < sub(new Date(), { days: 1 })
+                            }
                           />
                         </PopoverContent>
                       </Popover>

@@ -10,4 +10,5 @@ export const Q_KEYS = {
   BUSINESSES: "businesses",
   REMINDER_CONFIGS: "reminder-configs",
   APPOINTMENT_COUNTS: "appointment-counts",
+  ME: "me",
 };

@@ -62,9 +62,12 @@ export const useCreateStaff = () => {
       }
       toast.error("Failed to create staff member");
     },
-    onSuccess: (created) => {
-      toast.success("Staff member created", {
-        description: `${created.username} has been added successfully.`,
+    onSuccess: (response) => {
+      const created = response.data;
+      toast.success(response.message || "Staff member created", {
+        description: created
+          ? `${created.username} has been added successfully.`
+          : undefined,
       });
     },
     onSettled: () => {
@@ -119,9 +122,12 @@ export const useUpdateStaff = () => {
       }
       toast.error("Failed to update staff member");
     },
-    onSuccess: (updated) => {
-      toast.success("Staff member updated", {
-        description: `${updated.username} has been updated successfully.`,
+    onSuccess: (response) => {
+      const updated = response.data;
+      toast.success(response.message || "Staff member updated", {
+        description: updated
+          ? `${updated.username} has been updated successfully.`
+          : undefined,
       });
     },
     onSettled: () => {
@@ -154,8 +160,8 @@ export const useDeleteStaff = () => {
       }
       toast.error("Failed to delete staff member");
     },
-    onSuccess: () => {
-      toast.success("Staff member deleted");
+    onSuccess: (response) => {
+      toast.success(response.message || "Staff member deleted");
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.STAFFS] });

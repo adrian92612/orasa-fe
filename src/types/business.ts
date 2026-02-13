@@ -4,7 +4,10 @@ export type BusinessResponse = {
   slug: string;
   freeSmsCredits: number;
   paidSmsCredits: number;
-  subscriptionStatus: string;
+  subscriptionStatus: "ACTIVE" | "EXPIRED" | "PENDING" | "CANCELLED";
+  subscriptionStartDate?: string;
+  subscriptionEndDate?: string;
+  nextCreditResetDate?: string;
   createdAt: string;
   firstBranchId: string;
 };

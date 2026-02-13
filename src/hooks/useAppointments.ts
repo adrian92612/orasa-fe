@@ -85,10 +85,10 @@ export const useCreateAppointment = () => {
   return useMutation({
     mutationFn: (data: CreateAppointmentRequest) =>
       appointmentService.createAppointment(data),
-    onSuccess: () => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENTS] });
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENT_COUNTS] });
-      toast.success("Appointment created successfully");
+      toast.success(response.message || "Appointment created successfully");
     },
     onError: (error: Error) => {
       toast.error("Failed to create appointment", {
@@ -149,8 +149,8 @@ export const useUpdateAppointment = () => {
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENTS] });
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENT_COUNTS] });
     },
-    onSuccess: () => {
-      toast.success("Appointment updated successfully");
+    onSuccess: (response) => {
+      toast.success(response.message || "Appointment updated successfully");
     },
   });
 };
@@ -194,8 +194,10 @@ export const useUpdateAppointmentStatus = () => {
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENTS] });
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENT_COUNTS] });
     },
-    onSuccess: () => {
-      toast.success("Appointment status updated successfully");
+    onSuccess: (response) => {
+      toast.success(
+        response.message || "Appointment status updated successfully",
+      );
     },
   });
 };
@@ -237,8 +239,8 @@ export const useDeleteAppointment = () => {
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENTS] });
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENT_COUNTS] });
     },
-    onSuccess: () => {
-      toast.success("Appointment deleted successfully");
+    onSuccess: (response) => {
+      toast.success(response.message || "Appointment deleted successfully");
     },
   });
 };

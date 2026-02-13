@@ -114,8 +114,8 @@ export const useCreateService = () => {
       }
       toast.error("Failed to create service");
     },
-    onSuccess: () => {
-      toast.success("Service created successfully");
+    onSuccess: (response) => {
+      toast.success(response.message || "Service created successfully");
     },
     onSettled: () => {
       // Always refetch after error or success:
@@ -208,8 +208,8 @@ export const useUpdateService = () => {
       }
       toast.error("Failed to update service");
     },
-    onSuccess: () => {
-      toast.success("Service updated successfully");
+    onSuccess: (response) => {
+      toast.success(response.message || "Service updated successfully");
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.SERVICES] });
@@ -252,8 +252,8 @@ export const useDeleteService = () => {
       }
       toast.error("Failed to delete service");
     },
-    onSuccess: () => {
-      toast.success("Service deleted successfully");
+    onSuccess: (response) => {
+      toast.success(response.message || "Service deleted successfully");
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.SERVICES] });
@@ -321,8 +321,8 @@ export const useAssignServiceToBranch = () => {
       }
       toast.error("Failed to assign service");
     },
-    onSuccess: () => {
-      toast.success("Service updated");
+    onSuccess: (response) => {
+      toast.success(response.message || "Service updated");
     },
     onSettled: (_data, _error, { branchId }) => {
       queryClient.invalidateQueries({
@@ -381,8 +381,8 @@ export const useUpdateServiceLink = () => {
       }
       toast.error("Failed to update service status");
     },
-    onSuccess: () => {
-      toast.success("Service status updated");
+    onSuccess: (response) => {
+      toast.success(response.message || "Service status updated");
     },
     onSettled: (_data, _error, { branchId }) => {
       queryClient.invalidateQueries({

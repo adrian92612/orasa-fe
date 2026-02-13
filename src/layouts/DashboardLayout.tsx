@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { NAV_ITEMS } from "@/constants/navigation";
 import { useLocation } from "react-router";
 import { Outlet } from "react-router";
+import SubscriptionBanner from "@/components/features/subscription/SubscriptionBanner";
 
 const DashboardLayout = () => {
   const {
@@ -72,6 +73,9 @@ const DashboardLayout = () => {
             </div>
           </div>
         </header>
+
+        <SubscriptionBanner />
+
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0 bg-slate-50/50">
           <div className="min-h-dvh flex-1 rounded-xl bg-background/50 md:min-h-min p-4">
             {isLoading ? (

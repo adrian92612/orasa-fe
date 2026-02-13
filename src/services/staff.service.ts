@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/api-client";
+import { apiClient, type ApiResponse } from "@/lib/api-client";
 import { API_ROUTES } from "@/constants/routes";
 
 import type {
@@ -22,26 +22,28 @@ export const staffService = {
     return response.data!;
   },
 
-  create: async (data: CreateStaffRequest): Promise<StaffResponse> => {
+  create: async (
+    data: CreateStaffRequest,
+  ): Promise<ApiResponse<StaffResponse>> => {
     const response = await apiClient.post<StaffResponse>(
       API_ROUTES.STAFF.CREATE,
       data,
     );
-    return response.data!;
+    return response;
   },
 
   update: async (
     id: string,
     data: UpdateStaffRequest,
-  ): Promise<StaffResponse> => {
+  ): Promise<ApiResponse<StaffResponse>> => {
     const response = await apiClient.put<StaffResponse>(
       API_ROUTES.STAFF.BY_ID(id),
       data,
     );
-    return response.data!;
+    return response;
   },
 
-  delete: async (id: string): Promise<void> => {
-    await apiClient.delete<void>(API_ROUTES.STAFF.BY_ID(id));
+  delete: async (id: string): Promise<ApiResponse<void>> => {
+    return await apiClient.delete<void>(API_ROUTES.STAFF.BY_ID(id));
   },
 };

@@ -13,6 +13,7 @@ export const API_ROUTES = {
   },
   BUSINESSES: {
     CREATE: `${ENV.API_URL}/businesses`,
+    ME: `${ENV.API_URL}/businesses/me`,
     COMPLETE_ONBOARDING: `${ENV.API_URL}/businesses/onboarding/complete`,
   },
   BRANCHES: {

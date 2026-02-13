@@ -37,6 +37,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     queryFn: async () => {
       try {
         const response = await apiClient.get<User>(API_ROUTES.AUTH.ME);
+        console.log("USER CONTEXT: ", response);
         if (response.success && response.data) {
           return response.data;
         }
@@ -53,6 +54,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     try {
       await apiClient.post(API_ROUTES.AUTH.LOGOUT, {});
+      sessionStorage.removeItem("subscription-banner-dismissed");
       await refetch();
       window.location.href = "/login";
     } catch (error) {

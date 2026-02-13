@@ -265,13 +265,10 @@ const AppointmentsPage = () => {
           </TabsContent>
 
           <TabsContent value="all">
-            <div className="flex flex-col gap-4 mb-6">
-              <div className="flex flex-1 gap-2 flex-wrap items-center">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 flex-wrap mb-5">
+              <div className="flex flex-col sm:flex-row gap-2 flex-1 flex-wrap">
                 <DateRangePicker
-                  date={{
-                    from: allTabDateRange.from,
-                    to: allTabDateRange.to,
-                  }}
+                  date={{ from: allTabDateRange.from, to: allTabDateRange.to }}
                   setDate={(range) => {
                     if (range?.from) {
                       setAllTabDateRange({
@@ -283,7 +280,7 @@ const AppointmentsPage = () => {
                 />
 
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-[140px]">
+                  <SelectTrigger className="w-full sm:w-[140px]">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -297,7 +294,7 @@ const AppointmentsPage = () => {
                 </Select>
 
                 <Select value={typeFilter} onValueChange={setTypeFilter}>
-                  <SelectTrigger className="w-[140px]">
+                  <SelectTrigger className="w-full sm:w-[140px]">
                     <SelectValue placeholder="Type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -308,22 +305,27 @@ const AppointmentsPage = () => {
                 </Select>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto self-end">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     placeholder="Search customers..."
-                    className="pl-9"
+                    className="pl-9 w-full"
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                   />
                 </div>
-                <Button variant="secondary" onClick={handleSearch}>
+                <Button
+                  variant="secondary"
+                  onClick={handleSearch}
+                  className="w-full sm:w-auto"
+                >
                   Search
                 </Button>
               </div>
             </div>
+
             {isLoading ? (
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {[1, 2, 3].map((i) => (
