@@ -11,10 +11,20 @@ export const API_ROUTES = {
     CHANGE_PASSWORD: `${ENV.API_URL}/profile/change-password`,
     ME: `${ENV.API_URL}/auth/me`,
   },
+  ADMIN: {
+    BUSINESSES: `${ENV.API_URL}/admin/businesses`,
+    EXTEND_SUBSCRIPTION: (businessId: string) =>
+      `${ENV.API_URL}/admin/businesses/${businessId}/subscription/extend`,
+    ACTIVATE_SUBSCRIPTION: (businessId: string) =>
+      `${ENV.API_URL}/admin/businesses/${businessId}/subscription/activate`,
+    CANCEL_SUBSCRIPTION: (businessId: string) =>
+      `${ENV.API_URL}/admin/businesses/${businessId}/subscription/cancel`,
+    ADD_CREDITS: (id: string) =>
+      `${ENV.API_URL}/admin/businesses/${id}/add-credits`,
+  },
   BUSINESSES: {
     CREATE: `${ENV.API_URL}/businesses`,
     ME: `${ENV.API_URL}/businesses/me`,
-    COMPLETE_ONBOARDING: `${ENV.API_URL}/businesses/onboarding/complete`,
   },
   BRANCHES: {
     BASE: `${ENV.API_URL}/branches`,
@@ -71,4 +81,8 @@ export const APP_ROUTES = {
   FORGOT_PASSWORD: "/forgot-password",
   RESET_PASSWORD: "/reset-password",
   CHANGE_PASSWORD: "/change-password",
+  ADMIN: {
+    DASHBOARD: "/admin/dashboard",
+    LOGIN: "/admin/login", // Still useful for structure, even if it redirects or uses same component
+  },
 } as const;

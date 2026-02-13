@@ -1,10 +1,8 @@
 import BusinessOnboardingForm from "@/components/features/onboarding/BusinessOnboardingForm";
 import ServiceOnboardingForm from "@/components/features/onboarding/ServiceOnboardingForm";
 import StaffOnboardingForm from "@/components/features/onboarding/StaffOnboardingForm";
-import { API_ROUTES, APP_ROUTES } from "@/constants/routes";
+import { APP_ROUTES } from "@/constants/routes";
 import { useUser } from "@/context/UserContext";
-import { apiClient } from "@/lib/api-client";
-import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -47,22 +45,6 @@ const OnboardingPage = () => {
   const currentStepIndex = STEPS.findIndex((s) => s.id === step);
   const currentStepData = STEPS[currentStepIndex];
 
-  const { mutate: completeOnboarding } = useMutation({
-    mutationFn: async () => {
-      return await apiClient.post(
-        API_ROUTES.BUSINESSES.COMPLETE_ONBOARDING,
-        {},
-      );
-    },
-    onSuccess: async () => {
-      await refetchUser();
-      navigate(APP_ROUTES.DASHBOARD.ANALYTICS);
-    },
-    onError: (error) => {
-      console.error("Failed to complete onboarding", error);
-    },
-  });
-
   const handleBusinessSuccess = (branchId: string) => {
     setFirstBranchId(branchId);
     setStep("service");
@@ -72,8 +54,9 @@ const OnboardingPage = () => {
     setStep("staff");
   };
 
-  const handleFinish = () => {
-    completeOnboarding();
+  const handleFinish = async () => {
+    await refetchUser();
+    navigate(APP_ROUTES.DASHBOARD.ANALYTICS);
   };
 
   if (isLoading) {
@@ -87,7 +70,6 @@ const OnboardingPage = () => {
   return (
     <main className="min-h-dvh w-full flex flex-col items-center justify-center py-12 bg-slate-50">
       <div className="w-full max-w-xl px-4">
-        {/* Step Indicator */}
         <nav className="mb-12 relative" aria-label="Progress">
           <ol className="flex items-center justify-between w-full">
             {STEPS.map((s, index) => {

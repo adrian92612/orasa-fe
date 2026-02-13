@@ -97,6 +97,7 @@ const StaffOnboardingForm = ({
                       <Input
                         id="username"
                         placeholder="johndoe"
+                        autoComplete="username"
                         {...field}
                         aria-invalid={fieldState.invalid}
                       />
@@ -122,6 +123,7 @@ const StaffOnboardingForm = ({
                           id="temporaryPassword"
                           type={showPassword ? "text" : "password"}
                           placeholder="••••••"
+                          autoComplete="new-password"
                           {...field}
                           aria-invalid={fieldState.invalid}
                         />
@@ -161,6 +163,7 @@ const StaffOnboardingForm = ({
                           id="confirmPassword"
                           type={showPassword ? "text" : "password"}
                           placeholder="••••••"
+                          autoComplete="new-password"
                           {...field}
                           aria-invalid={fieldState.invalid}
                         />
