@@ -21,6 +21,7 @@ export const API_ROUTES = {
       `${ENV.API_URL}/admin/businesses/${businessId}/subscription/cancel`,
     ADD_CREDITS: (id: string) =>
       `${ENV.API_URL}/admin/businesses/${id}/add-credits`,
+    SEED_DEMO: `${ENV.API_URL}/admin/demo/seed`,
   },
   BUSINESSES: {
     CREATE: `${ENV.API_URL}/businesses`,

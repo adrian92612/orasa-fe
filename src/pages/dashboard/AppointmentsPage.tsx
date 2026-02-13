@@ -16,7 +16,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tabs,
   TabsList,
-  TabsTrigger,
   TabsContent,
   TabsTrigger2,
 } from "@/components/ui/tabs";
