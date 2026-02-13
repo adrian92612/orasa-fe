@@ -166,6 +166,7 @@ const StaffDialog = ({ open, onOpenChange, staff }: StaffDialogProps) => {
                       {...field}
                       disabled={isEditing}
                       aria-invalid={!!fieldState.error}
+                      autoComplete="username"
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -197,6 +198,7 @@ const StaffDialog = ({ open, onOpenChange, staff }: StaffDialogProps) => {
                         placeholder="••••••"
                         {...field}
                         aria-invalid={!!fieldState.error}
+                        autoComplete="new-password"
                       />
                       <Button
                         type="button"
@@ -239,6 +241,7 @@ const StaffDialog = ({ open, onOpenChange, staff }: StaffDialogProps) => {
                         placeholder="••••••"
                         {...field}
                         aria-invalid={!!fieldState.error}
+                        autoComplete="new-password"
                       />
                     </div>
                     {fieldState.invalid && (

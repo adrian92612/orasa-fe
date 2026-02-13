@@ -20,6 +20,10 @@ const ActivityLogsPage = lazy(
   () => import("./pages/dashboard/ActivityLogsPage"),
 );
 const SmsLogsPage = lazy(() => import("./pages/dashboard/SmsLogsPage"));
+const AdminLayout = lazy(() => import("./layouts/AdminLayout"));
+const AdminDashboardPage = lazy(
+  () => import("./pages/admin/AdminDashboardPage"),
+);
 const SettingsPage = lazy(() => import("./pages/dashboard/SettingsPage"));
 
 import { Toaster } from "@/components/ui/sonner";
@@ -72,6 +76,20 @@ function App() {
                 <Route path="activity-logs" element={<ActivityLogsPage />} />
                 <Route path="sms-logs" element={<SmsLogsPage />} />
                 <Route path="settings" element={<SettingsPage />} />
+              </Route>
+
+              {/* Admin routes */}
+              <Route
+                path="/admin"
+                element={
+                  <RouteGuard variant="admin" children={<AdminLayout />} />
+                }
+              >
+                <Route
+                  index
+                  element={<Navigate to={APP_ROUTES.ADMIN.DASHBOARD} replace />}
+                />
+                <Route path="dashboard" element={<AdminDashboardPage />} />
               </Route>
             </Routes>
           </Suspense>

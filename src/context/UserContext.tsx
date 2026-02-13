@@ -37,13 +37,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     queryFn: async () => {
       try {
         const response = await apiClient.get<User>(API_ROUTES.AUTH.ME);
-        console.log("USER CONTEXT: ", response);
         if (response.success && response.data) {
           return response.data;
         }
         return null;
       } catch {
-        // If 401/403, just return null (not logged in)
         return null;
       }
     },

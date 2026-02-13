@@ -11,4 +11,5 @@ export const Q_KEYS = {
   REMINDER_CONFIGS: "reminder-configs",
   APPOINTMENT_COUNTS: "appointment-counts",
   ME: "me",
+  ADMIN_BUSINESSES: "admin-businesses",
 };

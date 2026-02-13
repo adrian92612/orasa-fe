@@ -69,7 +69,7 @@ const BusinessOnboardingForm = ({ onSuccess }: BusinessOnboardingFormProps) => {
       },
       {
         onSuccess: (result) => {
-          onSuccess(result.firstBranchId);
+          onSuccess(result.data?.firstBranchId || "");
         },
       },
     );

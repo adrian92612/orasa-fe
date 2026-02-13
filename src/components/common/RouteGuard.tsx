@@ -11,7 +11,7 @@ const STAFF_ALLOWED_ROUTES = NAV_ITEMS.filter((item) =>
 
 type RouteGuardProps = {
   children: ReactNode;
-  variant?: "private" | "public" | "onboarding";
+  variant?: "private" | "public" | "onboarding" | "admin";
 };
 
 const RouteGuard = ({ children, variant = "private" }: RouteGuardProps) => {
@@ -34,28 +34,34 @@ const RouteGuard = ({ children, variant = "private" }: RouteGuardProps) => {
     switch (variant) {
       case "private":
         if (!user) return APP_ROUTES.LOGIN;
+        if (user.role === "ADMIN") return APP_ROUTES.ADMIN.DASHBOARD; // Admin shouldn't be in private user dashboard
         if (!user.businessId) return APP_ROUTES.ONBOARDING;
         if (user.role === "STAFF" && !staffInAllowedRoute)
           return APP_ROUTES.DASHBOARD.APPOINTMENTS;
         break;
 
       case "public":
-        if (!user) break;
-
-        if (!user.businessId) return APP_ROUTES.ONBOARDING;
-
-        if (user.role === "STAFF") return APP_ROUTES.DASHBOARD.APPOINTMENTS;
-
-        return APP_ROUTES.DASHBOARD.ANALYTICS;
+        if (user) {
+          if (user.role === "ADMIN") return APP_ROUTES.ADMIN.DASHBOARD;
+          if (!user.businessId) return APP_ROUTES.ONBOARDING;
+          if (user.role === "STAFF") return APP_ROUTES.DASHBOARD.APPOINTMENTS;
+          return APP_ROUTES.DASHBOARD.ANALYTICS;
+        }
+        break;
 
       case "onboarding":
         if (!user) return APP_ROUTES.LOGIN;
-
+        if (user.role === "ADMIN") return APP_ROUTES.ADMIN.DASHBOARD;
         if (user.businessId) {
           return user.role === "STAFF"
             ? APP_ROUTES.DASHBOARD.APPOINTMENTS
             : APP_ROUTES.DASHBOARD.ANALYTICS;
         }
+        break;
+
+      case "admin":
+        if (!user) return APP_ROUTES.LOGIN;
+        if (user.role !== "ADMIN") return APP_ROUTES.DASHBOARD.ANALYTICS; // Redirect non-admins to their dashboard
         break;
     }
 
