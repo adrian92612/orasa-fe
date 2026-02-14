@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense, useEffect, useMemo } from "react";
+import React, { useState, lazy, Suspense, useMemo } from "react";
 import { format, addDays, startOfDay, endOfDay, addMonths } from "date-fns";
 import { Plus, Search, Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,12 +11,14 @@ import {
   useUpdateAppointmentStatus,
 } from "@/hooks/useAppointments";
 import AppointmentCard from "@/components/features/appointments/AppointmentCard";
-import type { AppointmentResponse } from "@/types/appointment";
+import type {
+  AppointmentResponse,
+  AppointmentStatus,
+} from "@/types/appointment";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tabs,
   TabsList,
-  TabsTrigger,
   TabsContent,
   TabsTrigger2,
 } from "@/components/ui/tabs";
@@ -45,6 +47,13 @@ const AppointmentsPage = () => {
 
   // Pagination
   const [page, setPage] = useState(0); // 0-based for API
+  const [prevBranchId, setPrevBranchId] = useState(selectedBranchId);
+
+  // Reset page seamlessly when branch changes (Recommended React pattern)
+  if (selectedBranchId !== prevBranchId) {
+    setPrevBranchId(selectedBranchId);
+    setPage(0);
+  }
   const [pageSize, setPageSize] = useState(10);
 
   // "All" Tab Date Range (User selected)
@@ -74,24 +83,11 @@ const AppointmentsPage = () => {
     if (activeTab === "upcoming") {
       return {
         from: startOfDay(addDays(today, 1)),
-        to: endOfDay(addDays(today, 2)), // Next 2 days
+        to: endOfDay(addDays(today, 2)),
       };
     }
     return allTabDateRange;
   }, [activeTab, allTabDateRange]);
-
-  // Reset page when filters change or tab changes
-  useEffect(() => {
-    setPage(0);
-  }, [
-    search,
-    effectiveDateRange,
-    selectedBranchId,
-    activeTab,
-    pageSize,
-    statusFilter,
-    typeFilter,
-  ]);
 
   const { data: appointmentPage, isLoading } = useAppointments(
     selectedBranchId,
@@ -117,11 +113,11 @@ const AppointmentsPage = () => {
   const deleteMutation = useDeleteAppointment();
   const updateStatusMutation = useUpdateAppointmentStatus();
 
-  // Local state for search input
   const [searchInput, setSearchInput] = useState("");
 
   const handleSearch = () => {
     setSearch(searchInput);
+    setPage(0);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -142,11 +138,11 @@ const AppointmentsPage = () => {
 
   const handleStatusChange = (
     appointment: AppointmentResponse,
-    newStatus: string,
+    newStatus: AppointmentStatus,
   ) => {
     updateStatusMutation.mutate({
       id: appointment.id,
-      status: newStatus as any,
+      status: newStatus,
     });
   };
 
@@ -168,7 +164,14 @@ const AppointmentsPage = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs
+          value={activeTab}
+          onValueChange={(val) => {
+            setActiveTab(val);
+            setPage(0);
+          }}
+          className="w-full"
+        >
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
             <TabsList className="w-full sm:w-auto justify-start rounded-none bg-transparent p-0">
               <TabsTrigger2 value="today">Today ({todayCount})</TabsTrigger2>
@@ -186,9 +189,9 @@ const AppointmentsPage = () => {
 
           <TabsContent value="today">
             {isLoading ? (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="flex flex-col gap-4">
                 {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-40 w-full rounded-xl" />
+                  <Skeleton key={i} className="h-24 w-full rounded-xl" />
                 ))}
               </div>
             ) : appointmentPage?.content.length === 0 ? (
@@ -201,7 +204,7 @@ const AppointmentsPage = () => {
               </div>
             ) : (
               <>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="flex flex-col gap-4">
                   {appointmentPage?.content.map((appointment) => (
                     <AppointmentCard
                       key={appointment.id}
@@ -226,9 +229,9 @@ const AppointmentsPage = () => {
 
           <TabsContent value="upcoming">
             {isLoading ? (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="flex flex-col gap-4">
                 {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-40 w-full rounded-xl" />
+                  <Skeleton key={i} className="h-24 w-full rounded-xl" />
                 ))}
               </div>
             ) : appointmentPage?.content.length === 0 ? (
@@ -241,7 +244,7 @@ const AppointmentsPage = () => {
               </div>
             ) : (
               <>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="flex flex-col gap-4">
                   {appointmentPage?.content.map((appointment) => (
                     <AppointmentCard
                       key={appointment.id}
@@ -275,11 +278,18 @@ const AppointmentsPage = () => {
                         from: range.from,
                         to: range.to || range.from,
                       });
+                      setPage(0);
                     }
                   }}
                 />
 
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <Select
+                  value={statusFilter}
+                  onValueChange={(val) => {
+                    setStatusFilter(val);
+                    setPage(0);
+                  }}
+                >
                   <SelectTrigger className="w-full sm:w-[140px]">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
@@ -293,7 +303,13 @@ const AppointmentsPage = () => {
                   </SelectContent>
                 </Select>
 
-                <Select value={typeFilter} onValueChange={setTypeFilter}>
+                <Select
+                  value={typeFilter}
+                  onValueChange={(val) => {
+                    setTypeFilter(val);
+                    setPage(0);
+                  }}
+                >
                   <SelectTrigger className="w-full sm:w-[140px]">
                     <SelectValue placeholder="Type" />
                   </SelectTrigger>
@@ -327,9 +343,9 @@ const AppointmentsPage = () => {
             </div>
 
             {isLoading ? (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="flex flex-col gap-4">
                 {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-40 w-full rounded-xl" />
+                  <Skeleton key={i} className="h-24 w-full rounded-xl" />
                 ))}
               </div>
             ) : appointmentPage?.content.length === 0 ? (
@@ -342,7 +358,7 @@ const AppointmentsPage = () => {
               </div>
             ) : (
               <>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="flex flex-col gap-4">
                   {appointmentPage?.content.map((appointment) => (
                     <AppointmentCard
                       key={appointment.id}

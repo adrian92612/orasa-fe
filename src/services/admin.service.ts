@@ -25,29 +25,36 @@ export const adminService = {
   },
 
   activateSubscription: async (businessId: string) => {
-    return await apiClient.post(
+    return await apiClient.post<void>(
       API_ROUTES.ADMIN.ACTIVATE_SUBSCRIPTION(businessId),
       {},
     );
   },
 
   extendSubscription: async (businessId: string, months: number) => {
-    return await apiClient.post(
+    return await apiClient.post<void>(
       API_ROUTES.ADMIN.EXTEND_SUBSCRIPTION(businessId),
       { months },
     );
   },
 
   cancelSubscription: async (businessId: string) => {
-    return await apiClient.post(
+    return await apiClient.post<void>(
       API_ROUTES.ADMIN.CANCEL_SUBSCRIPTION(businessId),
       {},
     );
   },
 
   addCredits: async (businessId: string, credits: number) => {
-    return await apiClient.post(API_ROUTES.ADMIN.ADD_CREDITS(businessId), {
-      credits,
-    });
+    return await apiClient.post<void>(
+      API_ROUTES.ADMIN.ADD_CREDITS(businessId),
+      {
+        credits,
+      },
+    );
+  },
+
+  seedDemoData: async () => {
+    return await apiClient.post<void>(API_ROUTES.ADMIN.SEED_DEMO, {});
   },
 };

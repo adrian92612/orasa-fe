@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Building2 } from "lucide-react";
+
 import type { BusinessResponse } from "@/types/business";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
@@ -8,8 +8,11 @@ import {
   useExtendSubscription,
   useCancelSubscription,
   useAddCredits,
+  useSeedDemoData,
 } from "@/hooks/useAdmin";
 import CommonPagination from "@/components/common/CommonPagination";
+import { Button } from "@/components/ui/button";
+import { Building2, Database } from "lucide-react";
 import BusinessCard from "@/components/features/admin/BusinessCard";
 import BusinessFilters from "@/components/features/admin/BusinessFilters";
 import AdminAddCreditsDialog from "@/components/features/admin/AdminAddCreditsDialog";
@@ -43,6 +46,7 @@ const AdminDashboardPage = () => {
   const extendMutation = useExtendSubscription();
   const cancelMutation = useCancelSubscription();
   const addCreditsMutation = useAddCredits();
+  const seedMutation = useSeedDemoData();
 
   const [creditsToAdd, setCreditsToAdd] = useState(50);
   const [showAddCreditsDialog, setShowAddCreditsDialog] = useState(false);
@@ -125,6 +129,14 @@ const AdminDashboardPage = () => {
             Manage all registered businesses and subscriptions.
           </p>
         </div>
+        <Button
+          variant="outline"
+          onClick={() => seedMutation.mutate()}
+          disabled={seedMutation.isPending}
+        >
+          <Database className="mr-2 h-4 w-4" />
+          {seedMutation.isPending ? "Seeding..." : "Seed Demo Data"}
+        </Button>
       </div>
 
       <BusinessFilters

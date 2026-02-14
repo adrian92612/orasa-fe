@@ -248,8 +248,25 @@ export const useAddCredits = () => {
       }
       toast.error("Failed to add credits");
     },
-    onSuccess: (response) => {
+    onSuccess: (response: ApiResponse<void>) => {
       toast.success(response.message || "Credits added successfully");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.ADMIN_BUSINESSES] });
+    },
+  });
+};
+
+export const useSeedDemoData = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => adminService.seedDemoData(),
+    onSuccess: (response: ApiResponse<void>) => {
+      toast.success(response.message || "Demo data seeded successfully");
+    },
+    onError: () => {
+      toast.error("Failed to seed demo data");
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.ADMIN_BUSINESSES] });
