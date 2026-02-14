@@ -1,38 +1,29 @@
 import { useState, lazy, Suspense } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-import { staffService } from "@/services/staff.service";
-
 import BranchList from "@/components/features/branches/BranchList";
+import { BranchesPageSkeleton } from "@/components/features/branches/BranchesPageSkeleton";
+
+import type { BranchResponse } from "@/types/branch";
+
+import { useSuspenseBranches } from "@/hooks/useBranches";
+import { useSuspenseServices } from "@/hooks/useServices";
+import { useSuspenseStaff } from "@/hooks/useStaff";
 
 const BranchDialog = lazy(
   () => import("@/components/features/branches/BranchDialog"),
 );
 
-import type { BranchResponse } from "@/types/branch";
-
-import { Q_KEYS } from "@/constants/queryKeys";
-import { useBranches } from "@/hooks/useBranches";
-import { useServices } from "@/hooks/useServices";
-
-const BranchesPage = () => {
+const BranchesPageContent = () => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState<BranchResponse | null>(
     null,
   );
 
-  const { data: branches, isLoading: isLoadingBranches } = useBranches();
-
-  const { data: staffList = [], isLoading: isLoadingStaff } = useQuery({
-    queryKey: [Q_KEYS.STAFFS],
-    queryFn: () => staffService.getAll(),
-    staleTime: Infinity,
-  });
-
-  const { data: serviceList = [], isLoading: isLoadingServices } =
-    useServices();
+  const { data: branches } = useSuspenseBranches();
+  const { data: staffList = [] } = useSuspenseStaff();
+  const { data: serviceList = [] } = useSuspenseServices();
 
   const handleCreate = () => {
     setSelectedBranch(null);
@@ -59,7 +50,7 @@ const BranchesPage = () => {
 
       <BranchList
         branches={branches || []}
-        isLoading={isLoadingBranches}
+        isLoading={false}
         onEdit={handleEdit}
       />
 
@@ -71,11 +62,19 @@ const BranchesPage = () => {
           branchToEdit={selectedBranch}
           staffList={staffList}
           serviceList={serviceList}
-          isLoadingStaff={isLoadingStaff}
-          isLoadingServices={isLoadingServices}
+          isLoadingStaff={false}
+          isLoadingServices={false}
         />
       </Suspense>
     </div>
+  );
+};
+
+const BranchesPage = () => {
+  return (
+    <Suspense fallback={<BranchesPageSkeleton />}>
+      <BranchesPageContent />
+    </Suspense>
   );
 };
 

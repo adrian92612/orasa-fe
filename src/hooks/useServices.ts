@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 import { serviceService } from "@/services/service.service";
 import { branchService } from "@/services/branch.service";
@@ -19,6 +24,13 @@ export const useServices = (branchId?: string | null) => {
   });
 };
 
+export const useSuspenseServices = (branchId?: string | null) => {
+  return useSuspenseQuery({
+    queryKey: [Q_KEYS.SERVICES, { branchId }],
+    queryFn: () => serviceService.getAllServices(branchId),
+  });
+};
+
 export const useBranchServices = (branchId: string | null) => {
   return useQuery({
     queryKey: [Q_KEYS.SERVICES, "branch", branchId],
@@ -27,6 +39,16 @@ export const useBranchServices = (branchId: string | null) => {
       return branchService.getServices(branchId);
     },
     enabled: !!branchId,
+  });
+};
+
+export const useSuspenseBranchServices = (branchId: string | null) => {
+  return useSuspenseQuery({
+    queryKey: [Q_KEYS.SERVICES, "branch", branchId],
+    queryFn: async () => {
+      if (!branchId) return [];
+      return branchService.getServices(branchId);
+    },
   });
 };
 
@@ -96,7 +118,7 @@ export const useCreateService = () => {
                 // In ServicesPage.tsx, we map BranchServiceResponse to ServiceResponse.
                 // We should add isOptimistic to BranchServiceResponse too or handle mapping.
                 isOptimistic: true,
-              } as any, // Temporary cast to avoid type error if we didn't add it to BranchServiceResponse yet
+              },
             ]);
           }
         });
@@ -188,7 +210,7 @@ export const useUpdateService = () => {
                     // Let's just update basePrice. The UI might show basePrice.
                     durationMinutes: data.durationMinutes ?? s.durationMinutes,
                     isOptimistic: true,
-                  } as any;
+                  };
                 }
                 return s;
               }),

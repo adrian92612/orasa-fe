@@ -61,6 +61,9 @@ export const API_ROUTES = {
     SEARCH: (branchId: string) =>
       `${ENV.API_URL}/appointments/branch/${branchId}/search`,
   },
+  ANALYTICS: {
+    DASHBOARD: `${ENV.API_URL}/analytics/dashboard`,
+  },
 } as const;
 
 export const APP_ROUTES = {

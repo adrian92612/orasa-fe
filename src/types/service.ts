@@ -35,6 +35,7 @@ export type BranchServiceResponse = {
   durationMinutes: number;
   active: boolean;
   createdAt: string;
+  isOptimistic?: boolean;
 };
 
 export type AssignServiceToBranchRequest = {

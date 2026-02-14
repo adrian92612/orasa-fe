@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { smsService } from "@/services/sms.service";
@@ -12,6 +17,14 @@ import type {
 
 export const useReminderConfigs = () => {
   return useQuery({
+    queryKey: [Q_KEYS.REMINDER_CONFIGS],
+    queryFn: smsService.getReminderConfigs,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useSuspenseReminderConfigs = () => {
+  return useSuspenseQuery({
     queryKey: [Q_KEYS.REMINDER_CONFIGS],
     queryFn: smsService.getReminderConfigs,
     staleTime: 5 * 60 * 1000,

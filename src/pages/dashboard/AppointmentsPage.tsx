@@ -1,21 +1,19 @@
-import React, { useState, lazy, Suspense, useMemo } from "react";
-import { format, addDays, startOfDay, endOfDay, addMonths } from "date-fns";
-import { Plus, Search, Calendar as CalendarIcon } from "lucide-react";
+import { useState, lazy, Suspense, useMemo } from "react";
+import type { KeyboardEvent } from "react";
+import { addDays, startOfDay, endOfDay, addMonths, format } from "date-fns";
+import { Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useUser } from "@/context/UserContext";
 import {
-  useAppointments,
   useDeleteAppointment,
-  useAppointmentCounts,
+  useSuspenseAppointmentCounts,
   useUpdateAppointmentStatus,
 } from "@/hooks/useAppointments";
-import AppointmentCard from "@/components/features/appointments/AppointmentCard";
 import type {
   AppointmentResponse,
   AppointmentStatus,
 } from "@/types/appointment";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tabs,
   TabsList,
@@ -23,7 +21,6 @@ import {
   TabsTrigger2,
 } from "@/components/ui/tabs";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
-import CommonPagination from "@/components/common/CommonPagination";
 import {
   Select,
   SelectContent,
@@ -31,12 +28,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AppointmentsPageSkeleton } from "@/components/features/appointments/AppointmentsPageSkeleton";
+import AppointmentList from "@/components/features/appointments/AppointmentList";
+import { AppointmentListSkeleton } from "@/components/features/appointments/AppointmentListSkeleton";
 
 const AppointmentDialog = lazy(
   () => import("@/components/features/appointments/AppointmentDialog"),
 );
 
-const AppointmentsPage = () => {
+const AppointmentsPageContent = () => {
   const { user, selectedBranchId } = useUser();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] =
@@ -89,23 +89,7 @@ const AppointmentsPage = () => {
     return allTabDateRange;
   }, [activeTab, allTabDateRange]);
 
-  const { data: appointmentPage, isLoading } = useAppointments(
-    selectedBranchId,
-    user?.businessId || null,
-    page,
-    pageSize,
-    activeTab === "all" ? search : "",
-    effectiveDateRange.from
-      ? format(effectiveDateRange.from, "yyyy-MM-dd")
-      : undefined,
-    effectiveDateRange.to
-      ? format(effectiveDateRange.to, "yyyy-MM-dd")
-      : undefined,
-    activeTab === "all" ? statusFilter : null,
-    activeTab === "all" ? typeFilter : null,
-  );
-
-  const { todayCount, upcomingCount } = useAppointmentCounts(
+  const { todayCount, upcomingCount } = useSuspenseAppointmentCounts(
     selectedBranchId,
     user?.businessId || null,
   );
@@ -120,7 +104,7 @@ const AppointmentsPage = () => {
     setPage(0);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === "Enter") {
       handleSearch();
     }
@@ -161,6 +145,31 @@ const AppointmentsPage = () => {
     setPage(0);
   };
 
+  const commonProps = {
+    branchId: selectedBranchId,
+    businessId: user?.businessId || null,
+    page,
+    pageSize,
+    search: activeTab === "all" ? search : "",
+    statusFilter: activeTab === "all" ? statusFilter : null,
+    typeFilter: activeTab === "all" ? typeFilter : null,
+    activeTab,
+    onEdit: handleEdit,
+    onDelete: handleDelete,
+    onStatusChange: handleStatusChange,
+    onPageChange: handlePageChange,
+    onPageSizeChange: handlePageSizeChange,
+  };
+
+  const dateProps = {
+    startDate: effectiveDateRange.from
+      ? format(effectiveDateRange.from, "yyyy-MM-dd")
+      : undefined,
+    endDate: effectiveDateRange.to
+      ? format(effectiveDateRange.to, "yyyy-MM-dd")
+      : undefined,
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4">
@@ -188,83 +197,14 @@ const AppointmentsPage = () => {
           </div>
 
           <TabsContent value="today">
-            {isLoading ? (
-              <div className="flex flex-col gap-4">
-                {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-24 w-full rounded-xl" />
-                ))}
-              </div>
-            ) : appointmentPage?.content.length === 0 ? (
-              <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed rounded-xl pointer-events-none select-none">
-                <CalendarIcon className="h-12 w-12 text-muted-foreground mb-4 opacity-20" />
-                <h3 className="text-lg font-medium">No appointments found</h3>
-                <p className="text-muted-foreground">
-                  You have no appointments scheduled for today.
-                </p>
-              </div>
-            ) : (
-              <>
-                <div className="flex flex-col gap-4">
-                  {appointmentPage?.content.map((appointment) => (
-                    <AppointmentCard
-                      key={appointment.id}
-                      appointment={appointment}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
-                      onStatusChange={handleStatusChange}
-                    />
-                  ))}
-                </div>
-                <CommonPagination
-                  totalItems={appointmentPage?.totalElements || 0}
-                  pageSize={pageSize}
-                  currentPage={page + 1}
-                  onPageChange={handlePageChange}
-                  onPageSizeChange={handlePageSizeChange}
-                  itemName="appointments"
-                />
-              </>
-            )}
+            <Suspense fallback={<AppointmentListSkeleton />}>
+              <AppointmentList {...commonProps} {...dateProps} />
+            </Suspense>
           </TabsContent>
-
           <TabsContent value="upcoming">
-            {isLoading ? (
-              <div className="flex flex-col gap-4">
-                {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-24 w-full rounded-xl" />
-                ))}
-              </div>
-            ) : appointmentPage?.content.length === 0 ? (
-              <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed rounded-xl pointer-events-none select-none">
-                <CalendarIcon className="h-12 w-12 text-muted-foreground mb-4 opacity-20" />
-                <h3 className="text-lg font-medium">No appointments found</h3>
-                <p className="text-muted-foreground">
-                  You have no appointments scheduled for the next 2 days.
-                </p>
-              </div>
-            ) : (
-              <>
-                <div className="flex flex-col gap-4">
-                  {appointmentPage?.content.map((appointment) => (
-                    <AppointmentCard
-                      key={appointment.id}
-                      appointment={appointment}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
-                      onStatusChange={handleStatusChange}
-                    />
-                  ))}
-                </div>
-                <CommonPagination
-                  totalItems={appointmentPage?.totalElements || 0}
-                  pageSize={pageSize}
-                  currentPage={page + 1}
-                  onPageChange={handlePageChange}
-                  onPageSizeChange={handlePageSizeChange}
-                  itemName="appointments"
-                />
-              </>
-            )}
+            <Suspense fallback={<AppointmentListSkeleton />}>
+              <AppointmentList {...commonProps} {...dateProps} />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="all">
@@ -342,43 +282,9 @@ const AppointmentsPage = () => {
               </div>
             </div>
 
-            {isLoading ? (
-              <div className="flex flex-col gap-4">
-                {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-24 w-full rounded-xl" />
-                ))}
-              </div>
-            ) : appointmentPage?.content.length === 0 ? (
-              <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed rounded-xl pointer-events-none select-none">
-                <CalendarIcon className="h-12 w-12 text-muted-foreground mb-4 opacity-20" />
-                <h3 className="text-lg font-medium">No appointments found</h3>
-                <p className="text-muted-foreground">
-                  Try adjusting your filters or create a new appointment.
-                </p>
-              </div>
-            ) : (
-              <>
-                <div className="flex flex-col gap-4">
-                  {appointmentPage?.content.map((appointment) => (
-                    <AppointmentCard
-                      key={appointment.id}
-                      appointment={appointment}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
-                      onStatusChange={handleStatusChange}
-                    />
-                  ))}
-                </div>
-                <CommonPagination
-                  totalItems={appointmentPage?.totalElements || 0}
-                  pageSize={pageSize}
-                  currentPage={page + 1}
-                  onPageChange={handlePageChange}
-                  onPageSizeChange={handlePageSizeChange}
-                  itemName="appointments"
-                />
-              </>
-            )}
+            <Suspense fallback={<AppointmentListSkeleton />}>
+              <AppointmentList {...commonProps} {...dateProps} />
+            </Suspense>
           </TabsContent>
         </Tabs>
       </div>
@@ -392,6 +298,14 @@ const AppointmentsPage = () => {
         />
       </Suspense>
     </div>
+  );
+};
+
+const AppointmentsPage = () => {
+  return (
+    <Suspense fallback={<AppointmentsPageSkeleton />}>
+      <AppointmentsPageContent />
+    </Suspense>
   );
 };
 

@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 import { format, addDays } from "date-fns";
 import { appointmentService } from "@/services/appointment.service";
@@ -23,6 +28,75 @@ export const useAppointments = (
   type?: string | null,
 ) => {
   return useQuery({
+    queryKey: [
+      Q_KEYS.APPOINTMENTS,
+      branchId || "ALL",
+      businessId,
+      page,
+      size,
+      search,
+      startDate,
+      endDate,
+      status,
+      type,
+    ],
+    queryFn: () => {
+      // ... same logic
+      if (search || startDate || endDate || status || type) {
+        if (branchId) {
+          return appointmentService.searchAppointments(
+            branchId,
+            search,
+            startDate || "",
+            endDate || "",
+            status,
+            type,
+            page,
+            size,
+          );
+        }
+        return appointmentService.searchAppointmentsByBusiness(
+          businessId!,
+          search,
+          startDate || "",
+          endDate || "",
+          status,
+          type,
+          page,
+          size,
+        );
+      }
+
+      if (branchId) {
+        return appointmentService.getAppointmentsByBranch(branchId, page, size);
+      }
+
+      if (businessId) {
+        return appointmentService.getAppointmentsByBusiness(
+          businessId,
+          page,
+          size,
+        );
+      }
+
+      return Promise.reject(new Error("No branch or business ID provided"));
+    },
+    enabled: !!(branchId || businessId),
+  });
+};
+
+export const useSuspenseAppointments = (
+  branchId: string | null,
+  businessId: string | null,
+  page = 0,
+  size = 20,
+  search = "",
+  startDate?: string,
+  endDate?: string,
+  status?: string | null,
+  type?: string | null,
+) => {
+  return useSuspenseQuery({
     queryKey: [
       Q_KEYS.APPOINTMENTS,
       branchId || "ALL",
@@ -75,11 +149,11 @@ export const useAppointments = (
 
       return Promise.reject(new Error("No branch or business ID provided"));
     },
-    enabled: !!(branchId || businessId),
   });
 };
 
 export const useCreateAppointment = () => {
+  // ... existing code
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -99,6 +173,7 @@ export const useCreateAppointment = () => {
 };
 
 export const useUpdateAppointment = () => {
+  // ... existing code
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -156,6 +231,7 @@ export const useUpdateAppointment = () => {
 };
 
 export const useUpdateAppointmentStatus = () => {
+  // ... existing code
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -203,6 +279,7 @@ export const useUpdateAppointmentStatus = () => {
 };
 
 export const useDeleteAppointment = () => {
+  // ... existing code
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -329,5 +406,89 @@ export const useAppointmentCounts = (
     todayCount: todayData?.totalElements || 0,
     upcomingCount: upcomingData?.totalElements || 0,
     isLoading: isLoadingToday || isLoadingUpcoming,
+  };
+};
+
+export const useSuspenseAppointmentCounts = (
+  branchId: string | null,
+  businessId: string | null,
+) => {
+  const today = new Date();
+  const todayStr = format(today, "yyyy-MM-dd");
+
+  const tomorrow = addDays(today, 1);
+  const dayAfterTomorrow = addDays(today, 2);
+  const upcomingStartStr = format(tomorrow, "yyyy-MM-dd");
+  const upcomingEndStr = format(dayAfterTomorrow, "yyyy-MM-dd");
+
+  const { data: todayData } = useSuspenseQuery({
+    queryKey: [
+      Q_KEYS.APPOINTMENT_COUNTS,
+      branchId || "ALL",
+      businessId,
+      "today",
+    ],
+    queryFn: () => {
+      if (branchId) {
+        return appointmentService.searchAppointments(
+          branchId,
+          "",
+          todayStr,
+          todayStr,
+          null,
+          null,
+          0,
+          1,
+        );
+      }
+      return appointmentService.searchAppointmentsByBusiness(
+        businessId!,
+        "",
+        todayStr,
+        todayStr,
+        null,
+        null,
+        0,
+        1,
+      );
+    },
+  });
+
+  const { data: upcomingData } = useSuspenseQuery({
+    queryKey: [
+      Q_KEYS.APPOINTMENT_COUNTS,
+      branchId || "ALL",
+      businessId,
+      "upcoming",
+    ],
+    queryFn: () => {
+      if (branchId) {
+        return appointmentService.searchAppointments(
+          branchId,
+          "",
+          upcomingStartStr,
+          upcomingEndStr,
+          null,
+          null,
+          0,
+          1,
+        );
+      }
+      return appointmentService.searchAppointmentsByBusiness(
+        businessId!,
+        "",
+        upcomingStartStr,
+        upcomingEndStr,
+        null,
+        null,
+        0,
+        1,
+      );
+    },
+  });
+
+  return {
+    todayCount: todayData.totalElements,
+    upcomingCount: upcomingData.totalElements,
   };
 };

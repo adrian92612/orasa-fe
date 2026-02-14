@@ -1,13 +1,14 @@
 import { lazy, Suspense, useMemo, useState } from "react";
 import { Plus, Search } from "lucide-react";
 
-import { useStaff } from "@/hooks/useStaff";
+import { useSuspenseStaff } from "@/hooks/useStaff";
 
 import type { StaffResponse } from "@/types/staff";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import StaffList from "@/components/features/staff/StaffList";
+import { StaffPageSkeleton } from "@/components/features/staff/StaffPageSkeleton";
 
 const StaffDialog = lazy(
   () => import("@/components/features/staff/StaffDialog"),
@@ -16,8 +17,8 @@ const StaffDeleteDialog = lazy(
   () => import("@/components/features/staff/StaffDeleteDialog"),
 );
 
-const StaffPage = () => {
-  const { data: staff = [], isLoading } = useStaff();
+const StaffPageContent = () => {
+  const { data: staff } = useSuspenseStaff();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -73,7 +74,7 @@ const StaffPage = () => {
 
       <StaffList
         staff={filteredStaff}
-        isLoading={isLoading}
+        isLoading={false}
         isSearchActive={!!searchQuery.trim()}
         onEdit={handleEdit}
         onDelete={handleDelete}
@@ -92,6 +93,14 @@ const StaffPage = () => {
         />
       </Suspense>
     </div>
+  );
+};
+
+const StaffPage = () => {
+  return (
+    <Suspense fallback={<StaffPageSkeleton />}>
+      <StaffPageContent />
+    </Suspense>
   );
 };
 

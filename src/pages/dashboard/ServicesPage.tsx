@@ -2,8 +2,8 @@ import { useState, lazy, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import {
-  useServices,
-  useBranchServices,
+  useSuspenseServices,
+  useSuspenseBranchServices,
   useAssignServiceToBranch,
   useUpdateServiceLink,
 } from "@/hooks/useServices";
@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/context/UserContext";
 import { useBranches } from "@/hooks/useBranches";
 import type { ServiceResponse, BranchServiceResponse } from "@/types/service";
+import { ServicesPageSkeleton } from "@/components/features/services/ServicesPageSkeleton";
 
 const ServiceDialog = lazy(
   () => import("@/components/features/services/ServiceDialog"),
@@ -22,15 +23,13 @@ const ServiceDeleteDialog = lazy(
   () => import("@/components/features/services/ServiceDeleteDialog"),
 );
 
-const ServicesPage = () => {
+const ServicesPageContent = () => {
   const { selectedBranchId, user } = useUser();
   const { data: branches = [] } = useBranches();
   const hasMultipleBranches = branches.length > 1;
 
-  const { data: allServices = [], isLoading: isLoadingAll } = useServices(null);
-
-  const { data: branchServices = [], isLoading: isLoadingBranch } =
-    useBranchServices(selectedBranchId);
+  const { data: allServices } = useSuspenseServices(null);
+  const { data: branchServices } = useSuspenseBranchServices(selectedBranchId);
 
   const assignService = useAssignServiceToBranch();
   const updateServiceLink = useUpdateServiceLink();
@@ -48,12 +47,15 @@ const ServicesPage = () => {
   const activeServices: ServiceResponse[] = [];
   const inactiveServices: ServiceResponse[] = [];
 
+  const safeBranchServices = branchServices || [];
+  const safeAllServices = allServices || [];
+
   if (selectedBranchId) {
     const activeServiceIds = new Set<string>();
     const serviceLinkMap = new Map<string, string>();
     const branchServiceMap = new Map<string, BranchServiceResponse>();
 
-    branchServices.forEach((bs: BranchServiceResponse) => {
+    safeBranchServices.forEach((bs: BranchServiceResponse) => {
       serviceLinkMap.set(bs.serviceId, bs.id);
       branchServiceMap.set(bs.serviceId, bs);
       if (bs.active) {
@@ -75,7 +77,7 @@ const ServicesPage = () => {
       }
     });
 
-    allServices.forEach((s) => {
+    safeAllServices.forEach((s) => {
       if (!activeServiceIds.has(s.id)) {
         const existingLinkId = serviceLinkMap.get(s.id);
         const branchService = branchServiceMap.get(s.id);
@@ -90,7 +92,7 @@ const ServicesPage = () => {
       }
     });
   } else {
-    activeServices.push(...allServices);
+    activeServices.push(...safeAllServices);
   }
 
   const handleToggleActive = (service: ServiceResponse) => {
@@ -179,8 +181,6 @@ const ServicesPage = () => {
     setOtherCurrentPage(1);
   };
 
-  const isLoading = isLoadingAll || isLoadingBranch;
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -216,7 +216,7 @@ const ServicesPage = () => {
             <TabsContent value="active" className="mt-6 space-y-4">
               <ServiceList
                 services={paginatedActive}
-                isLoading={isLoading}
+                isLoading={false}
                 isSearchActive={!!searchQuery.trim()}
                 onEdit={handleEdit}
                 onToggleActive={handleToggleActive}
@@ -236,7 +236,7 @@ const ServicesPage = () => {
             <TabsContent value="other" className="mt-6 space-y-4">
               <ServiceList
                 services={paginatedInactive}
-                isLoading={isLoading}
+                isLoading={false}
                 isSearchActive={!!searchQuery.trim()}
                 onEdit={handleEdit}
                 onToggleActive={handleToggleActive}
@@ -257,7 +257,7 @@ const ServicesPage = () => {
           <>
             <ServiceList
               services={paginatedActive} // Contains all services in this case
-              isLoading={isLoading}
+              isLoading={false}
               isSearchActive={!!searchQuery.trim()}
               onEdit={handleEdit}
               onDelete={handleDelete}
@@ -289,6 +289,14 @@ const ServicesPage = () => {
         />
       </Suspense>
     </div>
+  );
+};
+
+const ServicesPage = () => {
+  return (
+    <Suspense fallback={<ServicesPageSkeleton />}>
+      <ServicesPageContent />
+    </Suspense>
   );
 };
 

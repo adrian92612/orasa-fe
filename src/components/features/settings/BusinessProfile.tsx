@@ -1,13 +1,7 @@
-import { useMyBusiness } from "@/hooks/useBusiness";
+import { useSuspenseMyBusiness } from "@/hooks/useBusiness";
 import { useUser } from "@/context/UserContext";
 import { format } from "date-fns";
-import {
-  Loader2,
-  AlertCircle,
-  CheckCircle2,
-  XCircle,
-  Clock,
-} from "lucide-react";
+import { CheckCircle2, XCircle, Clock, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -21,27 +15,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 const BusinessProfile = () => {
   const { user } = useUser();
 
-  const { data: business, isLoading, error } = useMyBusiness();
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center p-8">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (error || !business) {
-    return (
-      <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>
-          Failed to load business profile. Please try again later.
-        </AlertDescription>
-      </Alert>
-    );
-  }
+  const { data: business } = useSuspenseMyBusiness();
 
   const getStatusBadge = (status: string) => {
     switch (status) {

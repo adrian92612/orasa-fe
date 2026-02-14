@@ -1,8 +1,4 @@
-type ApiResponse<T> = {
-  success: boolean;
-  message: string;
-  data?: T;
-};
+import type { ApiResponse } from "@/types/api";
 
 const apiClient = {
   post: async <T, B = unknown>(

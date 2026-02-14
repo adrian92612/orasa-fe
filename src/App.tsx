@@ -26,6 +26,8 @@ const AdminDashboardPage = lazy(
 );
 const SettingsPage = lazy(() => import("./pages/dashboard/SettingsPage"));
 
+import { DashboardSkeleton } from "@/components/features/dashboard/DashboardSkeleton";
+
 import { Toaster } from "@/components/ui/sonner";
 
 function App() {
@@ -63,7 +65,11 @@ function App() {
                 element={
                   <RouteGuard
                     variant="private"
-                    children={<DashboardLayout />}
+                    children={
+                      <Suspense fallback={<DashboardSkeleton />}>
+                        <DashboardLayout />
+                      </Suspense>
+                    }
                   />
                 }
               >

@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { branchService } from "@/services/branch.service";
@@ -29,6 +34,14 @@ export const useBranches = () => {
   }, [query.data, query.isLoading, selectedBranchId, setSelectedBranchId]);
 
   return query;
+};
+
+export const useSuspenseBranches = () => {
+  return useSuspenseQuery({
+    queryKey: [Q_KEYS.BRANCHES],
+    queryFn: branchService.getAllBranches,
+    staleTime: 5 * 60 * 1000,
+  });
 };
 
 export const useCreateBranch = () => {

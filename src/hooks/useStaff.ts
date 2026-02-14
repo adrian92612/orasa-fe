@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { staffService } from "@/services/staff.service";
@@ -13,6 +18,14 @@ import type { BranchResponse } from "@/types/branch";
 
 export const useStaff = () => {
   return useQuery({
+    queryKey: [Q_KEYS.STAFFS],
+    queryFn: staffService.getAll,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useSuspenseStaff = () => {
+  return useSuspenseQuery({
     queryKey: [Q_KEYS.STAFFS],
     queryFn: staffService.getAll,
     staleTime: 5 * 60 * 1000,

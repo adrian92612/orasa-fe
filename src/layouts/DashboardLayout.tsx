@@ -1,6 +1,6 @@
 import { Suspense, lazy } from "react";
 import { useUser } from "@/context/UserContext";
-import { useBranches } from "@/hooks/useBranches";
+import { useSuspenseBranches } from "@/hooks/useBranches";
 const AppSidebar = lazy(
   () => import("@/components/features/dashboard/Sidebar"),
 );
@@ -15,6 +15,7 @@ import { NAV_ITEMS } from "@/constants/navigation";
 import { useLocation } from "react-router";
 import { Outlet } from "react-router";
 import SubscriptionBanner from "@/components/features/subscription/SubscriptionBanner";
+import { DashboardSkeleton } from "@/components/features/dashboard/DashboardSkeleton";
 
 const DashboardLayout = () => {
   const {
@@ -24,16 +25,18 @@ const DashboardLayout = () => {
     isLoading: isLoadingUser,
   } = useUser();
   const location = useLocation();
-  const { data: branches, isLoading: isLoadingBranches } = useBranches();
-  const isLoading = isLoadingUser || isLoadingBranches;
+  const { data: branches } = useSuspenseBranches();
+
+  if (isLoadingUser) {
+    return <DashboardSkeleton />;
+  }
 
   const currentItem = NAV_ITEMS.find((item) => location.pathname === item.url);
   const pageTitle = currentItem ? currentItem.title : "Dashboard";
 
   const currentBranch = branches?.find((b) => b.id === selectedBranchId);
   const branchName = currentBranch ? currentBranch.name : "All Branches";
-  const isStaffNoBranches =
-    !isLoading && user?.role === "STAFF" && !branches?.length;
+  const isStaffNoBranches = user?.role === "STAFF" && !branches?.length;
 
   return (
     <SidebarProvider>
@@ -55,11 +58,7 @@ const DashboardLayout = () => {
               <div>
                 <h1 className="font-semibold text-lg">{pageTitle}</h1>
                 <span className="text-muted-foreground text-sm">
-                  {isLoading ? (
-                    <div className="h-4 w-24 animate-pulse rounded bg-muted" />
-                  ) : (
-                    branchName
-                  )}
+                  {branchName}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground border-l pl-4">
@@ -78,12 +77,7 @@ const DashboardLayout = () => {
 
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0 bg-slate-50/50">
           <div className="min-h-dvh flex-1 rounded-xl bg-background/50 md:min-h-min p-4">
-            {isLoading ? (
-              <div className="space-y-4">
-                <div className="h-8 w-1/4 animate-pulse rounded bg-muted" />
-                <div className="h-64 animate-pulse rounded bg-muted" />
-              </div>
-            ) : isStaffNoBranches ? (
+            {isStaffNoBranches ? (
               <div className="flex h-[450px] shrink-0 items-center justify-center rounded-md border border-dashed">
                 <div className="mx-auto flex max-w-[420px] flex-col items-center justify-center text-center">
                   <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">

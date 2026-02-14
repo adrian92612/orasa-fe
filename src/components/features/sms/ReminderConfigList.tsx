@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Bell, Plus } from "lucide-react";
 
-import { useDeleteReminderConfig, useReminderConfigs } from "@/hooks/useSms";
+import {
+  useDeleteReminderConfig,
+  useSuspenseReminderConfigs,
+} from "@/hooks/useSms";
 
 import type { ReminderConfigResponse } from "@/types/sms";
 
@@ -16,13 +19,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 
 import ReminderConfigCard from "@/components/features/sms/ReminderConfigCard";
 import ReminderConfigDialog from "@/components/features/sms/ReminderConfigDialog";
 
 const ReminderConfigList = () => {
-  const { data: configs = [], isLoading } = useReminderConfigs();
+  const { data: configs } = useSuspenseReminderConfigs();
   const deleteMutation = useDeleteReminderConfig();
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -75,21 +77,7 @@ const ReminderConfigList = () => {
         </Button>
       </div>
 
-      {isLoading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="rounded-lg border bg-card p-4">
-              <div className="flex items-center gap-3">
-                <Skeleton className="h-9 w-9 rounded-full" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-4 w-28" />
-                  <Skeleton className="h-3 w-64" />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : sortedConfigs.length === 0 ? (
+      {sortedConfigs.length === 0 ? (
         <div className="rounded-lg border bg-card p-8 text-center">
           <Bell className="mx-auto h-10 w-10 text-muted-foreground/50 mb-3" />
           <h3 className="font-semibold text-lg">No reminders configured</h3>

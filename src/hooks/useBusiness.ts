@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { businessService } from "@/services/business.service";
 import { type CreateBusinessRequest } from "@/types/business";
 import { Q_KEYS } from "@/constants/queryKeys";
@@ -12,6 +17,14 @@ export const useMyBusiness = () => {
     queryKey: [Q_KEYS.BUSINESSES, Q_KEYS.ME],
     queryFn: () => businessService.getMyBusiness(),
     enabled: !!user?.businessId,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useSuspenseMyBusiness = () => {
+  return useSuspenseQuery({
+    queryKey: [Q_KEYS.BUSINESSES, Q_KEYS.ME],
+    queryFn: () => businessService.getMyBusiness(),
     staleTime: 5 * 60 * 1000,
   });
 };
