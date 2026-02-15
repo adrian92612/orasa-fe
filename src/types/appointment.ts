@@ -20,7 +20,8 @@ export type AppointmentResponse = {
   serviceId?: string;
   serviceName?: string;
   selectedReminderIds: string[];
-  reminderLeadTimeMinutes?: number;
+  additionalReminderMinutes?: number;
+  additionalReminderTemplate?: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -36,7 +37,8 @@ export type CreateAppointmentRequest = {
   serviceId?: string;
   selectedReminderIds?: string[];
   notes?: string;
-  reminderLeadTimeMinutes?: number;
+  additionalReminderMinutes?: number;
+  additionalReminderTemplate?: string;
 };
 
 export type UpdateAppointmentRequest = {
@@ -48,6 +50,7 @@ export type UpdateAppointmentRequest = {
   serviceId?: string;
   selectedReminderIds?: string[];
   notes?: string;
-  reminderLeadTimeMinutes?: number;
+  additionalReminderMinutes?: number;
+  additionalReminderTemplate?: string;
   isWalkin?: boolean;
 };

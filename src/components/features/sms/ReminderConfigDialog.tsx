@@ -37,26 +37,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
-const PREDEFINED_TEMPLATES = [
-  {
-    id: "professional",
-    label: "Professional",
-    content:
-      "Reminder: {name}, your {service} is on {date} @ {time} at {businessName}. See you!",
-  },
-  {
-    id: "friendly",
-    label: "Friendly",
-    content:
-      "Hi {name}! Reminder for your {service} on {date} {time} at {businessName}. See ya!",
-  },
-  {
-    id: "short",
-    label: "Short & Direct",
-    content:
-      "{service} @ {businessName} on {date} {time}. Reminder for {name}. Thank you!",
-  },
-];
+import { PREDEFINED_TEMPLATES } from "@/constants/sms";
 
 const reminderConfigSchema = z
   .object({

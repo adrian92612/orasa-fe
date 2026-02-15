@@ -153,21 +153,77 @@ export const useSuspenseAppointments = (
 };
 
 export const useCreateAppointment = () => {
-  // ... existing code
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (data: CreateAppointmentRequest) =>
       appointmentService.createAppointment(data),
-    onSuccess: (response) => {
-      queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENTS] });
-      queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENT_COUNTS] });
-      toast.success(response.message || "Appointment created successfully");
+    onMutate: async (newAppointment) => {
+      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({ queryKey: [Q_KEYS.APPOINTMENTS] });
+
+      // Snapshot the previous value
+      const previousAppointments = queryClient.getQueriesData({
+        queryKey: [Q_KEYS.APPOINTMENTS],
+      });
+
+      // Optimistically update to the new value
+      queryClient.setQueriesData<{
+        content: AppointmentResponse[];
+        totalElements: number;
+      }>({ queryKey: [Q_KEYS.APPOINTMENTS] }, (old) => {
+        if (!old) return old;
+
+        const optimisticItem: AppointmentResponse = {
+          id: `temp-${Date.now()}`,
+          businessId: newAppointment.businessId,
+          branchId: newAppointment.branchId,
+          branchName: "...", // Unknown here, will be updated on refetch
+          type: newAppointment.isWalkin ? "WALK_IN" : "SCHEDULED",
+          customerName: newAppointment.customerName,
+          customerPhone: newAppointment.customerPhone,
+          startDateTime: newAppointment.startDateTime,
+          endDateTime:
+            newAppointment.endDateTime || newAppointment.startDateTime,
+          status: "PENDING",
+          notes: newAppointment.notes,
+          serviceId: newAppointment.serviceId,
+          serviceName: "...", // Unknown here
+          selectedReminderIds: newAppointment.selectedReminderIds || [],
+          additionalReminderMinutes: newAppointment.additionalReminderMinutes,
+          additionalReminderTemplate: newAppointment.additionalReminderTemplate,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+
+        return {
+          ...old,
+          content: [optimisticItem, ...old.content],
+          totalElements: old.totalElements + 1,
+        };
+      });
+
+      // Return a context object with the snapshotted value
+      return { previousAppointments };
     },
-    onError: (error: Error) => {
+    onError: (error: Error, _newAppointment, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      if (context?.previousAppointments) {
+        context.previousAppointments.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
       toast.error("Failed to create appointment", {
         description: error.message,
       });
+    },
+    onSettled: () => {
+      // Always refetch after error or success to sync with server
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENTS] });
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENT_COUNTS] });
+    },
+    onSuccess: (response) => {
+      toast.success(response.message || "Appointment created successfully");
     },
   });
 };
