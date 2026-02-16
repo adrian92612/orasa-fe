@@ -1,4 +1,4 @@
-export type SmsStatus = "PENDING" | "SENT" | "DELIVERED" | "FAILED";
+export type SmsStatus = "PENDING" | "DELIVERED" | "FAILED";
 
 export type SmsLog = {
   id: string;
@@ -15,4 +15,8 @@ export type SmsLog = {
 export type SmsLogSearchParams = {
   page?: number;
   size?: number;
+  branchId?: string;
+  startDate?: string;
+  endDate?: string;
+  status?: SmsStatus;
 };

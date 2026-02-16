@@ -8,7 +8,7 @@ import type { StaffResponse } from "@/types/staff";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import StaffList from "@/components/features/staff/StaffList";
-import { StaffPageSkeleton } from "@/components/features/staff/StaffPageSkeleton";
+import StaffPageSkeleton from "@/components/features/staff/StaffPageSkeleton";
 
 const StaffDialog = lazy(
   () => import("@/components/features/staff/StaffDialog"),

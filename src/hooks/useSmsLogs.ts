@@ -1,20 +1,24 @@
-import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api-client";
-import type { ApiResponse, PageResponse } from "@/types/api";
-import type { SmsLog, SmsLogSearchParams } from "@/types/sms";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { smsService } from "@/services/sms.service";
+import type { SmsLogSearchParams } from "@/types/sms";
+import { Q_KEYS } from "@/constants/queryKeys";
 
 export const useSmsLogs = (params: SmsLogSearchParams = {}) => {
   return useQuery({
-    queryKey: ["sms-logs", params],
+    queryKey: [Q_KEYS.SMS_LOGS, params],
     queryFn: async () => {
-      const queryParams = new URLSearchParams();
-      if (params.page) queryParams.append("page", (params.page - 1).toString());
-      if (params.size) queryParams.append("size", params.size.toString());
-
-      const { data } = await apiClient.get<ApiResponse<PageResponse<SmsLog>>>(
-        `/sms/logs?${queryParams.toString()}`,
-      );
-      return data.data;
+      return smsService.getSmsLogs(params);
     },
+  });
+};
+
+export const useSuspenseSmsLogs = (params: SmsLogSearchParams = {}) => {
+  return useSuspenseQuery({
+    queryKey: [Q_KEYS.SMS_LOGS, params],
+    queryFn: async () => {
+      return smsService.getSmsLogs(params);
+    },
+    // SMS logs are immutable, cache for 1 minute
+    staleTime: 60 * 1000,
   });
 };

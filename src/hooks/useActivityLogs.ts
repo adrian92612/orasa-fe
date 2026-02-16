@@ -1,40 +1,36 @@
-import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api-client";
-import type { ApiResponse, PageResponse } from "@/types/api";
-import type {
-  ActivityLog,
-  ActivityLogSearchParams,
-} from "@/types/activity-log";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { activityLogService } from "@/services/activity-log.service";
+import type { ActivityLogSearchParams } from "@/types/activity-log";
 import { useUser } from "@/context/UserContext";
+import { Q_KEYS } from "@/constants/queryKeys";
 
 export const useActivityLogs = (params: ActivityLogSearchParams = {}) => {
   const { user } = useUser();
   const businessId = user?.businessId;
 
   return useQuery({
-    queryKey: ["activity-logs", businessId, params],
+    queryKey: [Q_KEYS.ACTIVITY_LOGS, businessId, params],
     queryFn: async () => {
       if (!businessId) throw new Error("No business ID");
-
-      const queryParams = new URLSearchParams();
-      if (params.page) queryParams.append("page", (params.page - 1).toString());
-      if (params.size) queryParams.append("size", params.size.toString());
-      if (params.branchId) queryParams.append("branchId", params.branchId);
-      if (params.action) queryParams.append("action", params.action);
-      if (params.startDate) queryParams.append("startDate", params.startDate);
-      if (params.endDate) queryParams.append("endDate", params.endDate);
-
-      // Use search endpoint if any filter is applied, otherwise use list endpoint
-      const isSearch =
-        params.branchId || params.action || params.startDate || params.endDate;
-      const endpoint = isSearch
-        ? `/activity-logs/business/${businessId}/search?${queryParams.toString()}`
-        : `/activity-logs/business/${businessId}?${queryParams.toString()}`;
-
-      const { data } =
-        await apiClient.get<ApiResponse<PageResponse<ActivityLog>>>(endpoint);
-      return data.data;
+      return activityLogService.getActivityLogsByBusiness(businessId, params);
     },
     enabled: !!businessId,
+  });
+};
+
+export const useSuspenseActivityLogs = (
+  params: ActivityLogSearchParams = {},
+) => {
+  const { user } = useUser();
+  const businessId = user?.businessId;
+
+  return useSuspenseQuery({
+    queryKey: [Q_KEYS.ACTIVITY_LOGS, businessId, params],
+    queryFn: async () => {
+      if (!businessId) throw new Error("No business ID");
+      return activityLogService.getActivityLogsByBusiness(businessId, params);
+    },
+    // Activity logs are immutable, cache for 1 minute
+    staleTime: 60 * 1000,
   });
 };

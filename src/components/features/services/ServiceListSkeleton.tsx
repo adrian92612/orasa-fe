@@ -1,10 +1,11 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/ui/card";
 
 export function ServiceListSkeleton() {
   return (
     <div className="space-y-3">
       {Array.from({ length: 5 }).map((_, i) => (
-        <div
+        <Card
           key={i}
           className="flex items-center justify-between gap-4 rounded-xl border bg-card p-4"
         >
@@ -21,7 +22,7 @@ export function ServiceListSkeleton() {
             <Skeleton className="h-8 w-8 rounded-md" />
             <Skeleton className="h-8 w-8 rounded-md" />
           </div>
-        </div>
+        </Card>
       ))}
     </div>
   );

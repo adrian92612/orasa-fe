@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MoreHorizontal, Pencil, Trash2, User } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 import type { StaffResponse } from "@/types/staff";
 
@@ -33,7 +34,7 @@ const StaffList = ({
     return (
       <div className="space-y-3">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="rounded-lg border bg-card p-4">
+          <Card key={i} className="p-4">
             <div className="flex items-center gap-4">
               <Skeleton className="h-10 w-10 rounded-full" />
               <div className="flex-1 space-y-2">
@@ -41,7 +42,7 @@ const StaffList = ({
                 <Skeleton className="h-3 w-48" />
               </div>
             </div>
-          </div>
+          </Card>
         ))}
       </div>
     );
@@ -49,7 +50,7 @@ const StaffList = ({
 
   if (staff.length === 0) {
     return (
-      <div className="rounded-lg border bg-card p-8 text-center">
+      <Card className="p-8 text-center">
         <User className="mx-auto h-10 w-10 text-muted-foreground/50 mb-3" />
         <h3 className="font-semibold text-lg">
           {isSearchActive ? "No results found" : emptyTitle}
@@ -59,16 +60,16 @@ const StaffList = ({
             ? "Try adjusting your search query."
             : emptyDescription}
         </p>
-      </div>
+      </Card>
     );
   }
 
   return (
     <div className="space-y-3">
       {staff.map((member) => (
-        <div
+        <Card
           key={member.id}
-          className="rounded-lg border bg-card p-4 transition-colors hover:bg-accent/50"
+          className="p-4 transition-colors hover:bg-accent/50"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 min-w-0">
@@ -128,7 +129,7 @@ const StaffList = ({
               </DropdownMenu>
             </div>
           </div>
-        </div>
+        </Card>
       ))}
     </div>
   );

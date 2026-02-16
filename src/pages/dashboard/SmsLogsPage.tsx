@@ -1,39 +1,110 @@
-import { useState } from "react";
-import { useSmsLogs } from "@/hooks/useSmsLogs";
+import { Suspense, useState } from "react";
+import { subDays, format } from "date-fns";
+import { useSuspenseSmsLogs } from "@/hooks/useSmsLogs";
 import SmsLogList from "@/components/features/sms/SmsLogList";
+import SmsLogFilters from "@/components/features/sms/SmsLogFilters";
+import type { DateRange } from "react-day-picker";
+import type { SmsStatus } from "@/types/sms";
+import { useUser } from "@/context/UserContext";
+import CommonPagination from "@/components/common/CommonPagination";
+import SmsLogSkeleton from "@/components/features/sms/SmsLogSkeleton";
+import SmsLogsPageSkeleton from "@/components/features/sms/SmsLogsPageSkeleton";
 
-const SmsLogsPage = () => {
-  const [page, setPage] = useState(1);
-
-  const { data, isLoading } = useSmsLogs({
-    page,
-    size: 20,
-  });
+const SmsLogsPageContent = ({
+  params,
+  onPageChange,
+  onPageSizeChange,
+}: {
+  params: any;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (size: string) => void;
+}) => {
+  const { data } = useSuspenseSmsLogs(params);
 
   return (
-    <div className="h-full flex flex-col space-y-4">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">SMS History</h2>
-          <p className="text-muted-foreground">
-            View all sent SMS messages and their delivery status.
-          </p>
-        </div>
-      </div>
+    <>
+      <SmsLogList logs={data?.content || []} />
 
-      <div className="flex-1 flex flex-col min-h-0 bg-card rounded-lg border shadow-sm p-6">
-        <div className="flex-1 min-h-0">
-          <SmsLogList
-            logs={data?.content || []}
-            isLoading={isLoading}
-            currentPage={page}
-            totalPages={data?.totalPages || 1}
-            totalElements={data?.totalElements || 0}
-            onPageChange={setPage}
-          />
-        </div>
-      </div>
+      <CommonPagination
+        currentPage={params.page}
+        totalItems={data?.totalElements || 0}
+        pageSize={params.size}
+        onPageChange={onPageChange}
+        onPageSizeChange={onPageSizeChange}
+        itemName="messages"
+      />
+    </>
+  );
+};
+
+const SmsLogsPageBody = () => {
+  const { selectedBranchId } = useUser();
+
+  // Warm-up query to trigger page-level skeleton on initial load or branch change
+  useSuspenseSmsLogs({
+    page: 1,
+    size: 1,
+    branchId: selectedBranchId || undefined,
+  });
+
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [status, setStatus] = useState<string>("ALL");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: subDays(new Date(), 7),
+    to: new Date(),
+  });
+
+  const params = {
+    page,
+    size: pageSize,
+    branchId: selectedBranchId || undefined,
+    status: status === "ALL" ? undefined : (status as SmsStatus),
+    startDate: dateRange?.from
+      ? format(dateRange.from, "yyyy-MM-dd")
+      : undefined,
+    endDate: dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : undefined,
+  };
+
+  const handleStatusChange = (newStatus: string) => {
+    setStatus(newStatus);
+    setPage(1);
+  };
+
+  const handleDateRangeChange = (newRange: DateRange | undefined) => {
+    setDateRange(newRange);
+    setPage(1);
+  };
+
+  return (
+    <div className="space-y-4">
+      <SmsLogFilters
+        status={status}
+        onStatusChange={handleStatusChange}
+        dateRange={dateRange}
+        onDateRangeChange={handleDateRangeChange}
+        isLoading={false}
+      />
+
+      <Suspense fallback={<SmsLogSkeleton />}>
+        <SmsLogsPageContent
+          params={params}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => {
+            setPageSize(Number(size));
+            setPage(1);
+          }}
+        />
+      </Suspense>
     </div>
+  );
+};
+
+const SmsLogsPage = () => {
+  return (
+    <Suspense fallback={<SmsLogsPageSkeleton />}>
+      <SmsLogsPageBody />
+    </Suspense>
   );
 };
 

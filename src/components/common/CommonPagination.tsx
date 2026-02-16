@@ -36,7 +36,7 @@ const CommonPagination = ({
   const pageSizeOptions = [5, 10, 20, 50];
 
   return (
-    <div className="flex flex-col gap-4 border-t pt-4 mt-5 px-2 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-4 border-t border-black/50 pt-4 mt-5 px-2 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-4">
         <p className="text-xs text-muted-foreground">
           Showing{" "}

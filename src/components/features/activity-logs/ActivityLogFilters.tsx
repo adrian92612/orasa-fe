@@ -5,59 +5,55 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-// import { Input } from "@/components/ui/input"; (Unused for now)
-// import { Search } from "lucide-react"; (Unused for now)
+import { DateRangePicker } from "@/components/ui/date-range-picker";
+import type { DateRange } from "react-day-picker";
 
 interface ActivityLogFiltersProps {
   action: string;
   onActionChange: (value: string) => void;
+  dateRange: DateRange | undefined;
+  onDateRangeChange: (range: DateRange | undefined) => void;
   isLoading?: boolean;
 }
 
 const ActivityLogFilters = ({
   action,
   onActionChange,
+  dateRange,
+  onDateRangeChange,
   isLoading,
 }: ActivityLogFiltersProps) => {
   return (
-    <div className="flex flex-col sm:flex-row gap-4 mb-6">
-      <div className="w-full sm:w-[200px]">
+    <div className="flex flex-col md:flex-row gap-3 w-full">
+      <div className="w-full md:w-[180px]">
         <Select
           value={action}
-          onValueChange={(value) =>
-            onActionChange(value === "ALL" ? "" : value)
-          }
+          onValueChange={onActionChange}
           disabled={isLoading}
         >
-          <SelectTrigger>
-            <SelectValue placeholder="Filter by Action" />
+          <SelectTrigger className="h-9 border-black ">
+            <SelectValue placeholder="Action" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="ALL">All Actions</SelectItem>
-            <SelectItem value="APPOINTMENT_CREATED">
-              Appointment Created
-            </SelectItem>
-            <SelectItem value="APPOINTMENT_UPDATED">
-              Appointment Updated
-            </SelectItem>
-            <SelectItem value="APPOINTMENT_DELETED">
-              Appointment Deleted
-            </SelectItem>
-            <SelectItem value="APPOINTMENT_STATUS_CHANGED">
-              Status Changed
-            </SelectItem>
-            <SelectItem value="USER_LOGIN">User Login</SelectItem>
-            <SelectItem value="USER_LOGOUT">User Logout</SelectItem>
-            <SelectItem value="STAFF_CREATED">Staff Created</SelectItem>
-            <SelectItem value="STAFF_UPDATED">Staff Updated</SelectItem>
-            <SelectItem value="SERVICE_CREATED">Service Created</SelectItem>
-            <SelectItem value="SERVICE_UPDATED">Service Updated</SelectItem>
-            <SelectItem value="reminders">Reminders (Any)</SelectItem>
+            <SelectItem value="APPOINTMENT_CREATED">Created</SelectItem>
+            <SelectItem value="APPOINTMENT_UPDATED">Updated</SelectItem>
+            <SelectItem value="APPOINTMENT_DELETED">Deleted</SelectItem>
+            <SelectItem value="APPOINTMENT_STATUS_CHANGED">Status</SelectItem>
+            <SelectItem value="USER_LOGIN">Login</SelectItem>
+            <SelectItem value="USER_LOGOUT">Logout</SelectItem>
+            <SelectItem value="reminders">Reminders</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      {/* Date Range Picker Could Go Here */}
+      <div className="w-full md:w-auto">
+        <DateRangePicker
+          date={dateRange}
+          setDate={onDateRangeChange}
+          className="w-full md:w-[260px]"
+        />
+      </div>
     </div>
   );
 };

@@ -22,7 +22,7 @@ export type DashboardStats = {
   walkInCount: number;
   cancelledCount: number;
   noShowCount: number;
-  smsSent: number;
+  smsDelivered: number;
   smsFailed: number;
   dailyStats: DailyStatsDTO[];
   serviceStats: ServiceStatsDTO[];

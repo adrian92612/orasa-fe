@@ -28,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AppointmentsPageSkeleton } from "@/components/features/appointments/AppointmentsPageSkeleton";
+import AppointmentsPageSkeleton from "@/components/features/appointments/AppointmentsPageSkeleton";
 import AppointmentList from "@/components/features/appointments/AppointmentList";
 import { AppointmentListSkeleton } from "@/components/features/appointments/AppointmentListSkeleton";
 
