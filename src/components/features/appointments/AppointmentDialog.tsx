@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
@@ -61,6 +61,7 @@ import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown, CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format, sub } from "date-fns";
+import { PREDEFINED_TEMPLATES } from "@/constants/sms";
 
 const formatDuration = (minutes: number) => {
   const days = Math.floor(minutes / 1440);
@@ -92,6 +93,9 @@ const appointmentSchema = z.object({
   notes: z.string().trim().optional(),
   reminderLeadTimeHours: z.string().optional(),
   reminderLeadTimeMinutes: z.string().optional(),
+  additionalReminderMinutes: z.number().optional(),
+  customReminderEnabled: z.boolean().optional(),
+  additionalReminderTemplate: z.string().trim().optional(),
   status: z
     .enum(["PENDING", "CONFIRMED", "CANCELLED", "NO_SHOW", "COMPLETED"])
     .optional(),
@@ -132,7 +136,6 @@ const AppointmentDialog = ({
     control,
     handleSubmit,
     reset,
-    watch,
     setValue,
     formState: { dirtyFields },
   } = useForm<AppointmentFormValues>({
@@ -146,16 +149,17 @@ const AppointmentDialog = ({
       serviceId: "",
       selectedReminderIds: [],
       notes: "",
-      reminderLeadTimeHours: "",
-      reminderLeadTimeMinutes: "",
+      additionalReminderMinutes: 0,
+      customReminderEnabled: false,
+      additionalReminderTemplate: PREDEFINED_TEMPLATES[0].content,
       status: "PENDING",
     },
   });
 
-  const isWalkin = watch("isWalkin");
-  const startDateTime = watch("startDateTime");
-  const serviceId = watch("serviceId");
-  const watchedBranchId = watch("branchId"); // Watch branch selection
+  const isWalkin = useWatch({ control, name: "isWalkin" });
+  const startDateTime = useWatch({ control, name: "startDateTime" });
+  const serviceId = useWatch({ control, name: "serviceId" });
+  const watchedBranchId = useWatch({ control, name: "branchId" }); // Watch branch selection
 
   // Fetch services for the currently engaged branch (either prop or selected in form)
   const effectiveBranchId = watchedBranchId || initialBranchId;
@@ -164,11 +168,11 @@ const AppointmentDialog = ({
 
   useEffect(() => {
     if (appointmentToEdit) {
-      const hours = appointmentToEdit.reminderLeadTimeMinutes
-        ? Math.floor(appointmentToEdit.reminderLeadTimeMinutes / 60)
+      const hours = appointmentToEdit.additionalReminderMinutes
+        ? Math.floor(appointmentToEdit.additionalReminderMinutes / 60)
         : 0;
-      const minutes = appointmentToEdit.reminderLeadTimeMinutes
-        ? appointmentToEdit.reminderLeadTimeMinutes % 60
+      const minutesValue = appointmentToEdit.additionalReminderMinutes
+        ? appointmentToEdit.additionalReminderMinutes % 60
         : 0;
       reset({
         customerName: appointmentToEdit.customerName,
@@ -183,7 +187,12 @@ const AppointmentDialog = ({
         selectedReminderIds: appointmentToEdit.selectedReminderIds || [],
         notes: appointmentToEdit.notes || "",
         reminderLeadTimeHours: hours.toString(),
-        reminderLeadTimeMinutes: minutes.toString(),
+        reminderLeadTimeMinutes: minutesValue.toString(),
+        additionalReminderMinutes:
+          appointmentToEdit.additionalReminderMinutes || 0,
+        customReminderEnabled: !!appointmentToEdit.additionalReminderMinutes,
+        additionalReminderTemplate:
+          appointmentToEdit.additionalReminderTemplate || "",
         status: appointmentToEdit.status,
       });
     } else {
@@ -199,6 +208,9 @@ const AppointmentDialog = ({
         notes: "",
         reminderLeadTimeHours: "",
         reminderLeadTimeMinutes: "",
+        additionalReminderMinutes: 0,
+        customReminderEnabled: false,
+        additionalReminderTemplate: PREDEFINED_TEMPLATES[0].content,
         status: "PENDING",
       });
     }
@@ -216,6 +228,11 @@ const AppointmentDialog = ({
       setValue("selectedReminderIds", defaults);
     }
   }, [reminders, open, isEditing, setValue, dirtyFields.selectedReminderIds]);
+
+  const customReminderEnabled = useWatch({
+    control,
+    name: "customReminderEnabled",
+  });
 
   useEffect(() => {
     if (startDateTime && serviceId) {
@@ -239,9 +256,10 @@ const AppointmentDialog = ({
       return;
     }
 
-    const reminderLeadTimeMinutes =
-      Number(data.reminderLeadTimeHours || 0) * 60 +
-      Number(data.reminderLeadTimeMinutes || 0);
+    const additionalReminderValue = data.customReminderEnabled
+      ? Number(data.reminderLeadTimeHours || 0) * 60 +
+        Number(data.reminderLeadTimeMinutes || 0)
+      : 0;
 
     const payload = {
       customerName: data.customerName,
@@ -254,7 +272,10 @@ const AppointmentDialog = ({
       serviceId: data.serviceId,
       selectedReminderIds: data.selectedReminderIds,
       notes: data.notes,
-      reminderLeadTimeMinutes,
+      additionalReminderMinutes: additionalReminderValue,
+      additionalReminderTemplate: data.customReminderEnabled
+        ? data.additionalReminderTemplate
+        : undefined,
     };
 
     if (isEditing && appointmentToEdit) {
@@ -616,11 +637,34 @@ const AppointmentDialog = ({
                 </div>
               )}
 
-              {/* Custom Reminder */}
+              {/* Custom Reminder Toggle */}
               {!isWalkin && (
-                <div className="space-y-2">
+                <Controller
+                  name="customReminderEnabled"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="customReminderEnabled"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                      <Label
+                        htmlFor="customReminderEnabled"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Extra Reminder
+                      </Label>
+                    </div>
+                  )}
+                />
+              )}
+
+              {/* Extra Reminder Fields */}
+              {!isWalkin && customReminderEnabled && (
+                <div className="space-y-4 rounded-md border p-4 bg-muted/20 animate-in fade-in slide-in-from-top-2 duration-200">
                   <div className="text-sm font-medium">
-                    Custom Reminder (Optional)
+                    Extra Reminder Settings
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <Controller
@@ -628,7 +672,7 @@ const AppointmentDialog = ({
                       control={control}
                       render={({ field }) => (
                         <Field>
-                          <FieldLabel>Hours</FieldLabel>
+                          <FieldLabel>Hours Before</FieldLabel>
                           <Input
                             placeholder="0"
                             value={field.value ?? ""}
@@ -646,7 +690,7 @@ const AppointmentDialog = ({
                       control={control}
                       render={({ field }) => (
                         <Field>
-                          <FieldLabel>Minutes</FieldLabel>
+                          <FieldLabel>Minutes Before</FieldLabel>
                           <Input
                             placeholder="0"
                             value={field.value ?? ""}
@@ -660,6 +704,39 @@ const AppointmentDialog = ({
                       )}
                     />
                   </div>
+
+                  <Controller
+                    name="additionalReminderTemplate"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <Field>
+                        <FieldLabel>Message Template</FieldLabel>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Pick a template" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {PREDEFINED_TEMPLATES.map((t) => (
+                              <SelectItem key={t.id} value={t.content}>
+                                {t.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <div className="mt-2">
+                          <div className="rounded-md bg-muted p-2 italic text-[10px] text-muted-foreground border border-dashed">
+                            &quot;{field.value || "No template selected"}&quot;
+                          </div>
+                        </div>
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                      </Field>
+                    )}
+                  />
                 </div>
               )}
             </FieldGroup>

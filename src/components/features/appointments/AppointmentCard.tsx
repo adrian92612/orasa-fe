@@ -4,6 +4,7 @@ import {
   Phone,
   Clock,
   ChevronDown,
+  Loader2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -61,8 +62,15 @@ const AppointmentCard = ({
     }).format(date);
   };
 
+  const isOptimistic = appointment.id.startsWith("temp-");
+
   return (
-    <div className="group flex flex-col md:flex-row md:items-center justify-between p-4 gap-4 rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md">
+    <div
+      className={cn(
+        "group flex flex-col md:flex-row md:items-center justify-between p-4 gap-4 rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md",
+        isOptimistic && "opacity-70 grayscale-[0.5]",
+      )}
+    >
       {/* Left: Time & Date */}
       <div className="flex md:flex-col items-center md:items-start gap-2 md:gap-1 min-w-[100px] border-b md:border-b-0 md:border-r pb-3 md:pb-0 pr-0 md:pr-4">
         <div className="flex items-center gap-1.5 text-sm font-medium">
@@ -115,18 +123,26 @@ const AppointmentCard = ({
 
       {/* Right: Actions & Status */}
       <div className="flex items-center justify-between md:justify-end gap-3 pt-3 md:pt-0 border-t md:border-t-0 mt-1 md:mt-0">
+        {isOptimistic && (
+          <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground animate-pulse">
+            <Loader2 className="h-3 w-3 animate-spin" />
+            Saving...
+          </div>
+        )}
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger asChild disabled={isOptimistic}>
             <button
               className={cn(
                 statusColors[appointment.status],
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-full",
                 "text-[11px] font-bold uppercase tracking-wider transition-all",
-                "hover:cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-muted-foreground/20 active:scale-95",
+                !isOptimistic &&
+                  "hover:ring-2 hover:ring-offset-1 hover:ring-muted-foreground/20 active:scale-95",
+                isOptimistic ? "cursor-wait" : "hover:cursor-pointer",
               )}
             >
               {appointment.status.replace("_", " ")}
-              <ChevronDown className="h-3 w-3 opacity-60" />
+              {!isOptimistic && <ChevronDown className="h-3 w-3 opacity-60" />}
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -145,11 +161,12 @@ const AppointmentCard = ({
         </DropdownMenu>
 
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger asChild disabled={isOptimistic}>
             <Button
               variant="ghost"
               size="icon"
               className="h-8 w-8 text-muted-foreground hover:text-foreground"
+              disabled={isOptimistic}
             >
               <MoreVertical className="h-4 w-4" />
             </Button>
