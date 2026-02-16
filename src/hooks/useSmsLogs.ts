@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import apiClient from "@/services/api-client";
-import { ApiResponse, PageResponse } from "@/types/api";
-import { SmsLog, SmsLogSearchParams } from "@/types/sms";
+import { apiClient } from "@/lib/api-client";
+import type { ApiResponse, PageResponse } from "@/types/api";
+import type { SmsLog, SmsLogSearchParams } from "@/types/sms";
 
 export const useSmsLogs = (params: SmsLogSearchParams = {}) => {
   return useQuery({

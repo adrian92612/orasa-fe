@@ -42,6 +42,7 @@ const ActivityLogsPage = () => {
             isLoading={isLoading}
             currentPage={page}
             totalPages={data?.totalPages || 1}
+            totalElements={data?.totalElements || 0}
             onPageChange={setPage}
           />
         </div>

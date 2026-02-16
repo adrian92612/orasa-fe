@@ -1,11 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import apiClient from "@/services/api-client";
-import { ApiResponse, PageResponse } from "@/types/api";
-import { ActivityLog, ActivityLogSearchParams } from "@/types/activity-log";
-import { useAuth } from "@/context/AuthContext";
+import { apiClient } from "@/lib/api-client";
+import type { ApiResponse, PageResponse } from "@/types/api";
+import type {
+  ActivityLog,
+  ActivityLogSearchParams,
+} from "@/types/activity-log";
+import { useUser } from "@/context/UserContext";
 
 export const useActivityLogs = (params: ActivityLogSearchParams = {}) => {
-  const { user } = useAuth();
+  const { user } = useUser();
   const businessId = user?.businessId;
 
   return useQuery({

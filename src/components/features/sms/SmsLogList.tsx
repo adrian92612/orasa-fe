@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { SmsLog } from "@/types/sms";
+import type { SmsLog } from "@/types/sms";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -10,6 +10,7 @@ interface SmsLogListProps {
   isLoading: boolean;
   currentPage: number;
   totalPages: number;
+  totalElements: number;
   onPageChange: (page: number) => void;
 }
 
@@ -18,6 +19,7 @@ const SmsLogList = ({
   isLoading,
   currentPage,
   totalPages,
+  totalElements,
   onPageChange,
 }: SmsLogListProps) => {
   if (isLoading) {
@@ -99,8 +101,10 @@ const SmsLogList = ({
         <div className="flex justify-center pt-2 border-t mt-4">
           <CommonPagination
             currentPage={currentPage}
-            totalPages={totalPages}
+            totalItems={totalElements}
+            pageSize={20}
             onPageChange={onPageChange}
+            onPageSizeChange={() => {}}
           />
         </div>
       )}

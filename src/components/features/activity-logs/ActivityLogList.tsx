@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { ActivityLog } from "@/types/activity-log";
+import type { ActivityLog } from "@/types/activity-log";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -10,13 +10,13 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import CommonPagination from "@/components/common/CommonPagination";
-import { cn } from "@/lib/utils";
 
 interface ActivityLogListProps {
   logs: ActivityLog[];
   isLoading: boolean;
   currentPage: number;
   totalPages: number;
+  totalElements: number;
   onPageChange: (page: number) => void;
 }
 
@@ -25,6 +25,7 @@ const ActivityLogList = ({
   isLoading,
   currentPage,
   totalPages,
+  totalElements,
   onPageChange,
 }: ActivityLogListProps) => {
   if (isLoading) {
@@ -95,8 +96,10 @@ const ActivityLogList = ({
         <div className="flex justify-center pt-2 border-t mt-4">
           <CommonPagination
             currentPage={currentPage}
-            totalPages={totalPages}
+            totalItems={totalElements}
+            pageSize={20}
             onPageChange={onPageChange}
+            onPageSizeChange={() => {}}
           />
         </div>
       )}

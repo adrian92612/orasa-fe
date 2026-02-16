@@ -1,4 +1,3 @@
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -6,7 +5,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search } from "lucide-react";
+// import { Input } from "@/components/ui/input"; (Unused for now)
+// import { Search } from "lucide-react"; (Unused for now)
 
 interface ActivityLogFiltersProps {
   action: string;
