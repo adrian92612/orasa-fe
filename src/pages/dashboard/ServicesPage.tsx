@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/context/UserContext";
 import { useBranches } from "@/hooks/useBranches";
 import type { ServiceResponse, BranchServiceResponse } from "@/types/service";
-import { ServicesPageSkeleton } from "@/components/features/services/ServicesPageSkeleton";
+import ServicesPageSkeleton from "@/components/features/services/ServicesPageSkeleton";
 
 const ServiceDialog = lazy(
   () => import("@/components/features/services/ServiceDialog"),

@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import type { ServiceResponse } from "@/types/service";
+import { Card } from "@/components/ui/card";
 
 type ServiceListProps = {
   services: ServiceResponse[];
@@ -71,9 +72,9 @@ const ServiceList = ({
   return (
     <div className="space-y-3">
       {services.map((service) => (
-        <div
+        <Card
           key={service.id}
-          className="group relative flex items-center justify-between gap-4 rounded-xl border bg-card p-4 transition-all hover:bg-accent/40 hover:shadow-sm"
+          className="group relative flex-row items-center justify-between gap-4 rounded-xl border bg-card p-4 transition-all hover:bg-accent/40 hover:shadow-sm"
         >
           <div className="flex flex-1 items-center gap-4 min-w-0">
             {onToggleActive && (
@@ -167,7 +168,7 @@ const ServiceList = ({
               )}
             </div>
           </div>
-        </div>
+        </Card>
       ))}
     </div>
   );

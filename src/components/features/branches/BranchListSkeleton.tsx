@@ -1,10 +1,11 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/ui/card";
 
 export function BranchListSkeleton() {
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 3 }).map((_, i) => (
-        <div
+        <Card
           key={i}
           className="rounded-xl border bg-card p-6 shadow-sm space-y-4"
         >
@@ -25,7 +26,7 @@ export function BranchListSkeleton() {
               <Skeleton className="h-8 w-full" />
             </div>
           </div>
-        </div>
+        </Card>
       ))}
     </div>
   );

@@ -1,10 +1,11 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/ui/card";
 
 export function AppointmentListSkeleton() {
   return (
     <div className="flex flex-col gap-4">
       {Array.from({ length: 5 }).map((_, i) => (
-        <div
+        <Card
           key={i}
           className="flex flex-col md:flex-row md:items-center justify-between p-4 gap-4 rounded-xl border bg-card shadow-sm"
         >
@@ -31,7 +32,7 @@ export function AppointmentListSkeleton() {
             <Skeleton className="h-8 w-24 rounded-full" />
             <Skeleton className="h-8 w-8 rounded-md" />
           </div>
-        </div>
+        </Card>
       ))}
     </div>
   );

@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import BranchList from "@/components/features/branches/BranchList";
-import { BranchesPageSkeleton } from "@/components/features/branches/BranchesPageSkeleton";
+import BranchesPageSkeleton from "@/components/features/branches/BranchesPageSkeleton";
 
 import type { BranchResponse } from "@/types/branch";
 

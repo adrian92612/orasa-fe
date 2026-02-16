@@ -44,8 +44,8 @@ export function AnalyticsDashboard({ stats }: AnalyticsDashboardProps) {
           icon={CalendarX}
         />
         <StatCard
-          title="SMS Sent"
-          value={stats.smsSent}
+          title="SMS Delivered"
+          value={stats.smsDelivered}
           description={
             stats.smsFailed > 0
               ? `${stats.smsFailed} failed messages`

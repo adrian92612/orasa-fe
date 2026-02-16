@@ -64,6 +64,15 @@ export const API_ROUTES = {
   ANALYTICS: {
     DASHBOARD: `${ENV.API_URL}/analytics/dashboard`,
   },
+  ACTIVITY_LOGS: {
+    BY_BUSINESS: (businessId: string) =>
+      `${ENV.API_URL}/activity-logs/business/${businessId}`,
+    SEARCH: (businessId: string) =>
+      `${ENV.API_URL}/activity-logs/business/${businessId}/search`,
+  },
+  SMS_LOGS: {
+    BASE: `${ENV.API_URL}/sms/logs`,
+  },
 } as const;
 
 export const APP_ROUTES = {

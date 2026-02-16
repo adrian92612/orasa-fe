@@ -15,21 +15,11 @@ import { NAV_ITEMS } from "@/constants/navigation";
 import { useLocation } from "react-router";
 import { Outlet } from "react-router";
 import SubscriptionBanner from "@/components/features/subscription/SubscriptionBanner";
-import { DashboardSkeleton } from "@/components/features/dashboard/DashboardSkeleton";
 
 const DashboardLayout = () => {
-  const {
-    user,
-    logout,
-    selectedBranchId,
-    isLoading: isLoadingUser,
-  } = useUser();
+  const { user, logout, selectedBranchId } = useUser();
   const location = useLocation();
   const { data: branches } = useSuspenseBranches();
-
-  if (isLoadingUser) {
-    return <DashboardSkeleton />;
-  }
 
   const currentItem = NAV_ITEMS.find((item) => location.pathname === item.url);
   const pageTitle = currentItem ? currentItem.title : "Dashboard";
@@ -40,13 +30,13 @@ const DashboardLayout = () => {
 
   return (
     <SidebarProvider>
-      <Suspense
+      {/* <Suspense
         fallback={
-          <div className="h-screen w-[270px] border-r bg-sidebar hidden md:block" />
+          <div className="h-screen w-[256px] border-r bg-sidebar hidden md:block" />
         }
-      >
-        <AppSidebar onLogout={logout} />
-      </Suspense>
+      > */}
+      <AppSidebar onLogout={logout} />
+      {/* </Suspense> */}
 
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
@@ -93,13 +83,7 @@ const DashboardLayout = () => {
                 </div>
               </div>
             ) : (
-              <Suspense
-                fallback={
-                  <div className="space-y-4">
-                    <div className="h-64 animate-pulse rounded bg-muted" />
-                  </div>
-                }
-              >
+              <Suspense fallback={null}>
                 <Outlet />
               </Suspense>
             )}

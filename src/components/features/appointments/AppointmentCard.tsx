@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -65,9 +66,9 @@ const AppointmentCard = ({
   const isOptimistic = appointment.id.startsWith("temp-");
 
   return (
-    <div
+    <Card
       className={cn(
-        "group flex flex-col md:flex-row md:items-center justify-between p-4 gap-4 rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md",
+        "group flex flex-col md:flex-row md:items-center justify-between p-4 gap-4 transition-all hover:shadow-md",
         isOptimistic && "opacity-70 grayscale-[0.5]",
       )}
     >
@@ -184,7 +185,7 @@ const AppointmentCard = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-    </div>
+    </Card>
   );
 };
 

@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AnalyticsDashboard } from "@/components/dashboard/AnalyticsDashboard";
-import { AnalyticsDashboardSkeleton } from "@/components/dashboard/AnalyticsDashboardSkeleton";
+import AnalyticsDashboardSkeleton from "@/components/dashboard/AnalyticsDashboardSkeleton";
 
 const AnalyticsPageContent = () => {
   const [dateRange, setDateRange] = useState("last30Days");
