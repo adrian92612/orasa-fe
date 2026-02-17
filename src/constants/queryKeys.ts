@@ -12,5 +12,6 @@ export const Q_KEYS = {
   APPOINTMENT_COUNTS: "appointment-counts",
   ME: "me",
   ADMIN_BUSINESSES: "admin-businesses",
+  ADMIN_SMS_BALANCE: "admin-sms-balance",
   ANALYTICS: "analytics",
 };

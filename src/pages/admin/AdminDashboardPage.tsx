@@ -9,10 +9,11 @@ import {
   useCancelSubscription,
   useAddCredits,
   useSeedDemoData,
+  useSmsBalance,
 } from "@/hooks/useAdmin";
 import CommonPagination from "@/components/common/CommonPagination";
 import { Button } from "@/components/ui/button";
-import { Building2, Database } from "lucide-react";
+import { Building2, Database, MessageSquare } from "lucide-react";
 import BusinessCard from "@/components/features/admin/BusinessCard";
 import BusinessFilters from "@/components/features/admin/BusinessFilters";
 import AdminAddCreditsDialog from "@/components/features/admin/AdminAddCreditsDialog";
@@ -47,6 +48,7 @@ const AdminDashboardPage = () => {
   const cancelMutation = useCancelSubscription();
   const addCreditsMutation = useAddCredits();
   const seedMutation = useSeedDemoData();
+  const { data: smsBalance, isLoading: isLoadingBalance } = useSmsBalance();
 
   const [creditsToAdd, setCreditsToAdd] = useState(50);
   const [showAddCreditsDialog, setShowAddCreditsDialog] = useState(false);
@@ -137,6 +139,25 @@ const AdminDashboardPage = () => {
           <Database className="mr-2 h-4 w-4" />
           {seedMutation.isPending ? "Seeding..." : "Seed Demo Data"}
         </Button>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <div className="p-6 rounded-xl border bg-white shadow-sm flex items-center gap-4">
+          <div className="h-12 w-12 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+            <MessageSquare className="h-6 w-6" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">
+              PhilSMS Balance
+            </p>
+            <div className="flex items-baseline gap-2">
+              <h3 className="text-2xl font-bold">
+                {isLoadingBalance ? "..." : (smsBalance?.remainingCredits ?? 0)}
+              </h3>
+              <span className="text-xs text-muted-foreground">credits</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <BusinessFilters

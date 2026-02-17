@@ -273,3 +273,11 @@ export const useSeedDemoData = () => {
     },
   });
 };
+
+export const useSmsBalance = () => {
+  return useQuery({
+    queryKey: [Q_KEYS.ADMIN_SMS_BALANCE],
+    queryFn: () => adminService.getSmsBalance(),
+    select: (data) => data.data,
+  });
+};

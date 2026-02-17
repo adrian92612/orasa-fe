@@ -20,3 +20,9 @@ export type SmsLogSearchParams = {
   endDate?: string;
   status?: SmsStatus;
 };
+
+export type SmsBalanceResponse = {
+  remainingCredits: number;
+  success: boolean;
+  errorMessage: string | null;
+};

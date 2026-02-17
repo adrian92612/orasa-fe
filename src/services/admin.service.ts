@@ -2,6 +2,7 @@ import { apiClient } from "@/lib/api-client";
 import { API_ROUTES } from "@/constants/routes";
 import type { Page } from "@/types/common";
 import type { BusinessResponse } from "@/types/business";
+import type { SmsBalanceResponse } from "@/types/sms";
 
 export const adminService = {
   getAllBusinesses: async (params: {
@@ -56,5 +57,11 @@ export const adminService = {
 
   seedDemoData: async () => {
     return await apiClient.post<void>(API_ROUTES.ADMIN.SEED_DEMO, {});
+  },
+
+  getSmsBalance: async () => {
+    return await apiClient.get<SmsBalanceResponse>(
+      API_ROUTES.ADMIN.SMS_BALANCE,
+    );
   },
 };

@@ -22,6 +22,7 @@ export const API_ROUTES = {
     ADD_CREDITS: (id: string) =>
       `${ENV.API_URL}/admin/businesses/${id}/add-credits`,
     SEED_DEMO: `${ENV.API_URL}/admin/demo/seed`,
+    SMS_BALANCE: `${ENV.API_URL}/admin/sms-balance`,
   },
   BUSINESSES: {
     CREATE: `${ENV.API_URL}/businesses`,
