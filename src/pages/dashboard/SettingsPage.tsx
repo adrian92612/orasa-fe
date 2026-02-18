@@ -1,6 +1,7 @@
 import { useUser } from "@/context/UserContext";
 
 import ChangePasswordForm from "@/components/features/settings/ChangePasswordForm";
+import BillingTab from "@/components/features/settings/BillingTab";
 import ReminderConfigList from "@/components/features/sms/ReminderConfigList";
 
 import { Suspense } from "react";
@@ -18,16 +19,21 @@ const SettingsPage = () => {
 
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="general" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-          <TabsTrigger value="general">General & Subscription</TabsTrigger>
+      <Tabs defaultValue="profile" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 lg:w-[500px]">
+          <TabsTrigger value="profile">Profile</TabsTrigger>
+          <TabsTrigger value="billing">Billing & Plans</TabsTrigger>
           <TabsTrigger value="reminders">SMS & Reminders</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="general" className="mt-6">
+        <TabsContent value="profile" className="mt-6">
           <Suspense fallback={<BusinessProfileSkeleton />}>
             <BusinessProfile />
           </Suspense>
+        </TabsContent>
+
+        <TabsContent value="billing" className="mt-6 outline-none">
+          <BillingTab />
         </TabsContent>
 
         <TabsContent value="reminders" className="mt-6">
