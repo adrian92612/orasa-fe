@@ -1,7 +1,17 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { usePaymentMutations } from "@/hooks/usePayments";
+import { Q_KEYS } from "@/constants/queryKeys";
 import type { PayloroResponse } from "@/types/payment";
-import { Zap, Check, HelpCircle } from "lucide-react";
+import {
+  Zap,
+  Check,
+  HelpCircle,
+  ShieldCheck,
+  ShoppingCart,
+  Info,
+  Smartphone,
+} from "lucide-react";
 import {
   Card,
   CardContent,
@@ -12,15 +22,22 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import PaymentDialog from "./PaymentDialog";
 
 const SubscriptionPlans = () => {
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
-  const [selectedMonths, setSelectedMonths] = useState(1);
+  const [selectedMonths, setSelectedMonths] = useState(3);
   const [paymentData, setPaymentData] = useState<PayloroResponse | null>(null);
+  const queryClient = useQueryClient();
 
   const { createSubscriptionPayment, createCreditsPayment } =
     usePaymentMutations();
+
+  const handlePaymentSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: [Q_KEYS.BUSINESSES] });
+    queryClient.invalidateQueries({ queryKey: [Q_KEYS.CURRENT_USER] });
+  };
 
   const handleBuySubscription = async () => {
     setIsPaymentDialogOpen(true);
@@ -52,59 +69,91 @@ const SubscriptionPlans = () => {
   };
 
   const monthOptions = [1, 3, 6, 12];
+  const [customCredits, setCustomCredits] = useState<number | "">(100);
+
+  const handleCustomCreditsChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const rawValue = e.target.value;
+    if (rawValue === "") {
+      setCustomCredits("");
+      return;
+    }
+
+    const value = parseInt(rawValue);
+    if (!isNaN(value)) {
+      setCustomCredits(value);
+    }
+  };
+
+  const isCreditsValid =
+    typeof customCredits === "number" &&
+    customCredits >= 100 &&
+    customCredits <= 1000;
 
   const isLoading =
     createSubscriptionPayment.isPending || createCreditsPayment.isPending;
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-3">
-        <p className="text-sm font-semibold tracking-tight">1. Choose Pack</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Monthly Plan */}
-          <Card className="flex flex-col border-primary/20 shadow-sm relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-2">
-              <Zap className="w-12 h-12 text-primary/5 -mr-4 -mt-4 rotate-12" />
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
+          <div className="h-8 w-1 bg-primary rounded-full" />
+          <h3 className="text-lg font-black tracking-tight text-foreground uppercase">
+            Upgrade Your Experience
+          </h3>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Pro Plan Card */}
+          <Card className="lg:col-span-12 xl:col-span-7 flex flex-col border-primary/20 shadow-xl shadow-primary/5 relative overflow-hidden group bg-background/50 backdrop-blur-sm border-2">
+            <div className="absolute top-0 right-0 p-4">
+              <div className="h-24 w-24 bg-primary/5 rounded-full -mr-12 -mt-12 flex items-center justify-center">
+                <ShieldCheck className="w-8 h-8 text-primary/40 mr-6 mt-6" />
+              </div>
             </div>
-            <CardHeader>
+
+            <CardHeader className="pb-8">
               <div className="flex justify-between items-start">
-                <Badge
-                  variant="outline"
-                  className="border-primary text-primary font-bold"
-                >
-                  Monthly Subscription
-                </Badge>
-                <div className="text-right">
-                  <span className="text-3xl font-black">
+                <div className="space-y-1.5">
+                  <Badge className="bg-primary text-primary-foreground font-black px-3 py-0.5 rounded-full text-[10px] uppercase tracking-wider mb-2">
+                    Most Popular
+                  </Badge>
+                  <CardTitle className="text-3xl font-black tracking-tighter">
+                    Orasa Pro Plan
+                  </CardTitle>
+                  <CardDescription className="text-sm font-medium">
+                    Unlock full automation and multi-branch management.
+                  </CardDescription>
+                </div>
+                <div className="text-right glass-panel p-4 rounded-2xl bg-muted/50 border border-muted/50">
+                  <span className="text-4xl font-black tabular-nums tracking-tighter text-foreground">
                     ₱{selectedMonths * 299}
                   </span>
-                  <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">
-                    {selectedMonths} month{selectedMonths > 1 ? "s" : ""}{" "}
-                    renewal
+                  <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mt-0.5 opacity-70">
+                    Total for {selectedMonths} mo{selectedMonths > 1 ? "s" : ""}
                   </p>
                 </div>
               </div>
-              <CardTitle className="mt-4 text-2xl font-black">
-                Pro Plan
-              </CardTitle>
-              <CardDescription>
-                Full access to all Orasa features. PHP 299/mo.
-              </CardDescription>
             </CardHeader>
-            <CardContent className="flex-grow space-y-6">
-              <div className="space-y-3">
-                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                  Select Duration
+
+            <CardContent className="space-y-8 grow">
+              <div className="space-y-4">
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+                  1. Select Duration
                 </p>
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-4 gap-2">
                   {monthOptions.map((months) => (
                     <Button
                       key={months}
-                      size="sm"
                       variant={
                         selectedMonths === months ? "default" : "outline"
                       }
-                      className="h-8 min-w-[60px] font-bold"
+                      className={`h-12 font-black text-sm rounded-xl transition-all border-2 ${
+                        selectedMonths === months
+                          ? "border-primary shadow-lg shadow-primary/20 scale-105"
+                          : "border-muted/50 hover:border-primary/50"
+                      }`}
                       onClick={() => setSelectedMonths(months)}
                     >
                       {months} Mo
@@ -113,133 +162,137 @@ const SubscriptionPlans = () => {
                 </div>
               </div>
 
-              <ul className="space-y-3 border-t pt-4">
-                <li className="flex items-start gap-2.5 text-sm">
-                  <div className="rounded-full bg-green-500/10 p-0.5 mt-0.5">
-                    <Check className="w-3.5 h-3.5 text-green-600" />
-                  </div>
-                  <span className="font-medium">
-                    Structured appointment tracking
-                  </span>
-                </li>
-                <li className="flex items-start gap-2.5 text-sm">
-                  <div className="rounded-full bg-green-500/10 p-0.5 mt-0.5">
-                    <Check className="w-3.5 h-3.5 text-green-600" />
-                  </div>
-                  <span className="font-medium">
-                    Automated SMS reminders (100 free/mo)
-                  </span>
-                </li>
-                <li className="flex items-start gap-2.5 text-sm">
-                  <div className="rounded-full bg-green-500/10 p-0.5 mt-0.5">
-                    <Check className="w-3.5 h-3.5 text-green-600" />
-                  </div>
-                  <span className="font-medium">
-                    Advanced Analytics & Activity Logs
-                  </span>
-                </li>
-                <li className="flex items-start gap-2.5 text-sm">
-                  <div className="rounded-full bg-green-500/10 p-0.5 mt-0.5">
-                    <Check className="w-3.5 h-3.5 text-green-600" />
-                  </div>
-                  <span className="font-medium">
-                    Support for multiple branches & staff
-                  </span>
-                </li>
-              </ul>
+              <div className="space-y-4">
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+                  2. Features Included
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+                  {[
+                    "Unlimited staff accounts",
+                    "Multiple branch support",
+                    "Advanced analytics dashboard",
+                    "Automated SMS reminders",
+                    "100 Free SMS per month",
+                    "Activity & SMS logs access",
+                  ].map((feature) => (
+                    <div key={feature} className="flex items-center gap-3">
+                      <div className="rounded-full bg-primary/10 p-1">
+                        <Check className="w-3.5 h-3.5 text-primary" />
+                      </div>
+                      <span className="text-[13px] font-bold text-foreground/80 tracking-tight">
+                        {feature}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </CardContent>
-            <CardFooter>
+
+            <CardFooter className="pt-8 border-t border-muted/50 bg-muted/20">
               <Button
-                className="w-full h-12 transition-all font-bold text-lg group-hover:scale-[1.02]"
+                className="w-full h-14 rounded-2xl transition-all font-black text-lg group-hover:scale-[1.01] active:scale-[0.98] shadow-lg shadow-primary/30"
                 onClick={handleBuySubscription}
                 disabled={isLoading}
               >
-                <Zap className="mr-2 h-5 w-5 fill-current" />
-                Pay via GCash
+                <div className="w-5 h-5 mr-3 flex items-center justify-center bg-white/20 rounded-lg">
+                  <Zap className="w-4 h-4 fill-white" />
+                </div>
+                Generate Payment QR
               </Button>
             </CardFooter>
           </Card>
 
-          {/* Credit Packs */}
-          <Card className="flex flex-col border-muted shadow-none">
-            <CardHeader>
+          {/* SMS Top-up Card */}
+          <Card className="lg:col-span-12 xl:col-span-5 flex flex-col border-muted/50 shadow-sm bg-background/30 backdrop-blur-sm border-2">
+            <CardHeader className="pb-6">
               <div className="flex justify-between items-start">
-                <Badge
-                  variant="secondary"
-                  className="font-bold uppercase tracking-tight"
-                >
-                  SMS Top-up
-                </Badge>
-                <HelpCircle className="w-5 h-5 text-muted-foreground cursor-help" />
+                <div className="space-y-1">
+                  <Badge
+                    variant="outline"
+                    className="font-black text-[10px] uppercase tracking-widest bg-background/50 mb-2 border-muted-foreground/20"
+                  >
+                    Additional Units
+                  </Badge>
+                  <CardTitle className="text-2xl font-black tracking-tight">
+                    SMS Top-up
+                  </CardTitle>
+                </div>
+                <HelpCircle className="w-5 h-5 text-muted-foreground opacity-40 hover:opacity-100 cursor-help transition-opacity" />
               </div>
-              <CardTitle className="mt-4 text-2xl font-black">
-                SMS Credits
-              </CardTitle>
-              <CardDescription>
-                Buy additional SMS credits. These credits do not expire.
+              <CardDescription className="text-xs font-medium">
+                Running low? Enter the amount of credits you wish to add.
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex-grow space-y-5">
-              <div className="space-y-3">
-                <div className="flex justify-between items-center p-4 rounded-xl border bg-muted/20 transition-all hover:bg-muted/40">
-                  <div className="space-y-0.5">
-                    <p className="font-bold text-lg">100 Credits</p>
-                    <p className="text-xs text-muted-foreground font-medium">
-                      ₱1.00 per SMS
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="font-black text-xl">₱100</span>
-                    <Button
-                      size="sm"
-                      className="font-bold px-6"
-                      onClick={() => handleBuyCredits(100)}
-                      disabled={isLoading}
-                    >
-                      Buy
-                    </Button>
-                  </div>
-                </div>
 
-                <div className="flex justify-between items-center p-4 rounded-xl border-2 border-primary/30 bg-primary/5 transition-all hover:bg-primary/10">
-                  <div className="space-y-0.5">
-                    <div className="flex items-center gap-2">
-                      <p className="font-bold text-lg">500 Credits</p>
-                      <Badge className="bg-green-600 hover:bg-green-700 text-[9px] h-4 px-1 leading-none font-black uppercase">
-                        Save 10%
-                      </Badge>
+            <CardContent className="space-y-6 grow">
+              <div className="p-6 rounded-2xl border bg-background/50 hover:bg-background hover:border-primary/30 transition-all group overflow-hidden relative">
+                <div className="space-y-4 relative z-10">
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+                      Enter Credit Amount
+                    </p>
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        min={100}
+                        max={1000}
+                        step={10}
+                        value={customCredits}
+                        onChange={handleCustomCreditsChange}
+                        className="h-14 pl-12 text-2xl font-black tracking-tighter rounded-xl border-2 border-muted hover:border-primary/50 focus:border-primary transition-all pr-12"
+                      />
+                      <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/50" />
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-muted-foreground uppercase tracking-widest">
+                        SMS
+                      </span>
                     </div>
-                    <p className="text-xs text-muted-foreground font-medium">
-                      ₱0.90 per SMS
-                    </p>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <span className="font-black text-xl">₱450</span>
+
+                  {!isCreditsValid && (
+                    <p className="text-[10px] font-black text-destructive uppercase tracking-tighter animate-in fade-in slide-in-from-top-1">
+                      Minimum top-up is 100 and maximum is 1000
+                    </p>
+                  )}
+
+                  <div className="flex justify-between items-end pt-2">
+                    <div className="space-y-0.5">
+                      <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">
+                        Total Price
+                      </p>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-3xl font-black tracking-tighter text-foreground">
+                          ₱{customCredits}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground font-bold">
+                          (₱1.00 / SMS)
+                        </span>
+                      </div>
+                    </div>
                     <Button
-                      size="sm"
-                      className="font-bold px-6"
-                      onClick={() => handleBuyCredits(500)}
-                      disabled={isLoading}
+                      size="lg"
+                      className="font-black px-6 h-12 rounded-xl shadow-lg transition-transform active:scale-95 group-hover:shadow-primary/20"
+                      onClick={() => handleBuyCredits(customCredits as number)}
+                      disabled={isLoading || !isCreditsValid}
                     >
-                      Buy
+                      <ShoppingCart className="w-4 h-4 mr-2" />
+                      Refill
                     </Button>
                   </div>
                 </div>
-              </div>
-
-              <div className="flex items-start gap-3 bg-amber-50 p-4 rounded-xl border border-amber-200 text-amber-900 text-[11px] font-medium leading-relaxed">
-                <HelpCircle className="w-4 h-4 shrink-0 mt-0.5 opacity-60" />
-                <p>
-                  SMS credits are non-refundable. They are consumed upon each
-                  outgoing message attempt to customers.
-                </p>
+                <Smartphone className="absolute -bottom-8 -right-8 w-32 h-32 text-muted/5 group-hover:text-primary/5 transition-colors -rotate-12 pointer-events-none" />
               </div>
             </CardContent>
-            <CardFooter>
-              <p className="text-[10px] text-muted-foreground text-center w-full font-medium">
-                * Credits are added to your permanent balance immediately after
-                payment.
-              </p>
+
+            <CardFooter className="mt-auto">
+              <div className="bg-amber-500/5 p-4 rounded-xl border border-amber-500/10 flex gap-3 mt-4">
+                <div className="h-4 w-4 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <Info className="w-2.5 h-2.5 text-amber-600" />
+                </div>
+                <p className="text-[10px] text-amber-900/70 font-bold leading-relaxed italic">
+                  Credits are non-refundable and never expire. Valid for all
+                  branches under your business.
+                </p>
+              </div>
             </CardFooter>
           </Card>
         </div>
@@ -253,7 +306,7 @@ const SubscriptionPlans = () => {
         }}
         isLoading={isLoading}
         paymentData={paymentData}
-        method="gcash-qr"
+        onPaymentSuccess={handlePaymentSuccess}
       />
     </div>
   );

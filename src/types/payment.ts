@@ -14,3 +14,9 @@ export type CreateCreditsPaymentRequest = {
   credits: number;
   method: string;
 };
+
+export type PaymentStatusUpdate = {
+  merchantOrderNo: string;
+  status: "PENDING" | "SUCCESS" | "FAILED" | "EXPIRED";
+  type: "SUBSCRIPTION_RENEWAL" | "CREDIT_TOPUP";
+};

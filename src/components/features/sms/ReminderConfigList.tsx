@@ -48,12 +48,13 @@ const ReminderConfigList = () => {
     deleteMutation.mutate(deletingConfig.id, {
       onSuccess: () => setDeletingConfig(null),
     });
-    setDeletingConfig(null);
   };
 
-  const sortedConfigs = [...configs].sort(
-    (a, b) => (a.leadTimeMinutes ?? 0) - (b.leadTimeMinutes ?? 0),
-  );
+  const sortedConfigs = Array.isArray(configs)
+    ? [...configs].sort(
+        (a, b) => (a.leadTimeMinutes ?? 0) - (b.leadTimeMinutes ?? 0),
+      )
+    : [];
 
   const formatLeadTimeShort = (minutes: number) => {
     if (minutes < 60) return `${minutes}m`;
