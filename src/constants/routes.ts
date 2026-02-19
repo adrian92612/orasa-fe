@@ -74,6 +74,10 @@ export const API_ROUTES = {
   SMS_LOGS: {
     BASE: `${ENV.API_URL}/sms/logs`,
   },
+  PAYMENTS: {
+    SUBSCRIPTION: `${ENV.API_URL}/payments/subscription`,
+    CREDITS: `${ENV.API_URL}/payments/credits`,
+  },
 } as const;
 
 export const APP_ROUTES = {

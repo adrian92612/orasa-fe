@@ -1,7 +1,13 @@
-import { apiClient } from "@/lib/api-client";
+import { apiClient, type ApiResponse } from "@/lib/api-client";
 import { API_ROUTES } from "@/constants/routes";
 import type { PageResponse } from "@/types/api";
-import type { SmsLog, SmsLogSearchParams } from "@/types/sms";
+import type {
+  SmsLog,
+  SmsLogSearchParams,
+  ReminderConfigResponse,
+  CreateReminderConfigRequest,
+  UpdateReminderConfigRequest,
+} from "@/types/sms";
 
 export const smsService = {
   getSmsLogs: async (
@@ -19,5 +25,35 @@ export const smsService = {
       `${API_ROUTES.SMS_LOGS.BASE}?${queryParams.toString()}`,
     );
     return data!;
+  },
+
+  getReminderConfigs: async (): Promise<ReminderConfigResponse[]> => {
+    const response = await apiClient.get<ReminderConfigResponse[]>(
+      API_ROUTES.REMINDER_CONFIGS.BASE,
+    );
+    return response.data || [];
+  },
+
+  createReminderConfig: async (
+    payload: CreateReminderConfigRequest,
+  ): Promise<ApiResponse<ReminderConfigResponse>> => {
+    return await apiClient.post<ReminderConfigResponse>(
+      API_ROUTES.REMINDER_CONFIGS.BASE,
+      payload,
+    );
+  },
+
+  updateReminderConfig: async (
+    id: string,
+    payload: UpdateReminderConfigRequest,
+  ): Promise<ApiResponse<ReminderConfigResponse>> => {
+    return await apiClient.put<ReminderConfigResponse>(
+      API_ROUTES.REMINDER_CONFIGS.BY_ID(id),
+      payload,
+    );
+  },
+
+  deleteReminderConfig: async (id: string): Promise<ApiResponse<void>> => {
+    return await apiClient.delete<void>(API_ROUTES.REMINDER_CONFIGS.BY_ID(id));
   },
 };
