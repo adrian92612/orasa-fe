@@ -61,6 +61,7 @@ export function PopularServicesChart({ data }: PopularServicesChartProps) {
               layout="vertical"
               fill="var(--color-count)"
               radius={5}
+              maxBarSize={50}
             />
           </BarChart>
         </ChartContainer>

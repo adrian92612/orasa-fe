@@ -11,16 +11,23 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-interface DateRangePickerProps {
+export type DatePreset = {
+  label: string;
+  date: DateRange;
+};
+
+type DateRangePickerProps = {
   className?: string;
   date: DateRange | undefined;
   setDate: (date: DateRange | undefined) => void;
-}
+  presets?: DatePreset[];
+};
 
 export function DateRangePicker({
   className,
   date,
   setDate,
+  presets,
 }: DateRangePickerProps) {
   return (
     <div className={cn("grid gap-2", className)}>
@@ -50,14 +57,33 @@ export function DateRangePicker({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            initialFocus
-            mode="range"
-            defaultMonth={date?.from}
-            selected={date}
-            onSelect={setDate}
-            numberOfMonths={2}
-          />
+          <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x">
+            {presets && presets.length > 0 && (
+              <div className="flex flex-col gap-1 p-3 w-full sm:w-[150px]">
+                {presets.map((preset) => (
+                  <Button
+                    key={preset.label}
+                    variant="ghost"
+                    size="sm"
+                    className="justify-start text-left font-normal"
+                    onClick={() => setDate(preset.date)}
+                  >
+                    {preset.label}
+                  </Button>
+                ))}
+              </div>
+            )}
+            <div>
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={date?.from}
+                selected={date}
+                onSelect={setDate}
+                numberOfMonths={2}
+              />
+            </div>
+          </div>
         </PopoverContent>
       </Popover>
     </div>

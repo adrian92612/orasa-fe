@@ -30,16 +30,9 @@ const DashboardLayout = () => {
 
   return (
     <SidebarProvider>
-      {/* <Suspense
-        fallback={
-          <div className="h-screen w-[256px] border-r bg-sidebar hidden md:block" />
-        }
-      > */}
       <AppSidebar onLogout={logout} />
-      {/* </Suspense> */}
-
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 border-b px-4 backdrop-blur-sm">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
 

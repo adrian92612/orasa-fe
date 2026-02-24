@@ -1,24 +1,30 @@
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
+import type { DateRange } from "react-day-picker";
 import { analyticsService } from "@/services/analytics.service";
-import type { DashboardStats } from "@/types/analytics";
 import { Q_KEYS } from "@/constants/queryKeys";
 
-export const useDashboardStats = (startDate: string, endDate: string) => {
-  return useQuery<DashboardStats>({
-    queryKey: [Q_KEYS.ANALYTICS, startDate, endDate],
-    queryFn: () => analyticsService.getDashboardStats(startDate, endDate),
-    // Keep data fresh for 5 minutes as analytics don't change second-by-second
-    staleTime: 5 * 60 * 1000,
-  });
+const formatDateRange = (date: DateRange | undefined) => {
+  const startDateStr = date?.from ? format(date.from, "yyyy-MM-dd") : "";
+  const endDateStr = date?.to
+    ? format(date.to, "yyyy-MM-dd")
+    : date?.from
+      ? format(date.from, "yyyy-MM-dd")
+      : "";
+
+  return { startDateStr, endDateStr };
 };
 
 export const useSuspenseDashboardStats = (
-  startDate: string,
-  endDate: string,
+  date: DateRange | undefined,
+  branchId?: string | null,
 ) => {
-  return useSuspenseQuery<DashboardStats>({
-    queryKey: [Q_KEYS.ANALYTICS, startDate, endDate],
-    queryFn: () => analyticsService.getDashboardStats(startDate, endDate),
+  const { startDateStr, endDateStr } = formatDateRange(date);
+
+  return useSuspenseQuery({
+    queryKey: [Q_KEYS.ANALYTICS, startDateStr, endDateStr, branchId],
+    queryFn: () =>
+      analyticsService.getDashboardStats(startDateStr, endDateStr, branchId),
     staleTime: 5 * 60 * 1000,
   });
 };
