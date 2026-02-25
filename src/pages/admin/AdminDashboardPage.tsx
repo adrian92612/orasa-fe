@@ -12,6 +12,7 @@ import {
   useSmsBalance,
 } from "@/hooks/useAdmin";
 import CommonPagination from "@/components/common/CommonPagination";
+import { CommonPaginationSkeleton } from "@/components/common/CommonPaginationSkeleton";
 import { Button } from "@/components/ui/button";
 import { Building2, Database, MessageSquare } from "lucide-react";
 import BusinessCard from "@/components/features/admin/BusinessCard";
@@ -31,7 +32,7 @@ const AdminDashboardPage = () => {
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState("");
-  const debouncedSearch = useDebounce(searchQuery, 500);
+  const debouncedSearch = useDebounce(searchQuery);
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(5);
@@ -169,14 +170,17 @@ const AdminDashboardPage = () => {
 
       {/* Content */}
       {isLoading ? (
-        <div className="flex flex-col gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-24 w-full rounded-lg border bg-muted animate-pulse"
-            />
-          ))}
-        </div>
+        <>
+          <div className="flex flex-col gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-24 w-full rounded-lg border bg-muted animate-pulse"
+              />
+            ))}
+          </div>
+          <CommonPaginationSkeleton />
+        </>
       ) : businessesPage?.content.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-center rounded-lg border bg-white border-dashed">
           <Building2 className="h-12 w-12 text-muted-foreground/50 mb-4" />

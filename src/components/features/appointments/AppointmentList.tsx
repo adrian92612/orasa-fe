@@ -1,7 +1,13 @@
 import { Calendar as CalendarIcon } from "lucide-react";
 import AppointmentCard from "@/components/features/appointments/AppointmentCard";
 import CommonPagination from "@/components/common/CommonPagination";
-import { useSuspenseAppointments } from "@/hooks/useAppointments";
+import {
+  useSuspenseAppointments,
+  useDeleteAppointment,
+  useUpdateAppointmentStatus,
+} from "@/hooks/useAppointments";
+import { useMutationState } from "@tanstack/react-query";
+import { Q_KEYS } from "@/constants/queryKeys";
 import type {
   AppointmentResponse,
   AppointmentStatus,
@@ -19,11 +25,6 @@ type AppointmentListProps = {
   typeFilter?: string | null;
   activeTab: string;
   onEdit: (appointment: AppointmentResponse) => void;
-  onDelete: (id: string) => void;
-  onStatusChange: (
-    appointment: AppointmentResponse,
-    newStatus: AppointmentStatus,
-  ) => void;
   onPageChange: (newPage: number) => void;
   onPageSizeChange: (val: string) => void;
 };
@@ -40,11 +41,38 @@ const AppointmentList = ({
   typeFilter,
   activeTab,
   onEdit,
-  onDelete,
-  onStatusChange,
   onPageChange,
   onPageSizeChange,
 }: AppointmentListProps) => {
+  const deleteMutation = useDeleteAppointment();
+  const updateStatusMutation = useUpdateAppointmentStatus();
+
+  const pendingMutations = useMutationState({
+    filters: { status: "pending", mutationKey: [Q_KEYS.APPOINTMENTS] },
+    select: (mutation) => mutation.state.variables as any,
+  });
+
+  const checkIsSaving = (id: string) =>
+    pendingMutations.some((vars) => {
+      if (typeof vars === "string") return vars === id;
+      return vars?.id === id;
+    });
+
+  const handleDelete = (id: string) => {
+    if (confirm("Are you sure you want to delete this appointment?")) {
+      deleteMutation.mutate(id);
+    }
+  };
+
+  const handleStatusChange = (
+    appointment: AppointmentResponse,
+    newStatus: AppointmentStatus,
+  ) => {
+    updateStatusMutation.mutate({
+      id: appointment.id,
+      status: newStatus,
+    });
+  };
   const { data: appointmentPage } = useSuspenseAppointments(
     branchId,
     businessId,
@@ -66,7 +94,7 @@ const AppointmentList = ({
           {activeTab === "today"
             ? "You have no appointments scheduled for today."
             : activeTab === "upcoming"
-              ? "You have no appointments scheduled for the next 2 days."
+              ? "You have no appointments scheduled for the next 7 days."
               : "Try adjusting your filters or create a new appointment."}
         </p>
       </div>
@@ -80,9 +108,10 @@ const AppointmentList = ({
           <AppointmentCard
             key={appointment.id}
             appointment={appointment}
+            isSaving={checkIsSaving(appointment.id)}
             onEdit={onEdit}
-            onDelete={onDelete}
-            onStatusChange={onStatusChange}
+            onDelete={handleDelete}
+            onStatusChange={handleStatusChange}
           />
         ))}
       </div>

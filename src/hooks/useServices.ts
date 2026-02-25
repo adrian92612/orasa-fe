@@ -59,18 +59,15 @@ export const useCreateService = () => {
     mutationFn: (data: CreateServiceRequest) =>
       serviceService.createService(data),
     onMutate: async (newServiceData) => {
-      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
       await queryClient.cancelQueries({
         queryKey: [Q_KEYS.SERVICES, { branchId: null }],
       });
 
-      // Snapshot the previous value
       const previousServices = queryClient.getQueryData<ServiceResponse[]>([
         Q_KEYS.SERVICES,
         { branchId: null },
       ]);
 
-      // Optimistically update to the new value
       if (previousServices) {
         queryClient.setQueryData<ServiceResponse[]>(
           [Q_KEYS.SERVICES, { branchId: null }],

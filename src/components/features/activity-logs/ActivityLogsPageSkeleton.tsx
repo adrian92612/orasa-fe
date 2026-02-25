@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import ActivityLogSkeleton from "./ActivityLogSkeleton";
+import { CommonPaginationSkeleton } from "@/components/common/CommonPaginationSkeleton";
 
 export default function ActivityLogsPageSkeleton() {
   return (
@@ -20,14 +21,7 @@ export default function ActivityLogsPageSkeleton() {
       </div>
 
       {/* Pagination Skeleton */}
-      <div className="flex items-center justify-between py-4">
-        <Skeleton className="h-4 w-[150px]" />
-        <div className="flex items-center space-x-2">
-          <Skeleton className="h-8 w-8" />
-          <Skeleton className="h-8 w-8" />
-          <Skeleton className="h-8 w-8" />
-        </div>
-      </div>
+      <CommonPaginationSkeleton />
     </div>
   );
 }

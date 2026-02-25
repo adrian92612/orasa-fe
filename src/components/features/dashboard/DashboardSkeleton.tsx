@@ -1,46 +1,9 @@
-import { useLocation } from "react-router";
-import { APP_ROUTES } from "@/constants/routes";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
-
-// Direct imports for instant rendering (No more lazy loading for skeletons)
-import AnalyticsDashboardSkeleton from "@/components/dashboard/AnalyticsDashboardSkeleton";
-import AppointmentsPageSkeleton from "@/components/features/appointments/AppointmentsPageSkeleton";
-import BranchesPageSkeleton from "@/components/features/branches/BranchesPageSkeleton";
-import ServicesPageSkeleton from "@/components/features/services/ServicesPageSkeleton";
-import StaffPageSkeleton from "@/components/features/staff/StaffPageSkeleton";
-import ActivityLogsPageSkeleton from "@/components/features/activity-logs/ActivityLogsPageSkeleton";
-import SmsLogsPageSkeleton from "@/components/features/sms/SmsLogsPageSkeleton";
-import BusinessProfileSkeleton from "@/components/features/settings/BusinessProfileSkeleton";
+import { PageSkeleton } from "@/components/common/PageSkeleton";
 
 export function DashboardSkeleton() {
-  const location = useLocation();
-  const path = location.pathname;
-
-  const renderPageSkeleton = () => {
-    switch (path) {
-      case APP_ROUTES.DASHBOARD.ANALYTICS:
-        return <AnalyticsDashboardSkeleton />;
-      case APP_ROUTES.DASHBOARD.APPOINTMENTS:
-        return <AppointmentsPageSkeleton />;
-      case APP_ROUTES.DASHBOARD.BRANCHES:
-        return <BranchesPageSkeleton />;
-      case APP_ROUTES.DASHBOARD.SERVICES:
-        return <ServicesPageSkeleton />;
-      case APP_ROUTES.DASHBOARD.STAFF:
-        return <StaffPageSkeleton />;
-      case APP_ROUTES.DASHBOARD.ACTIVITY_LOGS:
-        return <ActivityLogsPageSkeleton />;
-      case APP_ROUTES.DASHBOARD.SMS_LOGS:
-        return <SmsLogsPageSkeleton />;
-      case APP_ROUTES.DASHBOARD.SETTINGS:
-        return <BusinessProfileSkeleton />;
-      default:
-        return <AppointmentsPageSkeleton />;
-    }
-  };
-
   return (
     <SidebarProvider>
       <div className="hidden h-screen w-[256px] border-r bg-sidebar md:flex flex-col">
@@ -73,7 +36,9 @@ export function DashboardSkeleton() {
           </div>
         </header>
 
-        <main className="pt-4 px-8">{renderPageSkeleton()}</main>
+        <main className="pt-4 px-4">
+          <PageSkeleton />
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );

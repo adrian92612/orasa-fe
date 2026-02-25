@@ -24,7 +24,7 @@ import { useCreateService } from "@/hooks/useServices";
 
 const serviceSchema = z.object({
   name: z.string().min(1, "Service name is required"),
-  description: z.string().min(1, "Description is required"),
+  description: z.string().optional(),
   basePrice: z.coerce.number().min(1, "Price must be at least 1"),
   durationMinutes: z.coerce
     .number()

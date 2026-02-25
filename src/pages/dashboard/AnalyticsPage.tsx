@@ -2,13 +2,17 @@ import { Suspense, useState } from "react";
 import { startOfMonth, endOfMonth, subMonths, subDays } from "date-fns";
 import type { DateRange } from "react-day-picker";
 
-import { useSuspenseDashboardStats } from "@/hooks/useAnalytics";
+import {
+  useDashboardStats,
+  useSuspenseDashboardStats,
+} from "@/hooks/useAnalytics";
 import {
   DateRangePicker,
   type DatePreset,
 } from "@/components/ui/date-range-picker";
 import { AnalyticsDashboard } from "@/components/dashboard/AnalyticsDashboard";
 import AnalyticsDashboardSkeleton from "@/components/dashboard/AnalyticsDashboardSkeleton";
+import AnalyticsPageSkeleton from "@/components/dashboard/AnalyticsPageSkeleton";
 import { useUser } from "@/context/UserContext";
 
 const AnalyticsDashboardData = ({
@@ -57,6 +61,15 @@ const AnalyticsPage = () => {
     };
   });
 
+  const { isLoading: isLoadingInitial } = useDashboardStats(
+    date,
+    selectedBranchId,
+  );
+
+  if (isLoadingInitial) {
+    return <AnalyticsPageSkeleton />;
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -64,7 +77,12 @@ const AnalyticsPage = () => {
           Overview of your business performance.
         </p>
         <div className="flex items-center gap-2">
-          <DateRangePicker date={date} setDate={setDate} presets={presets} />
+          <DateRangePicker
+            date={date}
+            setDate={setDate}
+            presets={presets}
+            disabled={{ after: new Date() }}
+          />
         </div>
       </div>
 

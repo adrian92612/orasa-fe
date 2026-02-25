@@ -1,20 +1,21 @@
 import { Suspense, lazy } from "react";
 import { useUser } from "@/context/UserContext";
 import { useSuspenseBranches } from "@/hooks/useBranches";
-const AppSidebar = lazy(
-  () => import("@/components/features/dashboard/Sidebar"),
-);
+import { PageSkeleton } from "@/components/common/PageSkeleton";
+import { useLocation } from "react-router";
+import { Outlet } from "react-router";
+import { Building2 } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { NAV_ITEMS } from "@/constants/navigation";
+import SubscriptionBanner from "@/components/features/subscription/SubscriptionBanner";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Building2 } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import { NAV_ITEMS } from "@/constants/navigation";
-import { useLocation } from "react-router";
-import { Outlet } from "react-router";
-import SubscriptionBanner from "@/components/features/subscription/SubscriptionBanner";
+const AppSidebar = lazy(
+  () => import("@/components/features/dashboard/Sidebar"),
+);
 
 const DashboardLayout = () => {
   const { user, logout, selectedBranchId } = useUser();
@@ -58,7 +59,7 @@ const DashboardLayout = () => {
 
         <SubscriptionBanner />
 
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0 bg-slate-50/50">
+        <div className="flex flex-1 flex-col gap-4 pt-0 bg-slate-50/50">
           <div className="min-h-dvh flex-1 rounded-xl bg-background/50 md:min-h-min p-4">
             {isStaffNoBranches ? (
               <div className="flex h-[450px] shrink-0 items-center justify-center rounded-md border border-dashed">
@@ -76,7 +77,7 @@ const DashboardLayout = () => {
                 </div>
               </div>
             ) : (
-              <Suspense fallback={null}>
+              <Suspense fallback={<PageSkeleton />}>
                 <Outlet />
               </Suspense>
             )}

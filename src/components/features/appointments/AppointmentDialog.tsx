@@ -60,7 +60,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown, CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
-import { format, sub } from "date-fns";
+import { format, sub, isSameDay } from "date-fns";
 import { PREDEFINED_TEMPLATES } from "@/constants/sms";
 
 const formatDuration = (minutes: number) => {
@@ -244,6 +244,18 @@ const AppointmentDialog = ({
       }
     }
   }, [startDateTime, serviceId, branchServices, setValue]);
+
+  useEffect(() => {
+    if (isWalkin && startDateTime) {
+      const today = new Date();
+      if (!isSameDay(startDateTime, today)) {
+        const newDate = new Date();
+        newDate.setHours(startDateTime.getHours());
+        newDate.setMinutes(startDateTime.getMinutes());
+        setValue("startDateTime", newDate);
+      }
+    }
+  }, [isWalkin, startDateTime, setValue]);
 
   const onSubmit = (data: AppointmentFormValues) => {
     if (!user?.businessId) return;
@@ -519,7 +531,6 @@ const AppointmentDialog = ({
                             selected={field.value}
                             onSelect={(date) => {
                               if (date) {
-                                // Preserve existing time if available, else default to current time
                                 const current = field.value || new Date();
                                 const newDate = new Date(date);
                                 newDate.setHours(current.getHours());
@@ -527,9 +538,13 @@ const AppointmentDialog = ({
                                 field.onChange(newDate);
                               }
                             }}
-                            disabled={(date) =>
-                              date < sub(new Date(), { days: 1 })
-                            }
+                            disabled={(date) => {
+                              const today = new Date();
+                              if (isWalkin) {
+                                return !isSameDay(date, today);
+                              }
+                              return date < sub(today, { days: 1 });
+                            }}
                           />
                         </PopoverContent>
                       </Popover>
@@ -547,7 +562,6 @@ const AppointmentDialog = ({
                             newDate.setHours(hours);
                             newDate.setMinutes(minutes);
 
-                            // prevent past time if same day
                             if (newDate >= new Date()) {
                               field.onChange(newDate);
                             }

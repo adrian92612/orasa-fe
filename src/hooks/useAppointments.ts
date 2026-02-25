@@ -233,6 +233,7 @@ export const useUpdateAppointment = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
+    mutationKey: [Q_KEYS.APPOINTMENTS, "UPDATE"],
     mutationFn: ({
       id,
       data,
@@ -287,10 +288,10 @@ export const useUpdateAppointment = () => {
 };
 
 export const useUpdateAppointmentStatus = () => {
-  // ... existing code
   const queryClient = useQueryClient();
 
   return useMutation({
+    mutationKey: [Q_KEYS.APPOINTMENTS, Q_KEYS.UPDATE_STATUS],
     mutationFn: ({ id, status }: { id: string; status: AppointmentStatus }) =>
       appointmentService.updateStatus(id, status),
     onMutate: async ({ id, status }) => {
@@ -339,6 +340,7 @@ export const useDeleteAppointment = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
+    mutationKey: [Q_KEYS.APPOINTMENTS, "DELETE"],
     mutationFn: (id: string) => appointmentService.deleteAppointment(id),
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: [Q_KEYS.APPOINTMENTS] });
@@ -386,9 +388,9 @@ export const useAppointmentCounts = (
   const todayStr = format(today, "yyyy-MM-dd");
 
   const tomorrow = addDays(today, 1);
-  const dayAfterTomorrow = addDays(today, 2);
+  const nextWeek = addDays(today, 7);
   const upcomingStartStr = format(tomorrow, "yyyy-MM-dd");
-  const upcomingEndStr = format(dayAfterTomorrow, "yyyy-MM-dd");
+  const upcomingEndStr = format(nextWeek, "yyyy-MM-dd");
 
   const { data: todayData, isLoading: isLoadingToday } = useQuery({
     queryKey: [
@@ -473,9 +475,9 @@ export const useSuspenseAppointmentCounts = (
   const todayStr = format(today, "yyyy-MM-dd");
 
   const tomorrow = addDays(today, 1);
-  const dayAfterTomorrow = addDays(today, 2);
+  const nextWeek = addDays(today, 7);
   const upcomingStartStr = format(tomorrow, "yyyy-MM-dd");
-  const upcomingEndStr = format(dayAfterTomorrow, "yyyy-MM-dd");
+  const upcomingEndStr = format(nextWeek, "yyyy-MM-dd");
 
   const { data: todayData } = useSuspenseQuery({
     queryKey: [

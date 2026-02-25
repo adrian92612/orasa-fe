@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import SmsLogSkeleton from "./SmsLogSkeleton";
+import { CommonPaginationSkeleton } from "@/components/common/CommonPaginationSkeleton";
 
 export default function SmsLogsPageSkeleton() {
   return (
@@ -14,10 +15,7 @@ export default function SmsLogsPageSkeleton() {
       <SmsLogSkeleton />
 
       {/* Pagination Skeleton */}
-      <div className="flex items-center justify-between pt-4">
-        <Skeleton className="h-8 w-40" />
-        <Skeleton className="h-8 w-64" />
-      </div>
+      <CommonPaginationSkeleton />
     </div>
   );
 }

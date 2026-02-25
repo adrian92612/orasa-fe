@@ -21,6 +21,7 @@ type DateRangePickerProps = {
   date: DateRange | undefined;
   setDate: (date: DateRange | undefined) => void;
   presets?: DatePreset[];
+  disabled?: React.ComponentProps<typeof Calendar>["disabled"];
 };
 
 export function DateRangePicker({
@@ -28,6 +29,7 @@ export function DateRangePicker({
   date,
   setDate,
   presets,
+  disabled,
 }: DateRangePickerProps) {
   return (
     <div className={cn("grid gap-2", className)}>
@@ -35,7 +37,7 @@ export function DateRangePicker({
         <PopoverTrigger asChild>
           <Button
             id="date"
-            variant={"outline"}
+            variant="outline"
             className={cn(
               "w-[300px] justify-start text-left font-normal",
               !date && "text-muted-foreground",
@@ -56,6 +58,7 @@ export function DateRangePicker({
             )}
           </Button>
         </PopoverTrigger>
+
         <PopoverContent className="w-auto p-0" align="start">
           <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x">
             {presets && presets.length > 0 && (
@@ -73,14 +76,16 @@ export function DateRangePicker({
                 ))}
               </div>
             )}
+
             <div>
               <Calendar
-                initialFocus
+                autoFocus
                 mode="range"
                 defaultMonth={date?.from}
                 selected={date}
                 onSelect={setDate}
                 numberOfMonths={2}
+                disabled={disabled}
               />
             </div>
           </div>
