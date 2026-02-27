@@ -4,7 +4,9 @@ import { useUpdateReminderConfig } from "@/hooks/useSms";
 
 import type { ReminderConfigResponse } from "@/types/sms";
 
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 
 type ReminderConfigCardProps = {
@@ -48,10 +50,8 @@ const ReminderConfigCard = ({
   };
 
   return (
-    <div
-      className={`rounded-lg border bg-card p-4 transition-colors ${
-        config.enabled ? "" : "opacity-60"
-      }`}
+    <Card
+      className={cn("p-4 transition-colors", !config.enabled && "opacity-60")}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3 min-w-0 flex-1">
@@ -102,7 +102,7 @@ const ReminderConfigCard = ({
           </Button>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 

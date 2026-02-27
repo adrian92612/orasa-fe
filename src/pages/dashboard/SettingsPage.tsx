@@ -7,8 +7,7 @@ import ReminderConfigList from "@/components/features/sms/ReminderConfigList";
 import { Suspense } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BusinessProfile from "@/components/features/settings/BusinessProfile";
-import BusinessProfileSkeleton from "@/components/features/settings/BusinessProfileSkeleton";
-import { ReminderConfigListSkeleton } from "@/components/features/sms/ReminderConfigListSkeleton";
+import SettingsPageSkeleton from "@/components/features/settings/SettingsPageSkeleton";
 
 const SettingsPage = () => {
   const { user } = useUser();
@@ -19,29 +18,27 @@ const SettingsPage = () => {
 
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 lg:w-[500px]">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="billing">Billing & Plans</TabsTrigger>
-          <TabsTrigger value="reminders">SMS & Reminders</TabsTrigger>
-        </TabsList>
+      <Suspense fallback={<SettingsPageSkeleton />}>
+        <Tabs defaultValue="profile" className="w-full">
+          <TabsList className="w-full justify-start">
+            <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="billing">Billing & Plans</TabsTrigger>
+            <TabsTrigger value="reminders">SMS & Reminders</TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="profile" className="mt-6">
-          <Suspense fallback={<BusinessProfileSkeleton />}>
+          <TabsContent value="profile" className="mt-6">
             <BusinessProfile />
-          </Suspense>
-        </TabsContent>
+          </TabsContent>
 
-        <TabsContent value="billing" className="mt-6 outline-none">
-          <BillingTab />
-        </TabsContent>
+          <TabsContent value="billing" className="mt-6 outline-none">
+            <BillingTab />
+          </TabsContent>
 
-        <TabsContent value="reminders" className="mt-6">
-          <Suspense fallback={<ReminderConfigListSkeleton />}>
+          <TabsContent value="reminders" className="mt-6">
             <ReminderConfigList />
-          </Suspense>
-        </TabsContent>
-      </Tabs>
+          </TabsContent>
+        </Tabs>
+      </Suspense>
     </div>
   );
 };

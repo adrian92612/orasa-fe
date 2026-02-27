@@ -7,7 +7,7 @@ import ServicesPageSkeleton from "@/components/features/services/ServicesPageSke
 import StaffPageSkeleton from "@/components/features/staff/StaffPageSkeleton";
 import ActivityLogsPageSkeleton from "@/components/features/activity-logs/ActivityLogsPageSkeleton";
 import SmsLogsPageSkeleton from "@/components/features/sms/SmsLogsPageSkeleton";
-import BusinessProfileSkeleton from "@/components/features/settings/BusinessProfileSkeleton";
+import SettingsPageSkeleton from "@/components/features/settings/SettingsPageSkeleton";
 
 export const PageSkeleton = () => {
   const location = useLocation();
@@ -29,7 +29,7 @@ export const PageSkeleton = () => {
     case APP_ROUTES.DASHBOARD.SMS_LOGS:
       return <SmsLogsPageSkeleton />;
     case APP_ROUTES.DASHBOARD.SETTINGS:
-      return <BusinessProfileSkeleton />;
+      return <SettingsPageSkeleton />;
     default:
       return <AppointmentsPageSkeleton />;
   }

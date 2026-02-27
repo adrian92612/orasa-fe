@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { Bell, Plus } from "lucide-react";
 
 import {
@@ -22,9 +22,53 @@ import { Button } from "@/components/ui/button";
 
 import ReminderConfigCard from "@/components/features/sms/ReminderConfigCard";
 import ReminderConfigDialog from "@/components/features/sms/ReminderConfigDialog";
+import { ReminderConfigListSkeleton } from "@/components/features/sms/ReminderConfigListSkeleton";
+
+type ReminderConfigItemsProps = {
+  onEdit: (config: ReminderConfigResponse) => void;
+  onDelete: (config: ReminderConfigResponse) => void;
+};
+
+const ReminderConfigItems = ({
+  onEdit,
+  onDelete,
+}: ReminderConfigItemsProps) => {
+  const { data: configs } = useSuspenseReminderConfigs();
+
+  const sortedConfigs = Array.isArray(configs)
+    ? [...configs].sort(
+        (a, b) => (a.leadTimeMinutes ?? 0) - (b.leadTimeMinutes ?? 0),
+      )
+    : [];
+
+  if (sortedConfigs.length === 0) {
+    return (
+      <div className="rounded-lg border bg-card p-8 text-center">
+        <Bell className="mx-auto h-10 w-10 text-muted-foreground/50 mb-3" />
+        <h3 className="font-semibold text-lg">No reminders configured</h3>
+        <p className="text-sm text-muted-foreground mt-1">
+          Add your first reminder to automatically notify customers before their
+          appointments.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {sortedConfigs.map((config) => (
+        <ReminderConfigCard
+          key={config.id}
+          config={config}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
+      ))}
+    </div>
+  );
+};
 
 const ReminderConfigList = () => {
-  const { data: configs } = useSuspenseReminderConfigs();
   const deleteMutation = useDeleteReminderConfig();
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -50,12 +94,6 @@ const ReminderConfigList = () => {
     });
   };
 
-  const sortedConfigs = Array.isArray(configs)
-    ? [...configs].sort(
-        (a, b) => (a.leadTimeMinutes ?? 0) - (b.leadTimeMinutes ?? 0),
-      )
-    : [];
-
   const formatLeadTimeShort = (minutes: number) => {
     if (minutes < 60) return `${minutes}m`;
     const hours = minutes / 60;
@@ -78,27 +116,9 @@ const ReminderConfigList = () => {
         </Button>
       </div>
 
-      {sortedConfigs.length === 0 ? (
-        <div className="rounded-lg border bg-card p-8 text-center">
-          <Bell className="mx-auto h-10 w-10 text-muted-foreground/50 mb-3" />
-          <h3 className="font-semibold text-lg">No reminders configured</h3>
-          <p className="text-sm text-muted-foreground mt-1">
-            Add your first reminder to automatically notify customers before
-            their appointments.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {sortedConfigs.map((config) => (
-            <ReminderConfigCard
-              key={config.id}
-              config={config}
-              onEdit={handleEdit}
-              onDelete={setDeletingConfig}
-            />
-          ))}
-        </div>
-      )}
+      <Suspense fallback={<ReminderConfigListSkeleton />}>
+        <ReminderConfigItems onEdit={handleEdit} onDelete={setDeletingConfig} />
+      </Suspense>
 
       <ReminderConfigDialog
         open={dialogOpen}

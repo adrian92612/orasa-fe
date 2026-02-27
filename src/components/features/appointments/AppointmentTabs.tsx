@@ -29,7 +29,7 @@ export const AppointmentTabs = ({
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
-        <TabsList className="w-full sm:w-auto justify-start">
+        <TabsList className="w-full justify-start">
           <TabsTrigger value="today" disabled={isLoadingCounts}>
             Today ({isLoadingCounts ? "..." : todayCount})
           </TabsTrigger>

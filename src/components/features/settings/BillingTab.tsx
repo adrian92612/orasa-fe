@@ -5,20 +5,20 @@ import SubscriptionPlans from "./SubscriptionPlans";
 
 const BillingTab = () => {
   return (
-    <div className="space-y-8 max-w-[1200px] mx-auto animate-in fade-in duration-700">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-2xl font-black tracking-tight text-foreground">
-          Billing & Subscription
+    <div className="space-y-6">
+      <div className="space-y-1">
+        <h2 className="text-lg font-semibold tracking-tight">
+          Billing & Plans
         </h2>
-        <p className="text-sm font-medium text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           Manage your business plan, credits, and payment history.
         </p>
       </div>
 
-      <div className="flex flex-col gap-10">
+      <div className="flex flex-col gap-6">
         <Suspense
           fallback={
-            <Card className="h-[450px] w-full rounded-2xl animate-pulse bg-muted/20 border-none" />
+            <Card className="h-[300px] w-full animate-pulse bg-muted/20 border-border" />
           }
         >
           <SubscriptionInfo />
