@@ -39,7 +39,6 @@ const ActivityLogsPageContent = ({
 const ActivityLogsPageBody = () => {
   const { selectedBranchId } = useUser();
 
-  // Warm-up query to trigger page-level skeleton on initial load or branch change
   useSuspenseActivityLogs({
     page: 1,
     size: 1,
@@ -50,7 +49,7 @@ const ActivityLogsPageBody = () => {
   const [pageSize, setPageSize] = useState(5);
   const [action, setAction] = useState("ALL");
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: subDays(new Date(), 7),
+    from: subDays(new Date(), 6),
     to: new Date(),
   });
 

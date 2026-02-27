@@ -40,7 +40,6 @@ const SmsLogsPageContent = ({
 const SmsLogsPageBody = () => {
   const { selectedBranchId } = useUser();
 
-  // Warm-up query to trigger page-level skeleton on initial load or branch change
   useSuspenseSmsLogs({
     page: 1,
     size: 1,
@@ -51,7 +50,7 @@ const SmsLogsPageBody = () => {
   const [pageSize, setPageSize] = useState(5);
   const [status, setStatus] = useState<string>("ALL");
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: subDays(new Date(), 7),
+    from: subDays(new Date(), 6),
     to: new Date(),
   });
 

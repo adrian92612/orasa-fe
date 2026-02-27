@@ -1,3 +1,10 @@
+import type { DateRange } from "react-day-picker";
+import { endOfMonth, startOfMonth, subDays, subMonths } from "date-fns";
+
+import {
+  DateRangePicker,
+  type DatePreset,
+} from "@/components/ui/date-range-picker";
 import {
   Select,
   SelectContent,
@@ -5,8 +12,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DateRangePicker } from "@/components/ui/date-range-picker";
-import type { DateRange } from "react-day-picker";
+
+const STATUS_OPTIONS = [
+  { label: "All Status", value: "ALL" },
+  { label: "Pending", value: "PENDING" },
+  { label: "Delivered", value: "DELIVERED" },
+  { label: "Failed", value: "FAILED" },
+] as const;
 
 interface SmsLogFiltersProps {
   status: string;
@@ -23,31 +35,54 @@ const SmsLogFilters = ({
   onDateRangeChange,
   isLoading,
 }: SmsLogFiltersProps) => {
+  const now = new Date();
+  const presets: DatePreset[] = [
+    { label: "Today", date: { from: now, to: now } },
+    {
+      label: "Yesterday",
+      date: { from: subDays(now, 1), to: subDays(now, 1) },
+    },
+    { label: "Last 7 Days", date: { from: subDays(now, 6), to: now } },
+    { label: "Last 30 Days", date: { from: subDays(now, 29), to: now } },
+    {
+      label: "This Month",
+      date: { from: startOfMonth(now), to: endOfMonth(now) },
+    },
+    {
+      label: "Last Month",
+      date: {
+        from: startOfMonth(subMonths(now, 1)),
+        to: endOfMonth(subMonths(now, 1)),
+      },
+    },
+  ];
+
   return (
     <div className="flex flex-col md:flex-row gap-3 w-full">
-      <div className="w-full md:w-[180px]">
-        <Select
-          value={status}
-          onValueChange={onStatusChange}
-          disabled={isLoading}
-        >
-          <SelectTrigger className="h-9 border-black">
-            <SelectValue placeholder="All Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">All Status</SelectItem>
-            <SelectItem value="PENDING">Pending</SelectItem>
-            <SelectItem value="DELIVERED">Delivered</SelectItem>
-            <SelectItem value="FAILED">Failed</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <Select
+        value={status}
+        onValueChange={onStatusChange}
+        disabled={isLoading}
+      >
+        <SelectTrigger className="h-9 border-black">
+          <SelectValue placeholder="All Status" />
+        </SelectTrigger>
+        <SelectContent>
+          {STATUS_OPTIONS.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
       <div className="w-full md:w-auto">
         <DateRangePicker
           date={dateRange}
           setDate={onDateRangeChange}
           className="w-full md:w-[260px]"
+          presets={presets}
+          disabled={{ after: new Date() }}
         />
       </div>
     </div>

@@ -48,13 +48,9 @@ const AnalyticsPage = () => {
     },
   ];
 
-  const [date, setDate] = useState<DateRange | undefined>(() => {
-    const start = new Date();
-    start.setDate(now.getDate() - 29);
-    return {
-      from: start,
-      to: now,
-    };
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: subDays(new Date(), 6),
+    to: new Date(),
   });
 
   return (
