@@ -41,10 +41,14 @@ const onboardingSchema = z.object({
 type OnboardingValues = z.infer<typeof onboardingSchema>;
 
 type BusinessOnboardingFormProps = {
+  termsAcceptedAt: string;
   onSuccess: (firstBranchId: string) => void;
 };
 
-const BusinessOnboardingForm = ({ onSuccess }: BusinessOnboardingFormProps) => {
+const BusinessOnboardingForm = ({
+  termsAcceptedAt,
+  onSuccess,
+}: BusinessOnboardingFormProps) => {
   const { control, handleSubmit } = useForm<OnboardingValues>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
@@ -61,6 +65,7 @@ const BusinessOnboardingForm = ({ onSuccess }: BusinessOnboardingFormProps) => {
     createBusiness(
       {
         name: data.businessName,
+        termsAcceptedAt,
         branch: {
           name: data.branchName,
           address: data.branchAddress,

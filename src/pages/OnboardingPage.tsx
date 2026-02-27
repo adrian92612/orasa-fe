@@ -1,12 +1,13 @@
 import BusinessOnboardingForm from "@/components/features/onboarding/BusinessOnboardingForm";
 import ServiceOnboardingForm from "@/components/features/onboarding/ServiceOnboardingForm";
 import StaffOnboardingForm from "@/components/features/onboarding/StaffOnboardingForm";
+import TermsOnboardingForm from "@/components/features/onboarding/TermsOnboardingForm";
 import { APP_ROUTES } from "@/constants/routes";
 import { useUser } from "@/context/UserContext";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
-type OnboardingStep = "business" | "service" | "staff";
+type OnboardingStep = "terms" | "business" | "service" | "staff";
 
 type StepConfig = {
   id: OnboardingStep;
@@ -16,6 +17,12 @@ type StepConfig = {
 };
 
 const STEPS: StepConfig[] = [
+  {
+    id: "terms",
+    label: "Terms",
+    title: "Terms and Conditions",
+    description: "Please review and accept our terms before we begin.",
+  },
   {
     id: "business",
     label: "Business",
@@ -39,11 +46,17 @@ const STEPS: StepConfig[] = [
 const OnboardingPage = () => {
   const { refetchUser } = useUser();
   const navigate = useNavigate();
-  const [step, setStep] = useState<OnboardingStep>("business");
+  const [step, setStep] = useState<OnboardingStep>("terms");
   const [firstBranchId, setFirstBranchId] = useState<string | null>(null);
+  const [termsAcceptedAt, setTermsAcceptedAt] = useState<string>("");
 
   const currentStepIndex = STEPS.findIndex((s) => s.id === step);
   const currentStepData = STEPS[currentStepIndex];
+
+  const handleTermsAccept = (acceptedAt: string) => {
+    setTermsAcceptedAt(acceptedAt);
+    setStep("business");
+  };
 
   const handleBusinessSuccess = (branchId: string) => {
     setFirstBranchId(branchId);
@@ -120,8 +133,14 @@ const OnboardingPage = () => {
           </header>
 
           <div className="w-full flex justify-center">
+            {step === "terms" && (
+              <TermsOnboardingForm onAccept={handleTermsAccept} />
+            )}
             {step === "business" && (
-              <BusinessOnboardingForm onSuccess={handleBusinessSuccess} />
+              <BusinessOnboardingForm
+                termsAcceptedAt={termsAcceptedAt}
+                onSuccess={handleBusinessSuccess}
+              />
             )}
             {step === "service" && (
               <ServiceOnboardingForm onNext={handleServiceNext} />

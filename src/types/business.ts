@@ -14,6 +14,7 @@ export type BusinessResponse = {
 
 export type CreateBusinessRequest = {
   name: string;
+  termsAcceptedAt: string;
   branch: {
     name: string;
     address: string;
