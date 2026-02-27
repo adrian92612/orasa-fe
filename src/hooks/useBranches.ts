@@ -80,6 +80,7 @@ export const useUpdateBranch = () => {
   const { refetchUser } = useUser();
 
   return useMutation({
+    mutationKey: [Q_KEYS.BRANCHES, Q_KEYS.UPDATE],
     mutationFn: ({ id, data }: { id: string; data: UpdateBranchRequest }) =>
       branchService.updateBranch(id, data),
     onSuccess: (response) => {
@@ -112,6 +113,7 @@ export const useDeleteBranch = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
+    mutationKey: [Q_KEYS.BRANCHES, Q_KEYS.DELETE],
     mutationFn: (id: string) => branchService.deleteBranch(id),
     onSuccess: (response, deletedId) => {
       queryClient.setQueryData<BranchResponse[]>(
@@ -119,6 +121,7 @@ export const useDeleteBranch = () => {
         (old = []) => old.filter((b) => b.id !== deletedId),
       );
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.STAFFS] });
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.SERVICES] });
       toast.success(response.message || "Branch deleted", {
         description: "Branch has been deleted successfully.",
       });

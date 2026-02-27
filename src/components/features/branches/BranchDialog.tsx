@@ -176,6 +176,8 @@ const BranchDialog = ({
         },
       });
     }
+
+    onOpenChange(false);
   };
 
   const isPending = createMutation.isPending || updateMutation.isPending;

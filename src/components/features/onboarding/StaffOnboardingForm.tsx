@@ -92,7 +92,9 @@ const StaffOnboardingForm = ({
                 name="username"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="username">Username</FieldLabel>
+                    <FieldLabel htmlFor="username" required>
+                      Username
+                    </FieldLabel>
                     <FieldContent>
                       <Input
                         id="username"
@@ -114,7 +116,7 @@ const StaffOnboardingForm = ({
                 name="temporaryPassword"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="temporaryPassword">
+                    <FieldLabel htmlFor="temporaryPassword" required>
                       Password
                     </FieldLabel>
                     <FieldContent>
@@ -154,7 +156,7 @@ const StaffOnboardingForm = ({
                 name="confirmPassword"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="confirmPassword">
+                    <FieldLabel htmlFor="confirmPassword" required>
                       Confirm Password
                     </FieldLabel>
                     <FieldContent>

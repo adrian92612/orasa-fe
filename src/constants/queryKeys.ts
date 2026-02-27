@@ -15,4 +15,10 @@ export const Q_KEYS = {
   ADMIN_SMS_BALANCE: "admin-sms-balance",
   ANALYTICS: "analytics",
   UPDATE_STATUS: "update-status",
+  UPDATE: "update",
+  DELETE: "delete",
+  CREATE: "create",
+  ALL: "all",
+  TODAY: "today",
+  UPCOMING: "upcoming",
 };

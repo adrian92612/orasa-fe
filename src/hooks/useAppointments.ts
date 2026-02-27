@@ -30,7 +30,7 @@ export const useAppointments = (
   return useQuery({
     queryKey: [
       Q_KEYS.APPOINTMENTS,
-      branchId || "ALL",
+      branchId || Q_KEYS.ALL,
       businessId,
       page,
       size,
@@ -99,7 +99,7 @@ export const useSuspenseAppointments = (
   return useSuspenseQuery({
     queryKey: [
       Q_KEYS.APPOINTMENTS,
-      branchId || "ALL",
+      branchId || Q_KEYS.ALL,
       businessId,
       page,
       size,
@@ -156,6 +156,7 @@ export const useCreateAppointment = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
+    mutationKey: [Q_KEYS.APPOINTMENTS, Q_KEYS.CREATE],
     mutationFn: (data: CreateAppointmentRequest) =>
       appointmentService.createAppointment(data),
     onMutate: async (newAppointment) => {
@@ -232,7 +233,7 @@ export const useUpdateAppointment = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: [Q_KEYS.APPOINTMENTS, "UPDATE"],
+    mutationKey: [Q_KEYS.APPOINTMENTS, Q_KEYS.UPDATE],
     mutationFn: ({
       id,
       data,
@@ -332,7 +333,7 @@ export const useDeleteAppointment = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: [Q_KEYS.APPOINTMENTS, "DELETE"],
+    mutationKey: [Q_KEYS.APPOINTMENTS, Q_KEYS.DELETE],
     mutationFn: (id: string) => appointmentService.deleteAppointment(id),
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: [Q_KEYS.APPOINTMENTS] });
@@ -387,9 +388,9 @@ export const useAppointmentCounts = (
   const { data: todayData, isLoading: isLoadingToday } = useQuery({
     queryKey: [
       Q_KEYS.APPOINTMENT_COUNTS,
-      branchId || "ALL",
+      branchId || Q_KEYS.ALL,
       businessId,
-      "today",
+      Q_KEYS.TODAY,
     ],
     queryFn: () => {
       if (branchId) {
@@ -421,9 +422,9 @@ export const useAppointmentCounts = (
   const { data: upcomingData, isLoading: isLoadingUpcoming } = useQuery({
     queryKey: [
       Q_KEYS.APPOINTMENT_COUNTS,
-      branchId || "ALL",
+      branchId || Q_KEYS.ALL,
       businessId,
-      "upcoming",
+      Q_KEYS.UPCOMING,
     ],
     queryFn: () => {
       if (branchId) {
@@ -474,9 +475,9 @@ export const useSuspenseAppointmentCounts = (
   const { data: todayData } = useSuspenseQuery({
     queryKey: [
       Q_KEYS.APPOINTMENT_COUNTS,
-      branchId || "ALL",
+      branchId || Q_KEYS.ALL,
       businessId,
-      "today",
+      Q_KEYS.TODAY,
     ],
     queryFn: () => {
       if (branchId) {
@@ -507,9 +508,9 @@ export const useSuspenseAppointmentCounts = (
   const { data: upcomingData } = useSuspenseQuery({
     queryKey: [
       Q_KEYS.APPOINTMENT_COUNTS,
-      branchId || "ALL",
+      branchId || Q_KEYS.ALL,
       businessId,
-      "upcoming",
+      Q_KEYS.UPCOMING,
     ],
     queryFn: () => {
       if (branchId) {

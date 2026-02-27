@@ -246,9 +246,11 @@ const AppointmentDialog = ({
   }, [startDateTime, serviceId, branchServices, setValue]);
 
   useEffect(() => {
-    if (isWalkin && startDateTime) {
+    if (isWalkin) {
       const today = new Date();
-      if (!isSameDay(startDateTime, today)) {
+      if (!startDateTime) {
+        setValue("startDateTime", today);
+      } else if (!isSameDay(startDateTime, today)) {
         const newDate = new Date();
         newDate.setHours(startDateTime.getHours());
         newDate.setMinutes(startDateTime.getMinutes());

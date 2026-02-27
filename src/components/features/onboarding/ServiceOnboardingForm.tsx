@@ -75,7 +75,9 @@ const ServiceOnboardingForm = ({ onNext }: ServiceOnboardingFormProps) => {
                 name="name"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="name">Service Name</FieldLabel>
+                    <FieldLabel htmlFor="name" required>
+                      Service Name
+                    </FieldLabel>
                     <FieldContent>
                       <Input
                         id="name"
@@ -117,7 +119,9 @@ const ServiceOnboardingForm = ({ onNext }: ServiceOnboardingFormProps) => {
                 name="basePrice"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="basePrice">Base Price</FieldLabel>
+                    <FieldLabel htmlFor="basePrice" required>
+                      Base Price
+                    </FieldLabel>
                     <FieldContent>
                       <Input
                         id="basePrice"
@@ -140,7 +144,7 @@ const ServiceOnboardingForm = ({ onNext }: ServiceOnboardingFormProps) => {
                 name="durationMinutes"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="durationMinutes">
+                    <FieldLabel htmlFor="durationMinutes" required>
                       Duration (min)
                     </FieldLabel>
                     <FieldContent>

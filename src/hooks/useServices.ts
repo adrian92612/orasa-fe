@@ -142,6 +142,7 @@ export const useCreateService = () => {
       queryClient.invalidateQueries({
         queryKey: [Q_KEYS.SERVICES, "branch"],
       });
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.BRANCHES] });
     },
   });
 };
@@ -235,6 +236,7 @@ export const useUpdateService = () => {
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.SERVICES] });
       // Also invalidate branch services since they might display updated info
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.SERVICES, "branch"] });
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.BRANCHES] });
     },
   });
 };
@@ -350,6 +352,7 @@ export const useAssignServiceToBranch = () => {
       queryClient.invalidateQueries({
         queryKey: [Q_KEYS.SERVICES, "branch", branchId],
       });
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.BRANCHES] });
     },
   });
 };
@@ -411,6 +414,7 @@ export const useUpdateServiceLink = () => {
       queryClient.invalidateQueries({
         queryKey: [Q_KEYS.SERVICES, "branch", branchId],
       });
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.BRANCHES] });
     },
   });
 };
