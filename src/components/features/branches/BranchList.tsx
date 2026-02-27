@@ -5,27 +5,11 @@ import BranchCard from "./BranchCard";
 
 type BranchListProps = {
   branches: BranchResponse[];
-  isLoading: boolean;
   onEdit: (branch: BranchResponse) => void;
   checkIsSaving?: (branchId: string) => boolean;
 };
 
-const BranchList = ({
-  branches,
-  isLoading,
-  onEdit,
-  checkIsSaving,
-}: BranchListProps) => {
-  if (isLoading) {
-    return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {[1, 2, 3].map((i) => (
-          <Card key={i} className="h-40 animate-pulse" />
-        ))}
-      </div>
-    );
-  }
-
+const BranchList = ({ branches, onEdit, checkIsSaving }: BranchListProps) => {
   if (branches.length === 0) {
     return (
       <Card className="p-12 text-center">

@@ -63,7 +63,6 @@ const BranchesDataSection = ({
     <>
       <BranchList
         branches={branches || []}
-        isLoading={false}
         onEdit={onEdit}
         checkIsSaving={checkIsSaving}
       />
@@ -76,8 +75,6 @@ const BranchesDataSection = ({
           branchToEdit={selectedBranch}
           staffList={staffList}
           serviceList={serviceList}
-          isLoadingStaff={false}
-          isLoadingServices={false}
         />
       </Suspense>
     </>

@@ -1,7 +1,7 @@
 import { Q_KEYS } from "@/constants/queryKeys";
 import { API_ROUTES } from "@/constants/routes";
 import { apiClient } from "@/lib/api-client";
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createContext, type ReactNode, useContext, useState } from "react";
 
 export type UserRole = "OWNER" | "STAFF" | "ADMIN";
@@ -16,7 +16,6 @@ export type User = {
 
 type UserContextType = {
   user: User | null;
-  isLoading: boolean;
   error: Error | null;
   refetchUser: () => void;
   logout: () => void;
@@ -29,10 +28,9 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const {
     data: user,
-    isLoading,
     error,
     refetch,
-  } = useQuery({
+  } = useSuspenseQuery({
     queryKey: [Q_KEYS.CURRENT_USER],
     queryFn: async () => {
       try {
@@ -45,7 +43,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         return null;
       }
     },
-    retry: false,
     staleTime: 5 * 60 * 1000,
   });
 
@@ -66,7 +63,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     <UserContext.Provider
       value={{
         user: user || null,
-        isLoading,
         error: error as Error | null,
         refetchUser: refetch,
         logout,

@@ -1,19 +1,14 @@
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MoreHorizontal, Pencil, Trash2, User } from "lucide-react";
+import { User } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useMutationState } from "@tanstack/react-query";
+import { Q_KEYS } from "@/constants/queryKeys";
 
 import type { StaffResponse } from "@/types/staff";
+import StaffCard from "./StaffCard";
 
 type StaffListProps = {
   staff: StaffResponse[];
-  isLoading: boolean;
   isSearchActive: boolean;
   onEdit: (staff: StaffResponse) => void;
   onDelete: (staff: StaffResponse) => void;
@@ -23,30 +18,22 @@ type StaffListProps = {
 
 const StaffList = ({
   staff,
-  isLoading,
   isSearchActive,
   onEdit,
   onDelete,
   emptyTitle = "No staff found",
   emptyDescription = "You haven't added any staff yet. Staff members you add will appear here.",
 }: StaffListProps) => {
-  if (isLoading) {
-    return (
-      <div className="space-y-3">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Card key={i} className="p-4">
-            <div className="flex items-center gap-4">
-              <Skeleton className="h-10 w-10 rounded-full" />
-              <div className="flex-1 space-y-2">
-                <Skeleton className="h-4 w-32" />
-                <Skeleton className="h-3 w-48" />
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
-    );
-  }
+  const pendingMutations = useMutationState({
+    filters: { status: "pending", mutationKey: [Q_KEYS.STAFFS] },
+    select: (mutation) => mutation.state.variables as any,
+  });
+
+  const checkIsSaving = (id: string) =>
+    pendingMutations.some((vars) => {
+      if (typeof vars === "string") return vars === id;
+      return vars?.id === id;
+    });
 
   if (staff.length === 0) {
     return (
@@ -67,69 +54,13 @@ const StaffList = ({
   return (
     <div className="space-y-3">
       {staff.map((member) => (
-        <Card
+        <StaffCard
           key={member.id}
-          className="p-4 transition-colors hover:bg-accent/50"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <User className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-medium truncate">{member.username}</h3>
-                <div className="flex flex-wrap gap-1 mt-1.5">
-                  {member.branches.map((branch) => (
-                    <span
-                      key={branch.id}
-                      className="inline-flex items-center rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground"
-                    >
-                      {branch.name}
-                    </span>
-                  ))}
-                  {member.branches.length === 0 && (
-                    <span className="text-xs text-muted-foreground italic">
-                      No branches assigned
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-primary transition-colors"
-                onClick={() => onEdit(member)}
-              >
-                <Pencil className="h-4 w-4" />
-                <span className="sr-only">Edit</span>
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-destructive transition-colors"
-                  >
-                    <MoreHorizontal className="h-4 w-4" />
-                    <span className="sr-only">Open menu</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[160px]">
-                  <DropdownMenuItem
-                    onClick={() => onDelete(member)}
-                    className="text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer font-medium"
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Delete Staff
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        </Card>
+          member={member}
+          isSaving={checkIsSaving(member.id)}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
       ))}
     </div>
   );

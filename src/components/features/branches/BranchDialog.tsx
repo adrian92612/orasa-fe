@@ -61,8 +61,6 @@ type Props = {
   branchToEdit?: BranchResponse | null;
   staffList: StaffResponse[];
   serviceList: ServiceResponse[];
-  isLoadingStaff?: boolean;
-  isLoadingServices?: boolean;
 };
 
 const BranchDialog = ({
@@ -71,8 +69,6 @@ const BranchDialog = ({
   branchToEdit,
   staffList,
   serviceList,
-  isLoadingStaff,
-  isLoadingServices,
 }: Props) => {
   const createMutation = useCreateBranch();
   const updateMutation = useUpdateBranch();
@@ -271,11 +267,6 @@ const BranchDialog = ({
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel className="flex items-center gap-2">
                         Staffs
-                        {isLoadingStaff && (
-                          <span className="text-xs font-normal text-muted-foreground animate-pulse">
-                            (Loading...)
-                          </span>
-                        )}
                       </FieldLabel>
 
                       <div className="flex gap-2 mb-2">
@@ -283,7 +274,6 @@ const BranchDialog = ({
                           type="button"
                           size="sm"
                           variant="outline"
-                          disabled={isLoadingStaff}
                           onClick={() => field.onChange(allStaffIds)}
                         >
                           Select all
@@ -293,7 +283,6 @@ const BranchDialog = ({
                           type="button"
                           size="sm"
                           variant="ghost"
-                          disabled={isLoadingStaff}
                           onClick={() => field.onChange([])}
                         >
                           Clear
@@ -303,16 +292,9 @@ const BranchDialog = ({
                       <MultiSelect
                         values={field.value}
                         onValuesChange={field.onChange}
-                        disabled={isLoadingStaff}
                       >
                         <MultiSelectTrigger>
-                          <MultiSelectValue
-                            placeholder={
-                              isLoadingStaff
-                                ? "Loading staff..."
-                                : "Select staff"
-                            }
-                          />
+                          <MultiSelectValue placeholder="Select staff" />
                         </MultiSelectTrigger>
 
                         <MultiSelectContent>
@@ -343,11 +325,6 @@ const BranchDialog = ({
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel className="flex items-center gap-2">
                         Services
-                        {isLoadingServices && (
-                          <span className="text-xs font-normal text-muted-foreground animate-pulse">
-                            (Loading...)
-                          </span>
-                        )}
                       </FieldLabel>
 
                       <div className="flex gap-2 mb-2">
@@ -355,7 +332,6 @@ const BranchDialog = ({
                           type="button"
                           size="sm"
                           variant="outline"
-                          disabled={isLoadingServices}
                           onClick={() => field.onChange(allServiceIds)}
                         >
                           Select all
@@ -365,7 +341,6 @@ const BranchDialog = ({
                           type="button"
                           size="sm"
                           variant="ghost"
-                          disabled={isLoadingServices}
                           onClick={() => field.onChange([])}
                         >
                           Clear
@@ -375,16 +350,9 @@ const BranchDialog = ({
                       <MultiSelect
                         values={field.value}
                         onValuesChange={field.onChange}
-                        disabled={isLoadingServices}
                       >
                         <MultiSelectTrigger>
-                          <MultiSelectValue
-                            placeholder={
-                              isLoadingServices
-                                ? "Loading services..."
-                                : "Select services"
-                            }
-                          />
+                          <MultiSelectValue placeholder="Select services" />
                         </MultiSelectTrigger>
 
                         <MultiSelectContent>

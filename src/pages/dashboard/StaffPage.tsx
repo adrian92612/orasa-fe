@@ -1,6 +1,7 @@
-import { lazy, Suspense, useMemo, useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Plus, Search } from "lucide-react";
 
+import { useUser } from "@/context/UserContext";
 import { useSuspenseStaff } from "@/hooks/useStaff";
 
 import type { StaffResponse } from "@/types/staff";
@@ -8,7 +9,7 @@ import type { StaffResponse } from "@/types/staff";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import StaffList from "@/components/features/staff/StaffList";
-import StaffPageSkeleton from "@/components/features/staff/StaffPageSkeleton";
+import { StaffListSkeleton } from "@/components/features/staff/StaffListSkeleton";
 
 const StaffDialog = lazy(
   () => import("@/components/features/staff/StaffDialog"),
@@ -17,25 +18,49 @@ const StaffDeleteDialog = lazy(
   () => import("@/components/features/staff/StaffDeleteDialog"),
 );
 
-const StaffPageContent = () => {
+const StaffDataSection = ({
+  searchQuery,
+  onEdit,
+  onDelete,
+}: {
+  searchQuery: string;
+  onEdit: (member: StaffResponse) => void;
+  onDelete: (member: StaffResponse) => void;
+}) => {
+  const { selectedBranchId } = useUser();
   const { data: staff } = useSuspenseStaff();
 
+  const branchFiltered = selectedBranchId
+    ? staff.filter((s) => s.branches.some((b) => b.id === selectedBranchId))
+    : staff;
+
+  const filteredStaff = !searchQuery.trim()
+    ? branchFiltered
+    : branchFiltered.filter(
+        (s) =>
+          s.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          s.branches.some((b) =>
+            b.name.toLowerCase().includes(searchQuery.toLowerCase()),
+          ),
+      );
+
+  return (
+    <StaffList
+      staff={filteredStaff}
+      isSearchActive={!!searchQuery.trim()}
+      onEdit={onEdit}
+      onDelete={onDelete}
+    />
+  );
+};
+
+const StaffPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState<StaffResponse | null>(
     null,
   );
-
-  const filteredStaff = useMemo(() => {
-    if (!searchQuery.trim()) return staff;
-    const query = searchQuery.toLowerCase();
-    return staff.filter(
-      (s) =>
-        s.username.toLowerCase().includes(query) ||
-        s.branches.some((b) => b.name.toLowerCase().includes(query)),
-    );
-  }, [staff, searchQuery]);
 
   const handleCreate = () => {
     setSelectedStaff(null);
@@ -72,13 +97,13 @@ const StaffPageContent = () => {
         </Button>
       </div>
 
-      <StaffList
-        staff={filteredStaff}
-        isLoading={false}
-        isSearchActive={!!searchQuery.trim()}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+      <Suspense fallback={<StaffListSkeleton />}>
+        <StaffDataSection
+          searchQuery={searchQuery}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      </Suspense>
 
       <Suspense fallback={null}>
         <StaffDialog
@@ -93,14 +118,6 @@ const StaffPageContent = () => {
         />
       </Suspense>
     </div>
-  );
-};
-
-const StaffPage = () => {
-  return (
-    <Suspense fallback={<StaffPageSkeleton />}>
-      <StaffPageContent />
-    </Suspense>
   );
 };
 

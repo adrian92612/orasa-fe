@@ -4,7 +4,6 @@ import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router";
 
 import { NAV_ITEMS } from "@/constants/navigation";
-import FullPageLoading from "./FullPageLoading";
 
 const STAFF_ALLOWED_ROUTES = NAV_ITEMS.filter((item) =>
   item.allowedRoles.includes("STAFF"),
@@ -16,16 +15,12 @@ type RouteGuardProps = {
 };
 
 const RouteGuard = ({ children, variant = "private" }: RouteGuardProps) => {
-  const { user, isLoading } = useUser();
+  const { user } = useUser();
   const location = useLocation();
 
   const staffInAllowedRoute = STAFF_ALLOWED_ROUTES.some((route) =>
     location.pathname.startsWith(route),
   );
-
-  if (isLoading) {
-    return <FullPageLoading />;
-  }
 
   const getRedirect = () => {
     switch (variant) {

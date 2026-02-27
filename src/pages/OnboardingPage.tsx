@@ -37,7 +37,7 @@ const STEPS: StepConfig[] = [
 ];
 
 const OnboardingPage = () => {
-  const { isLoading, refetchUser } = useUser();
+  const { refetchUser } = useUser();
   const navigate = useNavigate();
   const [step, setStep] = useState<OnboardingStep>("business");
   const [firstBranchId, setFirstBranchId] = useState<string | null>(null);
@@ -58,14 +58,6 @@ const OnboardingPage = () => {
     await refetchUser();
     navigate(APP_ROUTES.DASHBOARD.ANALYTICS);
   };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-dvh flex items-center justify-center">
-        <p className="text-slate-500 animate-pulse">Loading onboarding...</p>
-      </div>
-    );
-  }
 
   return (
     <main className="min-h-dvh w-full flex flex-col items-center justify-center py-12 bg-slate-50">

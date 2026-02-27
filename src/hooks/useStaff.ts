@@ -85,6 +85,7 @@ export const useCreateStaff = () => {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.STAFFS] });
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.BRANCHES] });
     },
   });
 };
@@ -145,6 +146,7 @@ export const useUpdateStaff = () => {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.STAFFS] });
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.BRANCHES] });
     },
   });
 };
@@ -178,6 +180,7 @@ export const useDeleteStaff = () => {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.STAFFS] });
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.BRANCHES] });
     },
   });
 };
