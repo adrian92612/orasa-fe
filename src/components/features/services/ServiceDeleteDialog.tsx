@@ -1,13 +1,4 @@
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import DeleteDialog from "@/components/common/DeleteDialog";
 import type { ServiceResponse } from "@/types/service";
 import { useDeleteService } from "@/hooks/useServices";
 import { toast } from "sonner";
@@ -44,35 +35,22 @@ const ServiceDeleteDialog = ({
   };
 
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This will permanently delete the service{" "}
-            <span className="font-semibold text-foreground">
-              "{service?.name}"
-            </span>
-            . This action cannot be undone.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={deleteMutation.isPending}>
-            Cancel
-          </AlertDialogCancel>
-          <AlertDialogAction
-            onClick={(e) => {
-              e.preventDefault();
-              handleDelete();
-            }}
-            disabled={deleteMutation.isPending}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-          >
-            {deleteMutation.isPending ? "Deleting..." : "Delete Service"}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <DeleteDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      onConfirm={handleDelete}
+      isDeleting={deleteMutation.isPending}
+      confirmText="Delete Service"
+      description={
+        <>
+          This will permanently delete the service{" "}
+          <span className="font-semibold text-foreground">
+            "{service?.name}"
+          </span>
+          . This action cannot be undone.
+        </>
+      }
+    />
   );
 };
 

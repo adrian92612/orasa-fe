@@ -207,7 +207,6 @@ export const useCreateAppointment = () => {
       return { previousAppointments };
     },
     onError: (error: Error, _newAppointment, context) => {
-      // If the mutation fails, use the context returned from onMutate to roll back
       if (context?.previousAppointments) {
         context.previousAppointments.forEach(([queryKey, data]) => {
           queryClient.setQueryData(queryKey, data);
@@ -218,9 +217,9 @@ export const useCreateAppointment = () => {
       });
     },
     onSettled: () => {
-      // Always refetch after error or success to sync with server
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENTS] });
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENT_COUNTS] });
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.ANALYTICS] });
     },
     onSuccess: (response) => {
       toast.success(response.message || "Appointment created successfully");
@@ -242,15 +241,12 @@ export const useUpdateAppointment = () => {
       data: UpdateAppointmentRequest;
     }) => appointmentService.updateAppointment(id, data),
     onMutate: async ({ id, data }) => {
-      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: [Q_KEYS.APPOINTMENTS] });
 
-      // Snapshot the previous value
       const previousAppointments = queryClient.getQueriesData({
         queryKey: [Q_KEYS.APPOINTMENTS],
       });
 
-      // Optimistically update to the new value
       queryClient.setQueriesData<{ content: AppointmentResponse[] }>(
         { queryKey: [Q_KEYS.APPOINTMENTS] },
         (old) => {
@@ -264,11 +260,9 @@ export const useUpdateAppointment = () => {
         },
       );
 
-      // Return a context object with the snapshotted value
       return { previousAppointments };
     },
     onError: (_err, _newAppointment, context) => {
-      // If the mutation fails, use the context returned from onMutate to roll back
       if (context?.previousAppointments) {
         context.previousAppointments.forEach(([queryKey, data]) => {
           queryClient.setQueryData(queryKey, data);
@@ -277,7 +271,6 @@ export const useUpdateAppointment = () => {
       toast.error("Failed to update appointment");
     },
     onSettled: () => {
-      // Always refetch after error or success
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENTS] });
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENT_COUNTS] });
     },
@@ -336,7 +329,6 @@ export const useUpdateAppointmentStatus = () => {
 };
 
 export const useDeleteAppointment = () => {
-  // ... existing code
   const queryClient = useQueryClient();
 
   return useMutation({

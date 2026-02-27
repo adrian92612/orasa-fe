@@ -150,6 +150,7 @@ export const useUpdateService = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
+    mutationKey: [Q_KEYS.SERVICES],
     mutationFn: ({ id, data }: { id: string; data: UpdateServiceRequest }) =>
       serviceService.updateService(id, data),
     onMutate: async ({ id, data }) => {
@@ -242,6 +243,7 @@ export const useDeleteService = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
+    mutationKey: [Q_KEYS.SERVICES],
     mutationFn: (id: string) => serviceService.deleteService(id),
     onMutate: async (id) => {
       await queryClient.cancelQueries({
@@ -286,6 +288,7 @@ export const useAssignServiceToBranch = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
+    mutationKey: [Q_KEYS.SERVICES],
     mutationFn: ({
       branchId,
       data,
@@ -355,6 +358,7 @@ export const useUpdateServiceLink = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
+    mutationKey: [Q_KEYS.SERVICES],
     mutationFn: ({
       branchId,
       linkId,

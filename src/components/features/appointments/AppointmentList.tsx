@@ -59,9 +59,7 @@ const AppointmentList = ({
     });
 
   const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this appointment?")) {
-      deleteMutation.mutate(id);
-    }
+    deleteMutation.mutate(id);
   };
 
   const handleStatusChange = (

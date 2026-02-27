@@ -6,7 +6,7 @@ export default function ServicesPageSkeleton() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <Skeleton className="h-4 w-[250px]" />
+        <Skeleton className="h-6 w-[250px]" />
         <Skeleton className="h-10 w-32" />
       </div>
 
@@ -14,8 +14,14 @@ export default function ServicesPageSkeleton() {
         <Skeleton className="h-10 w-full" />
       </div>
 
-      <ServiceListSkeleton />
-      <CommonPaginationSkeleton />
+      <div className="min-h-[400px] space-y-8">
+        <Skeleton className="h-10 w-full lg:w-[400px]" />
+
+        <div className="mt-6 space-y-4">
+          <ServiceListSkeleton />
+          <CommonPaginationSkeleton />
+        </div>
+      </div>
     </div>
   );
 }

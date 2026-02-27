@@ -19,6 +19,7 @@ export type AppointmentResponse = {
   notes?: string;
   serviceId?: string;
   serviceName?: string;
+  serviceDeleted?: boolean;
   selectedReminderIds: string[];
   additionalReminderMinutes?: number;
   additionalReminderTemplate?: string;

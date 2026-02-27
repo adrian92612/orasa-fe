@@ -452,9 +452,12 @@ const AppointmentDialog = ({
                           )}
                         >
                           {field.value
-                            ? branchServices.find(
+                            ? (branchServices.find(
                                 (s) => s.serviceId === field.value,
-                              )?.serviceName
+                              )?.serviceName ??
+                              (appointmentToEdit?.serviceDeleted
+                                ? "⚠ Service was deleted — select a new one"
+                                : "Select a service"))
                             : "Select a service"}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
