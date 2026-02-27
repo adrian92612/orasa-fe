@@ -2,15 +2,8 @@ import OwnerLoginForm from "@/components/features/auth/OwnerLoginForm";
 import StaffLoginForm from "@/components/features/auth/StaffLoginForm";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useUser } from "@/context/UserContext";
 
 export const LoginPage = () => {
-  const { isLoading } = useUser();
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <main className="min-h-screen w-full flex items-center justify-center p-4 bg-slate-700">
       <div className="w-full max-w-md space-y-8 min-h-[530px] p-6 rounded-lg bg-background shadow-2xl">

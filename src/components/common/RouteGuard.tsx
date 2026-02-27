@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router";
 
 import { NAV_ITEMS } from "@/constants/navigation";
+import FullPageLoading from "./FullPageLoading";
 
 const STAFF_ALLOWED_ROUTES = NAV_ITEMS.filter((item) =>
   item.allowedRoles.includes("STAFF"),
@@ -23,11 +24,7 @@ const RouteGuard = ({ children, variant = "private" }: RouteGuardProps) => {
   );
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <FullPageLoading />;
   }
 
   const getRedirect = () => {

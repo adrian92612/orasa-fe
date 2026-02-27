@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { Suspense } from "react";
 import { useUser } from "@/context/UserContext";
 import { useSuspenseBranches } from "@/hooks/useBranches";
 import { PageSkeleton } from "@/components/common/PageSkeleton";
@@ -13,9 +13,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-const AppSidebar = lazy(
-  () => import("@/components/features/dashboard/Sidebar"),
-);
+import AppSidebar from "@/components/features/dashboard/Sidebar";
 
 const DashboardLayout = () => {
   const { user, logout, selectedBranchId } = useUser();

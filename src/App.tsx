@@ -1,48 +1,43 @@
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UserProvider } from "@/context/UserContext";
 import { APP_ROUTES } from "@/constants/routes";
 import RouteGuard from "./components/common/RouteGuard";
+import FullPageLoading from "./components/common/FullPageLoading";
+import DashboardLayout from "./layouts/DashboardLayout";
 
-const queryClient = new QueryClient();
-const LoginPage = lazy(() => import("@/pages/LoginPage"));
-const OnboardingPage = lazy(() => import("@/pages/OnboardingPage"));
-const DashboardLayout = lazy(() => import("./layouts/DashboardLayout"));
-const AnalyticsPage = lazy(() => import("./pages/dashboard/AnalyticsPage"));
-const AppointmentsPage = lazy(
-  () => import("./pages/dashboard/AppointmentsPage"),
-);
-const BranchesPage = lazy(() => import("./pages/dashboard/BranchesPage"));
-const ServicesPage = lazy(() => import("./pages/dashboard/ServicesPage"));
-const StaffPage = lazy(() => import("./pages/dashboard/StaffPage"));
-const ActivityLogsPage = lazy(
-  () => import("./pages/dashboard/ActivityLogsPage"),
-);
-const SmsLogsPage = lazy(() => import("./pages/dashboard/SmsLogsPage"));
-const AdminLayout = lazy(() => import("./layouts/AdminLayout"));
-const AdminDashboardPage = lazy(
-  () => import("./pages/admin/AdminDashboardPage"),
-);
-const SettingsPage = lazy(() => import("./pages/dashboard/SettingsPage"));
+// Pages
+import LoginPage from "@/pages/LoginPage";
+import OnboardingPage from "@/pages/OnboardingPage";
+import AnalyticsPage from "./pages/dashboard/AnalyticsPage";
+import AppointmentsPage from "./pages/dashboard/AppointmentsPage";
+import BranchesPage from "./pages/dashboard/BranchesPage";
+import ServicesPage from "./pages/dashboard/ServicesPage";
+import StaffPage from "./pages/dashboard/StaffPage";
+import ActivityLogsPage from "./pages/dashboard/ActivityLogsPage";
+import SmsLogsPage from "./pages/dashboard/SmsLogsPage";
+import AdminLayout from "./layouts/AdminLayout";
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
+import SettingsPage from "./pages/dashboard/SettingsPage";
 
 import { DashboardSkeleton } from "@/components/features/dashboard/DashboardSkeleton";
-
 import { Toaster } from "@/components/ui/sonner";
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider>
         <BrowserRouter>
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<FullPageLoading />}>
             <Routes>
               <Route
                 path={APP_ROUTES.HOME}
                 element={<Navigate to={APP_ROUTES.LOGIN} replace />}
               />
 
-              {/* Public routes */}
               <Route
                 path={APP_ROUTES.LOGIN}
                 element={
@@ -59,18 +54,14 @@ function App() {
                 }
               />
 
-              {/* Dashboard routes */}
               <Route
                 path="/dashboard"
                 element={
-                  <RouteGuard
-                    variant="private"
-                    children={
-                      <Suspense fallback={<DashboardSkeleton />}>
-                        <DashboardLayout />
-                      </Suspense>
-                    }
-                  />
+                  <RouteGuard variant="private">
+                    <Suspense fallback={<DashboardSkeleton />}>
+                      <DashboardLayout />
+                    </Suspense>
+                  </RouteGuard>
                 }
               >
                 <Route index element={<Navigate to="analytics" replace />} />
@@ -84,7 +75,6 @@ function App() {
                 <Route path="settings" element={<SettingsPage />} />
               </Route>
 
-              {/* Admin routes */}
               <Route
                 path="/admin"
                 element={
