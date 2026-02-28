@@ -1,11 +1,4 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Field,
@@ -76,83 +69,80 @@ const StaffLoginForm = () => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Staff Member</CardTitle>
-        <CardDescription>
-          Access your appointments and schedule.
-        </CardDescription>
-      </CardHeader>
+    <div className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FieldGroup>
+          {error && (
+            <div className="p-3 text-sm text-red-500 bg-red-50 rounded-md border border-red-100 mb-4">
+              {error}
+            </div>
+          )}
 
-      <CardContent className="space-y-4">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FieldGroup>
-            {error && (
-              <div className="p-3 text-sm text-red-500 bg-red-50 rounded-md">
-                {error}
-              </div>
+          <Controller
+            control={control}
+            name="username"
+            render={({ field, fieldState }) => (
+              <Field>
+                <FieldLabel htmlFor="username" required>
+                  Username
+                </FieldLabel>
+                <FieldContent>
+                  <Input
+                    id="username"
+                    placeholder="Enter your username"
+                    className="h-11 border-slate-200 focus-visible:ring-black"
+                    disabled={isPending}
+                    aria-invalid={!!errors.username}
+                    {...field}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </FieldContent>
+              </Field>
             )}
+          />
 
-            <Controller
-              control={control}
-              name="username"
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel htmlFor="username" required>
-                    Username
-                  </FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id="username"
-                      placeholder="Enter your username"
-                      disabled={isPending}
-                      aria-invalid={!!errors.username}
-                      {...field}
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </FieldContent>
-                </Field>
-              )}
-            />
-
-            <Controller
-              control={control}
-              name="password"
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel htmlFor="password" required>
-                    Password
-                  </FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="Enter your password"
-                      disabled={isPending}
-                      aria-invalid={!!errors.password}
-                      {...field}
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </FieldContent>
-                </Field>
-              )}
-            />
-            <Button className="w-full" type="submit" disabled={isPending}>
-              {isPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <LogIn className="mr-2 h-4 w-4" />
-              )}
-              Sign In
-            </Button>
-          </FieldGroup>
-        </form>
-      </CardContent>
-    </Card>
+          <Controller
+            control={control}
+            name="password"
+            render={({ field, fieldState }) => (
+              <Field>
+                <FieldLabel htmlFor="password" required>
+                  Password
+                </FieldLabel>
+                <FieldContent>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    className="h-11 border-slate-200 focus-visible:ring-black"
+                    disabled={isPending}
+                    aria-invalid={!!errors.password}
+                    {...field}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </FieldContent>
+              </Field>
+            )}
+          />
+          <Button
+            className="w-full h-11 text-base bg-black hover:bg-slate-900 transition-colors shadow-lg shadow-black/5"
+            type="submit"
+            disabled={isPending}
+          >
+            {isPending ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <LogIn className="mr-2 h-4 w-4" />
+            )}
+            Sign In
+          </Button>
+        </FieldGroup>
+      </form>
+    </div>
   );
 };
 

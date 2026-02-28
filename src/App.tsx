@@ -8,6 +8,7 @@ import FullPageLoading from "./components/common/FullPageLoading";
 import DashboardLayout from "./layouts/DashboardLayout";
 
 // Pages
+import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
 import OnboardingPage from "@/pages/OnboardingPage";
 import AnalyticsPage from "./pages/dashboard/AnalyticsPage";
@@ -33,10 +34,7 @@ function App() {
         <BrowserRouter>
           <Suspense fallback={<FullPageLoading />}>
             <Routes>
-              <Route
-                path={APP_ROUTES.HOME}
-                element={<Navigate to={APP_ROUTES.LOGIN} replace />}
-              />
+              <Route path={APP_ROUTES.HOME} element={<HomePage />} />
 
               <Route
                 path={APP_ROUTES.LOGIN}
