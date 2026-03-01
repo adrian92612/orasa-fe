@@ -39,7 +39,7 @@ export function DateRangePicker({
             id="date"
             variant="outline"
             className={cn(
-              "w-[300px] justify-start text-left font-normal",
+              "w-75 justify-start text-left font-normal border-primary/75",
               !date && "text-muted-foreground",
             )}
           >
@@ -60,9 +60,9 @@ export function DateRangePicker({
         </PopoverTrigger>
 
         <PopoverContent className="w-auto p-0" align="start">
-          <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x">
+          <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-primary/75">
             {presets && presets.length > 0 && (
-              <div className="flex flex-col gap-1 p-3 w-full sm:w-[150px]">
+              <div className="flex flex-col gap-1 p-3 w-full sm:w-37.5">
                 {presets.map((preset) => (
                   <Button
                     key={preset.label}

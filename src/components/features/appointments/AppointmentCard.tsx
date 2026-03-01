@@ -24,11 +24,11 @@ import type {
 import { cn } from "@/lib/utils";
 
 const statusColors: Record<AppointmentStatus, string> = {
-  PENDING: "bg-yellow-100 text-yellow-800",
-  CONFIRMED: "bg-blue-100 text-blue-800",
-  COMPLETED: "bg-green-100 text-green-800",
-  CANCELLED: "bg-red-100 text-red-800",
-  NO_SHOW: "bg-gray-100 text-gray-800",
+  PENDING: "bg-slate-100 text-slate-600 border border-slate-200",
+  CONFIRMED: "bg-accent/50 text-accent-foreground border border-accent",
+  COMPLETED: "bg-primary text-primary-foreground border border-primary",
+  CANCELLED: "bg-white text-slate-500 border border-slate-200 line-through",
+  NO_SHOW: "bg-slate-50 text-slate-400 border border-slate-200",
 };
 
 type AppointmentCardProps = {
@@ -80,7 +80,7 @@ const AppointmentCard = ({
           showSaving && "opacity-70 grayscale-[0.5]",
         )}
       >
-        <div className="flex md:flex-col items-center md:items-start gap-2 md:gap-1 min-w-[100px] border-b md:border-b-0 md:border-r pb-3 md:pb-0 pr-0 md:pr-4">
+        <div className="flex md:flex-col items-center md:items-start gap-2 md:gap-1 min-w-25 border-b md:border-b-0 md:border-r pb-3 md:pb-0 pr-0 md:pr-4">
           <div className="flex items-center gap-1.5 text-sm font-medium">
             <Clock className="h-4 w-4 text-primary" />
             <span>{formatTime(start)}</span>
@@ -99,7 +99,7 @@ const AppointmentCard = ({
             {appointment.type === "WALK_IN" && (
               <Badge
                 variant="outline"
-                className="text-[10px] uppercase font-bold tracking-wider border-orange-200 bg-orange-50 text-orange-700"
+                className="text-[10px] uppercase font-bold tracking-wider border-slate-300 bg-slate-100 text-slate-700"
               >
                 Walk-In
               </Badge>

@@ -23,20 +23,20 @@ const BusinessProfile = () => {
         </CardHeader>
         <CardContent className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-2">
-              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">
                 Business Name
               </p>
-              <div className="font-black text-2xl tracking-tighter">
+              <div className="font-semibold tracking-tight text-lg">
                 {business.name}
               </div>
             </div>
 
-            <div className="space-y-2">
-              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">
                 Owner Account
               </p>
-              <div className="font-bold text-lg text-primary">
+              <div className="font-semibold tracking-tight text-lg">
                 {user?.username}
               </div>
             </div>

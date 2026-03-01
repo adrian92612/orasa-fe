@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { TimeInput } from "@/components/ui/time-input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -309,8 +310,7 @@ const AppointmentDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        {/* ... Header ... */}
+      <DialogContent className="sm:max-w-125">
         <DialogHeader>
           <DialogTitle>
             {isEditing ? "Edit Appointment" : "New Appointment"}
@@ -449,7 +449,7 @@ const AppointmentDialog = ({
                           role="combobox"
                           aria-expanded={openCombobox}
                           className={cn(
-                            "w-full justify-between font-normal",
+                            "w-full justify-between font-normal dark:bg-input/30 dark:border-primary",
                             !field.value && "text-muted-foreground",
                           )}
                         >
@@ -518,7 +518,7 @@ const AppointmentDialog = ({
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "grow justify-start text-left font-normal",
+                              "grow justify-start text-left font-normal dark:bg-input/30 dark:border-primary",
                               !field.value && "text-muted-foreground",
                             )}
                           >
@@ -553,9 +553,8 @@ const AppointmentDialog = ({
                           />
                         </PopoverContent>
                       </Popover>
-                      <Input
-                        type="time"
-                        className="w-[130px] shrink-0"
+                      <TimeInput
+                        className="w-32.5 shrink-0 text-foreground dark:text-foreground"
                         value={field.value ? format(field.value, "HH:mm") : ""}
                         onChange={(e) => {
                           const time = e.target.value;
@@ -612,8 +611,10 @@ const AppointmentDialog = ({
 
               {/* Reminders */}
               {!isWalkin && reminders.length > 0 && (
-                <div className="space-y-4 rounded-md border p-4">
-                  <div className="text-sm font-medium">Reminders</div>
+                <div className="space-y-4 rounded-md border border-primary p-4">
+                  <div className="text-sm font-medium text-foreground">
+                    Reminders
+                  </div>
                   <Controller
                     name="selectedReminderIds"
                     control={control}
@@ -681,8 +682,8 @@ const AppointmentDialog = ({
 
               {/* Extra Reminder Fields */}
               {!isWalkin && customReminderEnabled && (
-                <div className="space-y-4 rounded-md border p-4 bg-muted/20 animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="text-sm font-medium">
+                <div className="space-y-4 rounded-md border p-4 border-primary animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="text-sm font-medium text-foreground">
                     Extra Reminder Settings
                   </div>
                   <div className="grid grid-cols-2 gap-4">

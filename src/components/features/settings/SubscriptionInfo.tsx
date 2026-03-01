@@ -18,7 +18,7 @@ const SubscriptionInfo = () => {
     switch (status) {
       case "ACTIVE":
         return (
-          <Badge className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border-emerald-500/20 shadow-none">
+          <Badge className="bg-accent/50 text-accent-foreground border-accent hover:bg-accent/80 shadow-none">
             <CheckCircle2 className="w-3 h-3 mr-1" /> Active
           </Badge>
         );

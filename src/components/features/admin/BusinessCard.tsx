@@ -6,6 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Card } from "@/components/ui/card";
 import { Calendar, CreditCard, MoreVertical } from "lucide-react";
 import type { BusinessResponse } from "@/types/business";
 
@@ -25,7 +26,7 @@ const BusinessCard = ({
   onCancel,
 }: BusinessCardProps) => {
   return (
-    <div className="group relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-lg border bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+    <Card className="group relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 hover:shadow-md transition-shadow">
       <div className="flex flex-col gap-1 min-w-[200px]">
         <div className="flex items-center gap-2">
           <h3 className="font-semibold leading-none tracking-tight">
@@ -101,7 +102,7 @@ const BusinessCard = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-    </div>
+    </Card>
   );
 };
 

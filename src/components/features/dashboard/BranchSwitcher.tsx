@@ -25,7 +25,7 @@ export const BranchSwitcher = () => {
         variant="outline"
         role="combobox"
         disabled
-        className="w-[200px] justify-between opacity-100 disabled:opacity-100 bg-muted/50"
+        className="w-50 justify-between opacity-100 disabled:opacity-100 bg-muted/50 text-background dark:text-foreground"
       >
         <div className="flex items-center">
           <Store className="mr-2 h-4 w-4" />
@@ -41,7 +41,7 @@ export const BranchSwitcher = () => {
         <Button
           variant="outline"
           role="combobox"
-          className="w-[200px] justify-between"
+          className="w-50 justify-between border-sidebar-foreground text-sidebar-foreground"
           disabled={isLoading}
         >
           <div className="flex items-center truncate">
@@ -53,7 +53,7 @@ export const BranchSwitcher = () => {
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-[200px]">
+      <DropdownMenuContent className="w-50">
         <DropdownMenuLabel>Select Branch</DropdownMenuLabel>
         <DropdownMenuSeparator />
 

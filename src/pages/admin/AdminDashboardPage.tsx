@@ -14,6 +14,7 @@ import {
 import CommonPagination from "@/components/common/CommonPagination";
 import { CommonPaginationSkeleton } from "@/components/common/CommonPaginationSkeleton";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Building2, Database, MessageSquare } from "lucide-react";
 import BusinessCard from "@/components/features/admin/BusinessCard";
 import BusinessFilters from "@/components/features/admin/BusinessFilters";
@@ -125,7 +126,7 @@ const AdminDashboardPage = () => {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">
             Business Management
           </h2>
           <p className="text-muted-foreground">
@@ -143,7 +144,7 @@ const AdminDashboardPage = () => {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="p-6 rounded-xl border bg-white shadow-sm flex items-center gap-4">
+        <Card className="p-6 flex-row items-center gap-4">
           <div className="h-12 w-12 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
             <MessageSquare className="h-6 w-6" />
           </div>
@@ -158,7 +159,7 @@ const AdminDashboardPage = () => {
               <span className="text-xs text-muted-foreground">credits</span>
             </div>
           </div>
-        </div>
+        </Card>
       </div>
 
       <BusinessFilters

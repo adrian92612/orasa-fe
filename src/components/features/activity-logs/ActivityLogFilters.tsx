@@ -80,7 +80,7 @@ const ActivityLogFilters = ({
         onValueChange={onActionChange}
         disabled={isLoading}
       >
-        <SelectTrigger className="h-9 border-black ">
+        <SelectTrigger>
           <SelectValue placeholder="Action" />
         </SelectTrigger>
         <SelectContent>

@@ -24,6 +24,7 @@ import SettingsPage from "./pages/dashboard/SettingsPage";
 
 import { DashboardSkeleton } from "@/components/features/dashboard/DashboardSkeleton";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "./components/theme-provider";
 
 const queryClient = new QueryClient();
 
@@ -31,64 +32,68 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider>
-        <BrowserRouter>
-          <Suspense fallback={<FullPageLoading />}>
-            <Routes>
-              <Route path={APP_ROUTES.HOME} element={<HomePage />} />
+        <ThemeProvider defaultTheme="system" storageKey="orasa-ui-theme">
+          <BrowserRouter>
+            <Suspense fallback={<FullPageLoading />}>
+              <Routes>
+                <Route path={APP_ROUTES.HOME} element={<HomePage />} />
 
-              <Route
-                path={APP_ROUTES.LOGIN}
-                element={
-                  <RouteGuard variant="public" children={<LoginPage />} />
-                }
-              />
-              <Route
-                path={APP_ROUTES.ONBOARDING}
-                element={
-                  <RouteGuard
-                    variant="onboarding"
-                    children={<OnboardingPage />}
-                  />
-                }
-              />
-
-              <Route
-                path="/dashboard"
-                element={
-                  <RouteGuard variant="private">
-                    <Suspense fallback={<DashboardSkeleton />}>
-                      <DashboardLayout />
-                    </Suspense>
-                  </RouteGuard>
-                }
-              >
-                <Route index element={<Navigate to="analytics" replace />} />
-                <Route path="analytics" element={<AnalyticsPage />} />
-                <Route path="appointments" element={<AppointmentsPage />} />
-                <Route path="branches" element={<BranchesPage />} />
-                <Route path="services" element={<ServicesPage />} />
-                <Route path="staff" element={<StaffPage />} />
-                <Route path="activity-logs" element={<ActivityLogsPage />} />
-                <Route path="sms-logs" element={<SmsLogsPage />} />
-                <Route path="settings" element={<SettingsPage />} />
-              </Route>
-
-              <Route
-                path="/admin"
-                element={
-                  <RouteGuard variant="admin" children={<AdminLayout />} />
-                }
-              >
                 <Route
-                  index
-                  element={<Navigate to={APP_ROUTES.ADMIN.DASHBOARD} replace />}
+                  path={APP_ROUTES.LOGIN}
+                  element={
+                    <RouteGuard variant="public" children={<LoginPage />} />
+                  }
                 />
-                <Route path="dashboard" element={<AdminDashboardPage />} />
-              </Route>
-            </Routes>
-          </Suspense>
-          <Toaster position="top-right" />
-        </BrowserRouter>
+                <Route
+                  path={APP_ROUTES.ONBOARDING}
+                  element={
+                    <RouteGuard
+                      variant="onboarding"
+                      children={<OnboardingPage />}
+                    />
+                  }
+                />
+
+                <Route
+                  path="/dashboard"
+                  element={
+                    <RouteGuard variant="private">
+                      <Suspense fallback={<DashboardSkeleton />}>
+                        <DashboardLayout />
+                      </Suspense>
+                    </RouteGuard>
+                  }
+                >
+                  <Route index element={<Navigate to="analytics" replace />} />
+                  <Route path="analytics" element={<AnalyticsPage />} />
+                  <Route path="appointments" element={<AppointmentsPage />} />
+                  <Route path="branches" element={<BranchesPage />} />
+                  <Route path="services" element={<ServicesPage />} />
+                  <Route path="staff" element={<StaffPage />} />
+                  <Route path="activity-logs" element={<ActivityLogsPage />} />
+                  <Route path="sms-logs" element={<SmsLogsPage />} />
+                  <Route path="settings" element={<SettingsPage />} />
+                </Route>
+
+                <Route
+                  path="/admin"
+                  element={
+                    <RouteGuard variant="admin" children={<AdminLayout />} />
+                  }
+                >
+                  <Route
+                    index
+                    element={
+                      <Navigate to={APP_ROUTES.ADMIN.DASHBOARD} replace />
+                    }
+                  />
+                  <Route path="dashboard" element={<AdminDashboardPage />} />
+                </Route>
+              </Routes>
+            </Suspense>
+            <Toaster position="top-right" />
+          </BrowserRouter>
+        </ThemeProvider>
       </UserProvider>
     </QueryClientProvider>
   );

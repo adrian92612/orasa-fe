@@ -4,15 +4,11 @@ import { useSuspenseBranches } from "@/hooks/useBranches";
 import { PageSkeleton } from "@/components/common/PageSkeleton";
 import { useLocation } from "react-router";
 import { Outlet } from "react-router";
-import { Building2 } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 import { NAV_ITEMS } from "@/constants/navigation";
 import SubscriptionBanner from "@/components/features/subscription/SubscriptionBanner";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { DashboardHeader } from "@/components/features/dashboard/DashboardHeader";
+import { NoBranchAssigned } from "@/components/features/dashboard/NoBranchAssigned";
 import AppSidebar from "@/components/features/dashboard/Sidebar";
 
 const DashboardLayout = () => {
@@ -31,49 +27,14 @@ const DashboardLayout = () => {
     <SidebarProvider>
       <AppSidebar onLogout={logout} />
       <SidebarInset>
-        <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 border-b px-4 backdrop-blur-sm">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-
-          <div className="flex flex-1 items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div>
-                <h1 className="font-semibold text-lg">{pageTitle}</h1>
-                <span className="text-muted-foreground text-sm">
-                  {branchName}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground border-l pl-4">
-                {new Date().toLocaleDateString("en-US", {
-                  weekday: "long",
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </div>
-            </div>
-          </div>
-        </header>
+        <DashboardHeader pageTitle={pageTitle} branchName={branchName} />
 
         <SubscriptionBanner />
 
-        <div className="flex flex-1 flex-col gap-4 pt-0 bg-slate-50/50">
-          <div className="min-h-dvh flex-1 rounded-xl bg-background/50 md:min-h-min p-4">
+        <div className="flex flex-1 flex-col gap-4 pt-0">
+          <div className="min-h-dvh flex-1 md:min-h-min p-4">
             {isStaffNoBranches ? (
-              <div className="flex h-[450px] shrink-0 items-center justify-center rounded-md border border-dashed">
-                <div className="mx-auto flex max-w-[420px] flex-col items-center justify-center text-center">
-                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
-                    <Building2 className="h-10 w-10 text-muted-foreground" />
-                  </div>
-                  <h3 className="mt-4 text-lg font-semibold">
-                    No Branch Assigned
-                  </h3>
-                  <p className="mb-4 mt-2 text-sm text-muted-foreground">
-                    You currently don't have access to any branches. Please
-                    contact the business owner to get assigned to a branch.
-                  </p>
-                </div>
-              </div>
+              <NoBranchAssigned />
             ) : (
               <Suspense fallback={<PageSkeleton />}>
                 <Outlet />

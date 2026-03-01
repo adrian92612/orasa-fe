@@ -7,7 +7,7 @@ const OwnerLoginForm = () => {
       <div className="grid gap-4">
         <Button
           variant="outline"
-          className="w-full h-12 text-base border-slate-200 hover:bg-slate-50 transition-colors"
+          className="w-full h-12 text-base bg-slate-900/50 border-slate-800 text-slate-200 hover:bg-slate-800 hover:text-white transition-colors"
           onClick={() => {
             window.location.href = API_ROUTES.AUTH.LOGIN_OWNER;
           }}
@@ -33,11 +33,11 @@ const OwnerLoginForm = () => {
 
       <p className="text-[11px] text-center text-slate-400 w-full leading-relaxed">
         By clicking continue, you agree to our{" "}
-        <a href="#" className="underline hover:text-black transition-colors">
+        <a href="#" className="underline hover:text-white transition-colors">
           Terms of Service
         </a>{" "}
         and{" "}
-        <a href="#" className="underline hover:text-black transition-colors">
+        <a href="#" className="underline hover:text-white transition-colors">
           Privacy Policy
         </a>
         .

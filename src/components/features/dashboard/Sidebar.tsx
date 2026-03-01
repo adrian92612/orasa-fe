@@ -17,6 +17,7 @@ import { useBranches } from "@/hooks/useBranches";
 import { LogOut, X } from "lucide-react";
 import { Link, useLocation } from "react-router";
 import { NAV_ITEMS } from "@/constants/navigation";
+import { ModeToggle } from "@/components/mode-toggle";
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   onLogout: () => void;
@@ -35,19 +36,19 @@ const AppSidebar = ({ onLogout, ...props }: AppSidebarProps) => {
   const displayBusinessName = user?.businessName || "Orasa";
 
   return (
-    <Sidebar {...props}>
+    <Sidebar {...props} className="border-primary">
       <SidebarHeader>
         <div className="flex flex-col gap-2 p-2">
           <div className="flex items-center justify-between px-2">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold shrink-0">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground font-bold shrink-0">
                 {displayBusinessName.charAt(0)}
               </div>
               <div className="flex flex-col gap-0.5 leading-none ">
                 <span className="font-semibold text-sm tracking-tight line-clamp-1 break-all">
                   {displayBusinessName}
                 </span>
-                <span className="text-xs text-muted-foreground truncate max-w-[160px] block">
+                <span className="text-xs text-muted-foreground truncate max-w-40 block">
                   {user?.role === "OWNER" ? "Owner" : "Staff"} {user?.username}
                 </span>
               </div>
@@ -95,13 +96,16 @@ const AppSidebar = ({ onLogout, ...props }: AppSidebarProps) => {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={onLogout}
-              className="text-red-500 hover:text-red-600 hover:bg-red-50 hover:cursor-pointer"
-            >
-              <LogOut />
-              <span>Logout</span>
-            </SidebarMenuButton>
+            <div className="flex items-center justify-between px-2 w-full">
+              <SidebarMenuButton
+                onClick={onLogout}
+                className="text-red-500 hover:text-red-600 hover:bg-red-50 hover:cursor-pointer w-auto"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Logout</span>
+              </SidebarMenuButton>
+              <ModeToggle />
+            </div>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

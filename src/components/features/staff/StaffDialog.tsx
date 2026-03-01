@@ -259,7 +259,7 @@ const StaffDialog = ({ open, onOpenChange, staff }: StaffDialogProps) => {
                 <Field>
                   <FieldLabel required>Assigned Branches</FieldLabel>
                   <FieldContent>
-                    <div className="space-y-2 rounded-md border p-3">
+                    <div className="space-y-2 rounded-md border border-primary p-3">
                       {branches.map((branch) => (
                         <div
                           key={branch.id}

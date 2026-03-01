@@ -64,7 +64,7 @@ const SmsLogFilters = ({
         onValueChange={onStatusChange}
         disabled={isLoading}
       >
-        <SelectTrigger className="h-9 border-black">
+        <SelectTrigger>
           <SelectValue placeholder="All Status" />
         </SelectTrigger>
         <SelectContent>

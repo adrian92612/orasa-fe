@@ -2,81 +2,45 @@ import { Calendar } from "lucide-react";
 import OwnerLoginForm from "@/components/features/auth/OwnerLoginForm";
 import StaffLoginForm from "@/components/features/auth/StaffLoginForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export const LoginPage = () => {
   return (
-    <main className="min-h-screen w-full grid lg:grid-cols-2 bg-white">
-      <div className="hidden lg:flex flex-col justify-between p-12 bg-slate-950 text-white relative overflow-hidden">
-        <div className="flex items-center gap-2 relative z-10">
-          <div className="bg-white p-1 rounded-md">
-            <Calendar className="text-black size-5" />
-          </div>
-          <span className="text-2xl font-bold tracking-tight italic">
-            Orasa
-          </span>
+    <main className="min-h-screen w-full flex flex-col lg:grid lg:grid-cols-2 bg-slate-950 text-slate-50">
+      <div className="flex flex-col items-center justify-center p-8 w-full order-1 lg:order-2 grow lg:grow-0">
+        <div className="absolute top-4 right-4 lg:hidden">
+          <ModeToggle />
         </div>
-
-        <div className="space-y-6 relative z-10 max-w-lg">
-          <h2 className="text-4xl font-bold leading-tight">
-            Digitalizing appointment management for small businesses.
-          </h2>
-          <p className="text-slate-400 text-lg leading-relaxed">
-            "Orasa helps you focus on what matters—your clients. Stop worrying
-            about forgotten appointments and manual logs."
-          </p>
-          <div className="flex items-center gap-3 pt-6 border-t border-slate-800/50">
-            <div className="size-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
-              <span className="text-xs font-bold text-slate-500">M</span>
-            </div>
-            <div>
-              <p className="font-semibold text-slate-200 text-sm">
-                Grow your business
-              </p>
-              <p className="text-xs text-slate-500">Simplified Operations</p>
-            </div>
-          </div>
-        </div>
-
-        <p className="text-xs text-slate-500 relative z-10">
-          © {new Date().getFullYear()} Orasa. Built for small businesses.
-        </p>
-
-        {/* Abstract background element */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[600px] bg-slate-400/5 rounded-full blur-[120px]" />
-      </div>
-
-      {/* Right side - Login Form */}
-      <div className="flex flex-col items-center justify-center p-8 w-full">
         <div className="w-full max-w-sm space-y-8 animate-in fade-in slide-in-from-right-4 duration-700">
           <div className="lg:hidden flex items-center gap-2 mb-8">
-            <div className="bg-black p-1 rounded-md">
-              <Calendar className="text-white size-4" />
+            <div className="bg-primary p-1 rounded-md">
+              <Calendar className="text-primary-foreground size-4" />
             </div>
-            <span className="text-xl font-bold tracking-tight italic">
+            <span className="text-xl font-bold tracking-tight italic text-primary">
               Orasa
             </span>
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-3xl font-bold tracking-tight text-white">
               Welcome back
             </h1>
-            <p className="text-slate-500">
+            <p className="text-slate-400">
               Please enter your details to sign in
             </p>
           </div>
 
           <Tabs defaultValue="owner" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8 bg-slate-50 p-1 border border-slate-200/50">
+            <TabsList className="w-full bg-slate-900/50 border-slate-800">
               <TabsTrigger
                 value="owner"
-                className="data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all"
+                className="data-[state=active]:bg-slate-800 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all text-slate-400 hover:text-white"
               >
                 Owner
               </TabsTrigger>
               <TabsTrigger
                 value="staff"
-                className="data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all"
+                className="data-[state=active]:bg-slate-800 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all text-slate-400 hover:text-white"
               >
                 Staff
               </TabsTrigger>
@@ -84,23 +48,61 @@ export const LoginPage = () => {
 
             <TabsContent
               value="owner"
-              className="mt-0 ring-offset-background focus-visible:outline-none"
+              className="mt-6 ring-offset-background focus-visible:outline-none"
             >
-              <div className="bg-white">
+              <div className="min-h-75">
                 <OwnerLoginForm />
               </div>
             </TabsContent>
 
             <TabsContent
               value="staff"
-              className="mt-0 ring-offset-background focus-visible:outline-none"
+              className="mt-6 ring-offset-background focus-visible:outline-none"
             >
-              <div className="bg-white">
+              <div className="min-h-75">
                 <StaffLoginForm />
               </div>
             </TabsContent>
           </Tabs>
         </div>
+      </div>
+
+      <div className="flex flex-col justify-between p-8 lg:p-12 bg-primary text-primary-foreground relative overflow-hidden order-2 lg:order-1 rounded-t-3xl lg:rounded-none">
+        <div className="hidden lg:flex items-center gap-2 relative z-10">
+          <div className="bg-white/20 p-1 rounded-md">
+            <Calendar className="text-white size-5" />
+          </div>
+          <span className="text-2xl font-bold tracking-tight italic text-white">
+            Orasa
+          </span>
+        </div>
+
+        <div className="space-y-6 relative z-10 max-w-lg mt-4 lg:mt-0">
+          <h2 className="text-3xl lg:text-4xl font-bold leading-tight">
+            Digitalizing appointment management for small businesses.
+          </h2>
+          <p className="text-slate-400 text-base lg:text-lg leading-relaxed">
+            "Orasa helps you focus on what matters—your clients. Stop worrying
+            about forgotten appointments and manual logs."
+          </p>
+          <div className="flex items-center gap-3 pt-6 border-t border-slate-800/50">
+            <div className="size-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0">
+              <span className="text-xs font-bold text-slate-400">M</span>
+            </div>
+            <div>
+              <p className="font-semibold text-slate-200 text-sm">
+                Grow your business
+              </p>
+              <p className="text-xs text-slate-400">Simplified Operations</p>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-xs text-slate-500 relative z-10 mt-12 lg:mt-0 text-center lg:text-left">
+          © {new Date().getFullYear()} Orasa. Built for small businesses.
+        </p>
+
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-150 bg-accent/10 rounded-full blur-[120px]" />
       </div>
     </main>
   );

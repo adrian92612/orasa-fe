@@ -73,7 +73,8 @@ const StaffLoginForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <FieldGroup>
           {error && (
-            <div className="p-3 text-sm text-red-500 bg-red-50 rounded-md border border-red-100 mb-4">
+            <div className="p-3 text-sm text-slate-200 bg-slate-900 rounded-md border border-slate-800 mb-4 font-medium flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0"></span>
               {error}
             </div>
           )}
@@ -83,14 +84,18 @@ const StaffLoginForm = () => {
             name="username"
             render={({ field, fieldState }) => (
               <Field>
-                <FieldLabel htmlFor="username" required>
+                <FieldLabel
+                  htmlFor="username"
+                  required
+                  className="text-backround"
+                >
                   Username
                 </FieldLabel>
                 <FieldContent>
                   <Input
                     id="username"
                     placeholder="Enter your username"
-                    className="h-11 border-slate-200 focus-visible:ring-black"
+                    className="h-11 bg-slate-900/50 border-slate-800 text-slate-100 placeholder:text-slate-500 focus-visible:ring-slate-400"
                     disabled={isPending}
                     aria-invalid={!!errors.username}
                     {...field}
@@ -108,7 +113,11 @@ const StaffLoginForm = () => {
             name="password"
             render={({ field, fieldState }) => (
               <Field>
-                <FieldLabel htmlFor="password" required>
+                <FieldLabel
+                  htmlFor="password"
+                  required
+                  className="text-backround"
+                >
                   Password
                 </FieldLabel>
                 <FieldContent>
@@ -116,7 +125,7 @@ const StaffLoginForm = () => {
                     id="password"
                     type="password"
                     placeholder="Enter your password"
-                    className="h-11 border-slate-200 focus-visible:ring-black"
+                    className="h-11 bg-slate-900/50 border-slate-800 text-slate-100 placeholder:text-slate-500 focus-visible:ring-slate-400"
                     disabled={isPending}
                     aria-invalid={!!errors.password}
                     {...field}
@@ -129,7 +138,7 @@ const StaffLoginForm = () => {
             )}
           />
           <Button
-            className="w-full h-11 text-base bg-black hover:bg-slate-900 transition-colors shadow-lg shadow-black/5"
+            className="w-full h-11 text-base bg-primary hover:bg-primary/90 text-primary-foreground transition-colors shadow-lg shadow-primary/20"
             type="submit"
             disabled={isPending}
           >
