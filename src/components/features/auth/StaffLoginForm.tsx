@@ -1,12 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Field,
-  FieldLabel,
-  FieldError,
-  FieldContent,
-  FieldGroup,
-} from "@/components/ui/field";
+import { Field, FieldLabel, FieldError, FieldContent, FieldGroup } from "@/components/ui/field";
 import { LogIn, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -45,10 +39,7 @@ const StaffLoginForm = () => {
 
   const { mutate: login, isPending } = useMutation({
     mutationFn: async (data: StaffLoginFormValues) => {
-      return await apiClient.post<AuthResponse, StaffLoginFormValues>(
-        API_ROUTES.AUTH.LOGIN_STAFF,
-        data,
-      );
+      return await apiClient.post<AuthResponse, StaffLoginFormValues>(API_ROUTES.AUTH.LOGIN_STAFF, data);
     },
     onSuccess: async (result) => {
       if (result.success) {
@@ -84,11 +75,7 @@ const StaffLoginForm = () => {
             name="username"
             render={({ field, fieldState }) => (
               <Field>
-                <FieldLabel
-                  htmlFor="username"
-                  required
-                  className="text-backround"
-                >
+                <FieldLabel htmlFor="username" required>
                   Username
                 </FieldLabel>
                 <FieldContent>
@@ -100,9 +87,7 @@ const StaffLoginForm = () => {
                     aria-invalid={!!errors.username}
                     {...field}
                   />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </FieldContent>
               </Field>
             )}
@@ -113,11 +98,7 @@ const StaffLoginForm = () => {
             name="password"
             render={({ field, fieldState }) => (
               <Field>
-                <FieldLabel
-                  htmlFor="password"
-                  required
-                  className="text-backround"
-                >
+                <FieldLabel htmlFor="password" required>
                   Password
                 </FieldLabel>
                 <FieldContent>
@@ -130,9 +111,7 @@ const StaffLoginForm = () => {
                     aria-invalid={!!errors.password}
                     {...field}
                   />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </FieldContent>
               </Field>
             )}
@@ -142,11 +121,7 @@ const StaffLoginForm = () => {
             type="submit"
             disabled={isPending}
           >
-            {isPending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <LogIn className="mr-2 h-4 w-4" />
-            )}
+            {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />}
             Sign In
           </Button>
         </FieldGroup>
