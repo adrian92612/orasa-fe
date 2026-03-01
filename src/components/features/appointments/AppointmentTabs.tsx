@@ -2,6 +2,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import type { ReactNode } from "react";
+import { useMyBusiness } from "@/hooks/useBusiness";
 
 type AppointmentTabsProps = {
   activeTab: string;
@@ -26,6 +27,9 @@ export const AppointmentTabs = ({
   upcomingContent,
   allContent,
 }: AppointmentTabsProps) => {
+  const { data: business } = useMyBusiness();
+  const canManageAppointments = business?.subscriptionStatus === "ACTIVE";
+
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
@@ -39,7 +43,15 @@ export const AppointmentTabs = ({
           <TabsTrigger value="all">All</TabsTrigger>
         </TabsList>
 
-        <Button onClick={onCreate}>
+        <Button
+          onClick={onCreate}
+          disabled={!canManageAppointments}
+          title={
+            !canManageAppointments
+              ? "Subscription required to create appointments"
+              : ""
+          }
+        >
           <Plus className="mr-2 h-4 w-4" />
           New Appointment
         </Button>

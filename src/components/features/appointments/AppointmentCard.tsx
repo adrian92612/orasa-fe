@@ -22,6 +22,7 @@ import type {
   AppointmentStatus,
 } from "@/types/appointment";
 import { cn } from "@/lib/utils";
+import { useMyBusiness } from "@/hooks/useBusiness";
 
 const statusColors: Record<AppointmentStatus, string> = {
   PENDING: "bg-slate-100 text-slate-600 border border-slate-200",
@@ -49,6 +50,9 @@ const AppointmentCard = ({
   onDelete,
   onStatusChange,
 }: AppointmentCardProps) => {
+  const { data: business } = useMyBusiness();
+  const canManageAppointments = business?.subscriptionStatus === "ACTIVE";
+
   const start = new Date(appointment.startDateTime);
 
   const formatDate = (date: Date) => {
@@ -136,19 +140,34 @@ const AppointmentCard = ({
         <div className="flex items-center justify-between md:justify-end gap-3 pt-3 md:pt-0 border-t md:border-t-0 mt-1 md:mt-0">
           {showSaving && <SavingIndicator />}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild disabled={showSaving}>
+            <DropdownMenuTrigger
+              asChild
+              disabled={showSaving || !canManageAppointments}
+            >
               <button
+                title={
+                  !canManageAppointments
+                    ? "Subscription required to change status"
+                    : ""
+                }
                 className={cn(
                   statusColors[appointment.status],
                   "flex items-center gap-1.5 px-3 py-1.5 rounded-full",
                   "text-[11px] font-bold uppercase tracking-wider transition-all",
                   !showSaving &&
                     "hover:ring-2 hover:ring-offset-1 hover:ring-muted-foreground/20 active:scale-95",
-                  showSaving ? "cursor-wait" : "hover:cursor-pointer",
+                  showSaving
+                    ? "cursor-wait"
+                    : !canManageAppointments
+                      ? "cursor-not-allowed opacity-50"
+                      : "hover:cursor-pointer",
                 )}
+                disabled={!canManageAppointments}
               >
                 {appointment.status.replace("_", " ")}
-                {!showSaving && <ChevronDown className="h-3 w-3 opacity-60" />}
+                {!showSaving && canManageAppointments && (
+                  <ChevronDown className="h-3 w-3 opacity-60" />
+                )}
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -167,12 +186,23 @@ const AppointmentCard = ({
           </DropdownMenu>
 
           <DropdownMenu>
-            <DropdownMenuTrigger asChild disabled={showSaving}>
+            <DropdownMenuTrigger
+              asChild
+              disabled={showSaving || !canManageAppointments}
+            >
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                disabled={showSaving}
+                title={
+                  !canManageAppointments
+                    ? "Subscription required to edit appointments"
+                    : ""
+                }
+                className={cn(
+                  "h-8 w-8 text-muted-foreground hover:text-foreground",
+                  !canManageAppointments && "opacity-50",
+                )}
+                disabled={showSaving || !canManageAppointments}
               >
                 <MoreVertical className="h-4 w-4" />
               </Button>

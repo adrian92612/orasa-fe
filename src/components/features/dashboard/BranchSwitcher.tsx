@@ -25,7 +25,7 @@ export const BranchSwitcher = () => {
         variant="outline"
         role="combobox"
         disabled
-        className="w-50 justify-between opacity-100 disabled:opacity-100 bg-muted/50 text-background dark:text-foreground"
+        className="w-50 justify-between opacity-100 disabled:opacity-100 text-background dark:text-foreground"
       >
         <div className="flex items-center">
           <Store className="mr-2 h-4 w-4" />
@@ -46,9 +46,7 @@ export const BranchSwitcher = () => {
         >
           <div className="flex items-center truncate">
             <Store className="mr-2 h-4 w-4 shrink-0" />
-            <span className="truncate">
-              {selectedBranch ? selectedBranch.name : "All Branches"}
-            </span>
+            <span className="truncate">{selectedBranch ? selectedBranch.name : "All Branches"}</span>
           </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -57,31 +55,16 @@ export const BranchSwitcher = () => {
         <DropdownMenuLabel>Select Branch</DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem
-          onSelect={() => setSelectedBranchId(null)}
-          className="cursor-pointer"
-        >
-          <Check
-            className={`mr-2 h-4 w-4 ${
-              selectedBranchId === null ? "opacity-100" : "opacity-0"
-            }`}
-          />
+        <DropdownMenuItem onSelect={() => setSelectedBranchId(null)} className="cursor-pointer">
+          <Check className={`mr-2 h-4 w-4 ${selectedBranchId === null ? "opacity-100" : "opacity-0"}`} />
           All Branches
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
         {branches.map((branch) => (
-          <DropdownMenuItem
-            key={branch.id}
-            onSelect={() => setSelectedBranchId(branch.id)}
-            className="cursor-pointer"
-          >
-            <Check
-              className={`mr-2 h-4 w-4 ${
-                selectedBranchId === branch.id ? "opacity-100" : "opacity-0"
-              }`}
-            />
+          <DropdownMenuItem key={branch.id} onSelect={() => setSelectedBranchId(branch.id)} className="cursor-pointer">
+            <Check className={`mr-2 h-4 w-4 ${selectedBranchId === branch.id ? "opacity-100" : "opacity-0"}`} />
             {branch.name}
           </DropdownMenuItem>
         ))}

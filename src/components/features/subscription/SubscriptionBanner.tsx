@@ -23,7 +23,7 @@ const SubscriptionBanner = () => {
         setVariant("destructive");
         setTitle("Subscription Pending");
         setMessage(
-          "Your subscription is pending activation. Access is restricted. Please complete payment to activate your account.",
+          "Your subscription is pending activation. Access to creating and updating appointments is restricted. Please complete payment to activate your account.",
         );
         setIsVisible(true);
         return;
@@ -33,7 +33,7 @@ const SubscriptionBanner = () => {
         setVariant("destructive");
         setTitle("Subscription Expired");
         setMessage(
-          "Your subscription has expired. Access to creating appointments and analytics is restricted. Please contact support to renew.",
+          "Your subscription has expired. Access to creating and updating appointments is restricted. Please contact support to renew.",
         );
         setIsVisible(true);
         return;

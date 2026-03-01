@@ -89,9 +89,7 @@ const OnboardingPage = () => {
                   {index !== STEPS.length - 1 && (
                     <div
                       className={`absolute top-4 left-1/2 w-full h-0.5 -translate-y-1/2 transition-colors duration-500 ${
-                        index < currentStepIndex
-                          ? "bg-blue-600"
-                          : "bg-slate-200"
+                        index < currentStepIndex ? "bg-primary" : "bg-slate-200"
                       }`}
                       style={{ zIndex: 0 }}
                     />
@@ -100,7 +98,7 @@ const OnboardingPage = () => {
                   <div
                     className={`relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all duration-500 ${
                       isActive || isCompleted
-                        ? "bg-blue-600 border-blue-600 text-white"
+                        ? "bg-primary border-primary text-white"
                         : "bg-white border-slate-300 text-slate-400"
                     }`}
                   >
@@ -113,7 +111,7 @@ const OnboardingPage = () => {
 
                   <span
                     className={`mt-2 text-[10px] uppercase tracking-wider font-bold transition-colors duration-300 ${
-                      isActive ? "text-blue-600" : "text-slate-400"
+                      isActive ? "text-primary" : "text-slate-400"
                     }`}
                   >
                     {s.label}
