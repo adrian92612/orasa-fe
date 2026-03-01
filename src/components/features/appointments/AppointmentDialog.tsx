@@ -118,44 +118,35 @@ const AppointmentDialog = ({
   branchId: propBranchId,
 }: AppointmentDialogProps) => {
   const { user, selectedBranchId } = useUser();
-  // Use passed branchId prop or context branchId.
-  // If neither matches (e.g. "All Branches" selected), this will be null.
   const initialBranchId = propBranchId || selectedBranchId;
-
   const { data: branches = [] } = useBranches();
-
-  // We need to fetch services for the *selected* branch in the form,
-  // not necessarily the initialBranchId if it was null.
   const isEditing = !!appointmentToEdit;
 
   const createMutation = useCreateAppointment();
   const updateMutation = useUpdateAppointment();
 
   const [openCombobox, setOpenCombobox] = useState(false);
+  const [hasAppliedDefaultReminders, setHasAppliedDefaultReminders] =
+    useState(false);
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    setValue,
-    formState: { dirtyFields },
-  } = useForm<AppointmentFormValues>({
-    resolver: zodResolver(appointmentSchema),
-    defaultValues: {
-      customerName: "",
-      customerPhone: "",
-      branchId: initialBranchId || "",
-      // Date fields are undefined initially for react-hook-form when using Date objects
-      isWalkin: false,
-      serviceId: "",
-      selectedReminderIds: [],
-      notes: "",
-      additionalReminderMinutes: 0,
-      customReminderEnabled: false,
-      additionalReminderTemplate: PREDEFINED_TEMPLATES[0].content,
-      status: "PENDING",
-    },
-  });
+  const { control, handleSubmit, reset, setValue } =
+    useForm<AppointmentFormValues>({
+      resolver: zodResolver(appointmentSchema),
+      defaultValues: {
+        customerName: "",
+        customerPhone: "",
+        branchId: initialBranchId || "",
+        // Date fields are undefined initially for react-hook-form when using Date objects
+        isWalkin: false,
+        serviceId: "",
+        selectedReminderIds: [],
+        notes: "",
+        additionalReminderMinutes: 0,
+        customReminderEnabled: false,
+        additionalReminderTemplate: PREDEFINED_TEMPLATES[0].content,
+        status: "PENDING",
+      },
+    });
 
   const isWalkin = useWatch({ control, name: "isWalkin" });
   const startDateTime = useWatch({ control, name: "startDateTime" });
@@ -201,7 +192,7 @@ const AppointmentDialog = ({
         customerName: "",
         customerPhone: "",
         branchId: initialBranchId || "",
-        startDateTime: undefined,
+        startDateTime: new Date(),
         endDateTime: undefined,
         isWalkin: false,
         serviceId: "",
@@ -214,6 +205,7 @@ const AppointmentDialog = ({
         additionalReminderTemplate: PREDEFINED_TEMPLATES[0].content,
         status: "PENDING",
       });
+      setHasAppliedDefaultReminders(false);
     }
   }, [appointmentToEdit, reset, open, initialBranchId]);
 
@@ -223,12 +215,13 @@ const AppointmentDialog = ({
       !isEditing &&
       open &&
       reminders.length > 0 &&
-      !dirtyFields.selectedReminderIds
+      !hasAppliedDefaultReminders
     ) {
       const defaults = reminders.filter((r) => r.enabled).map((r) => r.id);
       setValue("selectedReminderIds", defaults);
+      setHasAppliedDefaultReminders(true);
     }
-  }, [reminders, open, isEditing, setValue, dirtyFields.selectedReminderIds]);
+  }, [reminders, open, isEditing, setValue, hasAppliedDefaultReminders]);
 
   const customReminderEnabled = useWatch({
     control,
@@ -554,10 +547,9 @@ const AppointmentDialog = ({
                         </PopoverContent>
                       </Popover>
                       <TimeInput
-                        className="w-32.5 shrink-0 text-foreground dark:text-foreground"
+                        className="w-40 shrink-0 text-foreground dark:text-foreground"
                         value={field.value ? format(field.value, "HH:mm") : ""}
-                        onChange={(e) => {
-                          const time = e.target.value;
+                        onChange={(time) => {
                           if (time) {
                             const [hours, minutes] = time
                               .split(":")

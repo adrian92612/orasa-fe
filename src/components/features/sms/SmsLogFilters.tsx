@@ -80,7 +80,7 @@ const SmsLogFilters = ({
         <DateRangePicker
           date={dateRange}
           setDate={onDateRangeChange}
-          className="w-full md:w-[260px]"
+          className="w-full md:w-65"
           presets={presets}
           disabled={{ after: new Date() }}
         />

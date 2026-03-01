@@ -97,7 +97,7 @@ const ActivityLogFilters = ({
           date={dateRange}
           setDate={onDateRangeChange}
           presets={presets}
-          className="w-full md:w-[260px]"
+          className="w-full md:w-65"
           disabled={{ after: new Date() }}
         />
       </div>

@@ -27,7 +27,7 @@ const BusinessCard = ({
 }: BusinessCardProps) => {
   return (
     <Card className="group relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 hover:shadow-md transition-shadow">
-      <div className="flex flex-col gap-1 min-w-[200px]">
+      <div className="flex flex-col gap-1 min-w-50">
         <div className="flex items-center gap-2">
           <h3 className="font-semibold leading-none tracking-tight">
             {business.name}
