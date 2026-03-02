@@ -1,17 +1,15 @@
 import { Calendar as CalendarIcon } from "lucide-react";
 import AppointmentCard from "@/components/features/appointments/AppointmentCard";
 import CommonPagination from "@/components/common/CommonPagination";
-import {
-  useSuspenseAppointments,
-  useDeleteAppointment,
-  useUpdateAppointmentStatus,
-} from "@/hooks/useAppointments";
+import { useSuspenseAppointments, useDeleteAppointment, useUpdateAppointmentStatus } from "@/hooks/useAppointments";
 import { useMutationState } from "@tanstack/react-query";
 import { Q_KEYS } from "@/constants/queryKeys";
-import type {
-  AppointmentResponse,
-  AppointmentStatus,
-} from "@/types/appointment";
+import type { AppointmentResponse, AppointmentStatus, UpdateAppointmentRequest } from "@/types/appointment";
+
+type AppointmentMutationVariables =
+  | string
+  | { id: string; status: AppointmentStatus }
+  | { id: string; data: UpdateAppointmentRequest };
 
 type AppointmentListProps = {
   branchId: string | null;
@@ -49,23 +47,22 @@ const AppointmentList = ({
 
   const pendingMutations = useMutationState({
     filters: { status: "pending", mutationKey: [Q_KEYS.APPOINTMENTS] },
-    select: (mutation) => mutation.state.variables as any,
+    select: (mutation) => mutation.state.variables as AppointmentMutationVariables,
   });
 
   const checkIsSaving = (id: string) =>
     pendingMutations.some((vars) => {
       if (typeof vars === "string") return vars === id;
-      return vars?.id === id;
+      if (!vars) return false;
+      if (typeof vars === "object" && "id" in vars) return vars.id === id;
+      return false;
     });
 
   const handleDelete = (id: string) => {
     deleteMutation.mutate(id);
   };
 
-  const handleStatusChange = (
-    appointment: AppointmentResponse,
-    newStatus: AppointmentStatus,
-  ) => {
+  const handleStatusChange = (appointment: AppointmentResponse, newStatus: AppointmentStatus) => {
     updateStatusMutation.mutate({
       id: appointment.id,
       status: newStatus,

@@ -55,3 +55,14 @@ export type UpdateAppointmentRequest = {
   additionalReminderTemplate?: string;
   isWalkin?: boolean;
 };
+export type AppointmentSearchParams = {
+  branchId: string | null;
+  businessId: string | null;
+  page?: number;
+  size?: number;
+  search?: string;
+  startDate?: string;
+  endDate?: string;
+  status?: string | null;
+  type?: string | null;
+};

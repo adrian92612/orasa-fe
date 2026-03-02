@@ -2,6 +2,8 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
+import { type StaffResponse } from "@/types/staff";
+import { type ServiceResponse } from "@/types/service";
 import BranchDialog from "@/components/features/branches/BranchDialog";
 import { useCreateBranch, useUpdateBranch, useDeleteBranch } from "@/hooks/useBranches";
 import { useStaff } from "@/hooks/useStaff";
@@ -32,13 +34,13 @@ if (!Element.prototype.scrollIntoView) {
 }
 
 const mockStaffList = [
-  { id: "staff-1", username: "Staff One", role: "STAFF" } as unknown as any,
-  { id: "staff-2", username: "Staff Two", role: "STAFF" } as unknown as any,
+  { id: "staff-1", username: "Staff One", role: "STAFF" } as unknown,
+  { id: "staff-2", username: "Staff Two", role: "STAFF" } as unknown,
 ];
 
 const mockServiceList = [
-  { id: "srv-1", name: "Service One", basePrice: 100, durationMinutes: 30 } as unknown as any,
-  { id: "srv-2", name: "Service Two", basePrice: 200, durationMinutes: 60 } as unknown as any,
+  { id: "srv-1", name: "Service One", basePrice: 100, durationMinutes: 30 } as unknown,
+  { id: "srv-2", name: "Service Two", basePrice: 200, durationMinutes: 60 } as unknown,
 ];
 
 describe("BranchDialog", () => {
@@ -63,7 +65,7 @@ describe("BranchDialog", () => {
     } as unknown as ReturnType<typeof useDeleteBranch>);
 
     vi.mocked(useStaff).mockReturnValue({
-      data: mockStaffList,
+      data: mockStaffList as unknown as ReturnType<typeof useStaff>["data"],
       isLoading: false,
     } as unknown as ReturnType<typeof useStaff>);
   });
@@ -73,8 +75,8 @@ describe("BranchDialog", () => {
       <BranchDialog
         open={true}
         onOpenChange={onOpenChangeMock}
-        staffList={mockStaffList}
-        serviceList={mockServiceList}
+        staffList={mockStaffList as unknown as StaffResponse[]}
+        serviceList={mockServiceList as unknown as ServiceResponse[]}
         {...props}
       />,
     );

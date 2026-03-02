@@ -130,11 +130,7 @@ test.describe("Staff Management", () => {
     await page.goto("/dashboard/staff");
 
     // Should be redirected to dashboard/appointments (default for staff)
-    try {
-      await page.waitForURL(/.*\/dashboard\/appointments/, { timeout: 10000 });
-    } catch (e) {
-      throw e;
-    }
+    await page.waitForURL(/.*\/dashboard\/appointments/, { timeout: 10000 });
 
     await expect(page).toHaveURL(/.*\/dashboard\/appointments/);
 

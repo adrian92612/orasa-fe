@@ -2,14 +2,8 @@ import type { PayloroResponse } from "@/types/payment";
 import { usePaymentStatus } from "@/hooks/usePaymentStatus";
 import { QRCodeSVG } from "qrcode.react";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { useEffect } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useEffect, useCallback } from "react";
 
 type PaymentDialogProps = {
   isOpen: boolean;
@@ -19,18 +13,16 @@ type PaymentDialogProps = {
   onPaymentSuccess?: () => void;
 };
 
-const PaymentDialog = ({
-  isOpen,
-  onClose,
-  isLoading,
-  paymentData,
-  onPaymentSuccess,
-}: PaymentDialogProps) => {
+const PaymentDialog = ({ isOpen, onClose, isLoading, paymentData, onPaymentSuccess }: PaymentDialogProps) => {
   const { paymentStatus, reset } = usePaymentStatus(isOpen);
 
   const isSuccess = paymentStatus?.status === "SUCCESS";
-  const isFailed =
-    paymentStatus?.status === "FAILED" || paymentStatus?.status === "EXPIRED";
+  const isFailed = paymentStatus?.status === "FAILED" || paymentStatus?.status === "EXPIRED";
+
+  const handleClose = useCallback(() => {
+    reset();
+    onClose();
+  }, [reset, onClose]);
 
   useEffect(() => {
     if (isSuccess) {
@@ -40,21 +32,15 @@ const PaymentDialog = ({
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [isSuccess]);
-
-  const handleClose = () => {
-    reset();
-    onClose();
-  };
+  }, [isSuccess, onPaymentSuccess, handleClose]);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
           <DialogTitle>Pay with QR Code</DialogTitle>
           <DialogDescription>
-            Scan the QR code below to complete your payment using any QRPH
-            compatible app (GCash, Maya, etc.).
+            Scan the QR code below to complete your payment using any QRPH compatible app (GCash, Maya, etc.).
           </DialogDescription>
         </DialogHeader>
 
@@ -62,18 +48,14 @@ const PaymentDialog = ({
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-12">
               <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
-              <p className="text-sm text-muted-foreground font-medium">
-                Generating QR code...
-              </p>
+              <p className="text-sm text-muted-foreground font-medium">Generating QR code...</p>
             </div>
           ) : isSuccess ? (
             <div className="flex flex-col items-center justify-center py-8 animate-in fade-in zoom-in duration-300">
               <div className="rounded-full bg-emerald-100 dark:bg-emerald-900/30 p-4 mb-4">
                 <CheckCircle2 className="h-12 w-12 text-emerald-600" />
               </div>
-              <p className="text-lg font-black text-emerald-600 mb-1">
-                Payment Successful!
-              </p>
+              <p className="text-lg font-black text-emerald-600 mb-1">Payment Successful!</p>
               <p className="text-sm text-muted-foreground">
                 Your{" "}
                 {paymentStatus.type === "SUBSCRIPTION_RENEWAL"
@@ -87,12 +69,8 @@ const PaymentDialog = ({
               <div className="rounded-full bg-destructive/10 p-4 mb-4">
                 <XCircle className="h-12 w-12 text-destructive" />
               </div>
-              <p className="text-lg font-black text-destructive mb-1">
-                Payment Failed
-              </p>
-              <p className="text-sm text-muted-foreground">
-                The payment could not be completed. Please try again.
-              </p>
+              <p className="text-lg font-black text-destructive mb-1">Payment Failed</p>
+              <p className="text-sm text-muted-foreground">The payment could not be completed. Please try again.</p>
             </div>
           ) : paymentData?.success ? (
             <>
@@ -109,25 +87,19 @@ const PaymentDialog = ({
               )}
 
               <div className="bg-muted/50 p-4 rounded-xl border w-full text-center space-y-2">
-                <p className="text-[11px] font-bold text-primary uppercase tracking-wider">
-                  Reference No.
-                </p>
+                <p className="text-[11px] font-bold text-primary uppercase tracking-wider">Reference No.</p>
                 <p className="font-mono bg-background px-2 py-1 rounded border text-sm font-bold text-foreground">
                   {paymentData.platOrderNo}
                 </p>
                 <div className="flex items-center justify-center gap-2 mt-3">
                   <Loader2 className="h-3 w-3 animate-spin text-primary" />
-                  <p className="text-[10px] text-muted-foreground font-bold">
-                    Waiting for payment...
-                  </p>
+                  <p className="text-[10px] text-muted-foreground font-bold">Waiting for payment...</p>
                 </div>
               </div>
             </>
           ) : (
             <div className="text-center py-8">
-              <p className="text-destructive font-medium mb-2">
-                Failed to initiate payment
-              </p>
+              <p className="text-destructive font-medium mb-2">Failed to initiate payment</p>
               <p className="text-sm text-muted-foreground">
                 {paymentData?.errorMessage || "An unexpected error occurred."}
               </p>

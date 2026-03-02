@@ -19,26 +19,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Field,
-  FieldContent,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const createSchema = z
   .object({
     username: z.string().min(3, "Username must be at least 3 characters"),
-    temporaryPassword: z
-      .string()
-      .min(6, "Password must be at least 6 characters"),
+    temporaryPassword: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string(),
-    branchIds: z
-      .array(z.string())
-      .min(1, "At least one branch must be assigned"),
+    branchIds: z.array(z.string()).min(1, "At least one branch must be assigned"),
   })
   .refine((data) => data.temporaryPassword === data.confirmPassword, {
     message: "Passwords do not match",
@@ -48,15 +38,9 @@ const createSchema = z
 const editSchema = z
   .object({
     username: z.string(),
-    newPassword: z
-      .string()
-      .min(6, "Password must be at least 6 characters")
-      .or(z.literal(""))
-      .optional(),
+    newPassword: z.string().min(6, "Password must be at least 6 characters").or(z.literal("")).optional(),
     confirmPassword: z.string().optional(),
-    branchIds: z
-      .array(z.string())
-      .min(1, "At least one branch must be assigned"),
+    branchIds: z.array(z.string()).min(1, "At least one branch must be assigned"),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match",
@@ -92,8 +76,6 @@ const StaffDialog = ({ open, onOpenChange, staff }: StaffDialogProps) => {
 
   useEffect(() => {
     if (open) {
-      setShowPassword(false);
-
       if (staff) {
         reset({
           username: staff.username,
@@ -137,15 +119,11 @@ const StaffDialog = ({ open, onOpenChange, staff }: StaffDialogProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
-          <DialogTitle>
-            {isEditing ? "Edit Staff" : "Add Staff Member"}
-          </DialogTitle>
+          <DialogTitle>{isEditing ? "Edit Staff" : "Add Staff Member"}</DialogTitle>
           <DialogDescription>
-            {isEditing
-              ? `Update details for ${staff.username}.`
-              : "Create a new staff account."}
+            {isEditing ? `Update details for ${staff.username}.` : "Create a new staff account."}
           </DialogDescription>
         </DialogHeader>
 
@@ -168,9 +146,7 @@ const StaffDialog = ({ open, onOpenChange, staff }: StaffDialogProps) => {
                       aria-invalid={!!fieldState.error}
                       autoComplete="username"
                     />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </FieldContent>
                 </Field>
               )}
@@ -183,12 +159,7 @@ const StaffDialog = ({ open, onOpenChange, staff }: StaffDialogProps) => {
                 <Field>
                   <FieldLabel htmlFor="staff-password" required={!isEditing}>
                     {isEditing ? "New Password" : "Password"}
-                    {isEditing && (
-                      <span className="text-muted-foreground font-normal">
-                        {" "}
-                        (optional)
-                      </span>
-                    )}
+                    {isEditing && <span className="text-muted-foreground font-normal"> (optional)</span>}
                   </FieldLabel>
                   <FieldContent>
                     <div className="relative">
@@ -214,9 +185,7 @@ const StaffDialog = ({ open, onOpenChange, staff }: StaffDialogProps) => {
                         )}
                       </Button>
                     </div>
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </FieldContent>
                 </Field>
               )}
@@ -227,10 +196,7 @@ const StaffDialog = ({ open, onOpenChange, staff }: StaffDialogProps) => {
               name="confirmPassword"
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel
-                    htmlFor="staff-confirm-password"
-                    required={!isEditing}
-                  >
+                  <FieldLabel htmlFor="staff-confirm-password" required={!isEditing}>
                     Confirm Password
                   </FieldLabel>
                   <FieldContent>
@@ -244,9 +210,7 @@ const StaffDialog = ({ open, onOpenChange, staff }: StaffDialogProps) => {
                         autoComplete="new-password"
                       />
                     </div>
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </FieldContent>
                 </Field>
               )}
@@ -261,41 +225,25 @@ const StaffDialog = ({ open, onOpenChange, staff }: StaffDialogProps) => {
                   <FieldContent>
                     <div className="space-y-2 rounded-md border border-primary p-3">
                       {branches.map((branch) => (
-                        <div
-                          key={branch.id}
-                          className="flex items-center gap-2"
-                        >
+                        <div key={branch.id} className="flex items-center gap-2">
                           <Checkbox
                             id={`branch-${branch.id}`}
                             checked={field.value?.includes(branch.id)}
                             onCheckedChange={(checked) => {
                               const current = field.value ?? [];
                               field.onChange(
-                                checked
-                                  ? [...current, branch.id]
-                                  : current.filter(
-                                      (id: string) => id !== branch.id,
-                                    ),
+                                checked ? [...current, branch.id] : current.filter((id: string) => id !== branch.id),
                               );
                             }}
                           />
-                          <Label
-                            htmlFor={`branch-${branch.id}`}
-                            className="text-sm font-normal cursor-pointer"
-                          >
+                          <Label htmlFor={`branch-${branch.id}`} className="text-sm font-normal cursor-pointer">
                             {branch.name}
                           </Label>
                         </div>
                       ))}
-                      {branches.length === 0 && (
-                        <p className="text-sm text-muted-foreground">
-                          No branches available
-                        </p>
-                      )}
+                      {branches.length === 0 && <p className="text-sm text-muted-foreground">No branches available</p>}
                     </div>
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </FieldContent>
                 </Field>
               )}
@@ -303,12 +251,7 @@ const StaffDialog = ({ open, onOpenChange, staff }: StaffDialogProps) => {
           </FieldGroup>
 
           <DialogFooter className="mt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={isPending}
-            >
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
               Cancel
             </Button>
             <Button type="submit" disabled={isPending}>

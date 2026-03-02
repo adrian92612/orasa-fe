@@ -1,11 +1,5 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -102,10 +96,14 @@ const TermsOnboardingForm = ({ onAccept }: TermsOnboardingFormProps) => {
 
   // Check if content is already short enough that scrolling isn't needed
   useEffect(() => {
-    if (!scrollRef.current) return;
-    const { scrollHeight, clientHeight } = scrollRef.current;
-    if (scrollHeight <= clientHeight) {
-      setHasScrolledToBottom(true);
+    const scrollEl = scrollRef.current;
+    if (!scrollEl) return;
+
+    if (scrollEl.scrollHeight <= scrollEl.clientHeight) {
+      // Defer state update to avoid cascading render warning
+      requestAnimationFrame(() => {
+        setHasScrolledToBottom(true);
+      });
     }
   }, []);
 
@@ -119,9 +117,7 @@ const TermsOnboardingForm = ({ onAccept }: TermsOnboardingFormProps) => {
     <Card className="w-full max-w-2xl shadow-lg">
       <CardHeader className="text-center">
         <CardTitle>Terms and Conditions</CardTitle>
-        <CardDescription>
-          Please read and accept our terms to continue.
-        </CardDescription>
+        <CardDescription>Please read and accept our terms to continue.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6 flex flex-col items-center">
         <div
@@ -133,8 +129,7 @@ const TermsOnboardingForm = ({ onAccept }: TermsOnboardingFormProps) => {
             <div key={idx} className="space-y-2">
               <strong
                 className={cn(
-                  section.header.startsWith("Part") &&
-                    "text-base uppercase tracking-wide text-foreground font-bold",
+                  section.header.startsWith("Part") && "text-base uppercase tracking-wide text-foreground font-bold",
                 )}
               >
                 {section.header}
@@ -164,26 +159,18 @@ const TermsOnboardingForm = ({ onAccept }: TermsOnboardingFormProps) => {
           <Checkbox
             id="terms"
             checked={agreed}
-            onCheckedChange={(c) =>
-              hasScrolledToBottom ? setAgreed(c === true) : undefined
-            }
+            onCheckedChange={(c) => (hasScrolledToBottom ? setAgreed(c === true) : undefined)}
             disabled={!hasScrolledToBottom}
           />
           <label
             htmlFor="terms"
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {hasScrolledToBottom
-              ? "I accept the terms and conditions"
-              : "Please scroll to the bottom to accept"}
+            {hasScrolledToBottom ? "I accept the terms and conditions" : "Please scroll to the bottom to accept"}
           </label>
         </div>
 
-        <Button
-          className="w-full max-w-sm"
-          disabled={!agreed}
-          onClick={handleContinue}
-        >
+        <Button className="w-full max-w-sm" disabled={!agreed} onClick={handleContinue}>
           Continue
         </Button>
       </CardContent>

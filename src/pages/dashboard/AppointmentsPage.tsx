@@ -10,14 +10,32 @@ import AppointmentList from "@/components/features/appointments/AppointmentList"
 import { AppointmentListSkeleton } from "@/components/features/appointments/AppointmentListSkeleton";
 import type { AppointmentResponse } from "@/types/appointment";
 
-const AppointmentDialog = lazy(
-  () => import("@/components/features/appointments/AppointmentDialog"),
-);
+const AppointmentDialog = lazy(() => import("@/components/features/appointments/AppointmentDialog"));
 
 type AppointmentTabContentProps = {
   dateProps: { startDate?: string; endDate?: string };
-  commonProps: any;
-  filterProps: any;
+  commonProps: {
+    branchId: string | null;
+    businessId: string | null;
+    page: number;
+    pageSize: number;
+    search: string;
+    statusFilter: string | null;
+    typeFilter: string | null;
+    activeTab: string;
+    onEdit: (appointment: AppointmentResponse) => void;
+    onPageChange: (page: number) => void;
+    onPageSizeChange: (size: string) => void;
+  };
+  filterProps: {
+    statusFilter: string;
+    setStatusFilter: (val: string) => void;
+    typeFilter: string;
+    setTypeFilter: (val: string) => void;
+    searchInput: string;
+    setSearchInput: (val: string) => void;
+    onPageReset: () => void;
+  };
   includeDateRange?: boolean;
   dateRange?: { from: Date; to: Date };
   onDateRangeChange?: (range: { from: Date; to: Date }) => void;
@@ -46,8 +64,7 @@ const AppointmentTabContent = ({
 
 const AppointmentsPageContent = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedAppointment, setSelectedAppointment] =
-    useState<AppointmentResponse | null>(null);
+  const [selectedAppointment, setSelectedAppointment] = useState<AppointmentResponse | null>(null);
 
   const {
     user,
@@ -71,10 +88,7 @@ const AppointmentsPageContent = () => {
     setPage,
   } = useAppointmentsPage();
 
-  const { todayCount, upcomingCount } = useAppointmentCounts(
-    selectedBranchId,
-    user?.businessId || null,
-  );
+  const { todayCount, upcomingCount } = useAppointmentCounts(selectedBranchId, user?.businessId || null);
 
   const handleCreate = () => {
     setSelectedAppointment(null);
@@ -126,18 +140,10 @@ const AppointmentsPageContent = () => {
         upcomingCount={upcomingCount || 0}
         onCreate={handleCreate}
         todayContent={
-          <AppointmentTabContent
-            dateProps={dateProps}
-            commonProps={commonProps}
-            filterProps={filterProps}
-          />
+          <AppointmentTabContent dateProps={dateProps} commonProps={commonProps} filterProps={filterProps} />
         }
         upcomingContent={
-          <AppointmentTabContent
-            dateProps={dateProps}
-            commonProps={commonProps}
-            filterProps={filterProps}
-          />
+          <AppointmentTabContent dateProps={dateProps} commonProps={commonProps} filterProps={filterProps} />
         }
         allContent={
           <AppointmentTabContent
@@ -165,10 +171,7 @@ const AppointmentsPageContent = () => {
 
 const AppointmentsPage = () => {
   const { user, selectedBranchId } = useUser();
-  const { isLoading: isLoadingCounts } = useAppointmentCounts(
-    selectedBranchId,
-    user?.businessId || null,
-  );
+  const { isLoading: isLoadingCounts } = useAppointmentCounts(selectedBranchId, user?.businessId || null);
 
   if (isLoadingCounts) {
     return <AppointmentsPageSkeleton />;

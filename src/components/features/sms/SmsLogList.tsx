@@ -10,9 +10,7 @@ interface SmsLogListProps {
 const SmsLogList = ({ logs }: SmsLogListProps) => {
   if (!logs || logs.length === 0) {
     return (
-      <div className="text-center py-12 text-muted-foreground border rounded-lg bg-muted/10">
-        No SMS logs found.
-      </div>
+      <div className="text-center py-12 text-muted-foreground border rounded-lg bg-muted/10">No SMS logs found.</div>
     );
   }
 
@@ -33,18 +31,13 @@ const SmsLogList = ({ logs }: SmsLogListProps) => {
     <div className="space-y-3">
       <div className="space-y-2">
         {logs.map((log) => (
-          <Card
-            key={log.id}
-            className="p-3 gap-0 transition-colors hover:bg-accent/50"
-          >
+          <Card key={log.id} className="p-3 gap-0 transition-colors hover:bg-accent/50">
             <div className="flex items-center justify-between gap-3 mb-1.5">
               <div className="flex items-center gap-2 min-w-0">
                 <span className="font-semibold text-sm truncate">
                   {log.recipientPhone}
                   {log.customerName && (
-                    <span className="text-muted-foreground font-normal ml-1">
-                      ({log.customerName})
-                    </span>
+                    <span className="text-muted-foreground font-normal ml-1">({log.customerName})</span>
                   )}
                 </span>
                 <span className="font-mono text-[10px] text-muted-foreground whitespace-nowrap">
@@ -52,7 +45,7 @@ const SmsLogList = ({ logs }: SmsLogListProps) => {
                 </span>
               </div>
               <Badge
-                variant={getStatusVariant(log.status) as any}
+                variant={getStatusVariant(log.status) as "success" | "destructive" | "outline" | "secondary"}
                 className="text-[10px] px-1.5 py-0 font-normal h-4 shrink-0"
               >
                 {log.status}

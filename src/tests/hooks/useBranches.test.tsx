@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach, type Mock } from "vitest";
 import { useCreateBranch, useDeleteBranch, useUpdateBranch } from "@/hooks/useBranches";
 import { branchService } from "@/services/branch.service";
 import { Q_KEYS } from "@/constants/queryKeys";
@@ -27,7 +27,7 @@ vi.mock("@/context/UserContext", () => ({
 }));
 
 const mockRefetchUser = vi.fn();
-(useUser as any).mockReturnValue({
+(useUser as Mock).mockReturnValue({
   refetchUser: mockRefetchUser,
   selectedBranchId: null,
   setSelectedBranchId: vi.fn(),
@@ -48,7 +48,7 @@ describe("useBranches Hooks", () => {
   describe("useCreateBranch", () => {
     it("successfully creates a branch, invalidates caches, and refetches user", async () => {
       const mockBranch = { id: "1", name: "Main Branch" };
-      (branchService.createBranch as any).mockResolvedValue({
+      (branchService.createBranch as Mock).mockResolvedValue({
         success: true,
         message: "Branch created successfully",
         data: mockBranch,
@@ -78,7 +78,7 @@ describe("useBranches Hooks", () => {
     });
 
     it("handles error during creation", async () => {
-      (branchService.createBranch as any).mockRejectedValue(new Error("Network Error"));
+      (branchService.createBranch as Mock).mockRejectedValue(new Error("Network Error"));
 
       const { result } = renderHook(() => useCreateBranch(), { wrapper });
 
@@ -93,7 +93,7 @@ describe("useBranches Hooks", () => {
   describe("useUpdateBranch", () => {
     it("successfully updates a branch and invalidates caches", async () => {
       const mockBranch = { id: "1", name: "Updated Branch" };
-      (branchService.updateBranch as any).mockResolvedValue({
+      (branchService.updateBranch as Mock).mockResolvedValue({
         success: true,
         message: "Branch updated successfully",
         data: mockBranch,
@@ -123,7 +123,7 @@ describe("useBranches Hooks", () => {
     });
 
     it("handles error during update", async () => {
-      (branchService.updateBranch as any).mockRejectedValue(new Error("Network Error"));
+      (branchService.updateBranch as Mock).mockRejectedValue(new Error("Network Error"));
 
       const { result } = renderHook(() => useUpdateBranch(), { wrapper });
 
@@ -137,7 +137,7 @@ describe("useBranches Hooks", () => {
 
   describe("useDeleteBranch", () => {
     it("successfully deletes a branch and invalidates caches", async () => {
-      (branchService.deleteBranch as any).mockResolvedValue({
+      (branchService.deleteBranch as Mock).mockResolvedValue({
         success: true,
         message: "Branch deleted successfully",
       });
@@ -165,7 +165,7 @@ describe("useBranches Hooks", () => {
     });
 
     it("handles error during deletion", async () => {
-      (branchService.deleteBranch as any).mockRejectedValue(new Error("Network Error"));
+      (branchService.deleteBranch as Mock).mockRejectedValue(new Error("Network Error"));
 
       const { result } = renderHook(() => useDeleteBranch(), { wrapper });
 

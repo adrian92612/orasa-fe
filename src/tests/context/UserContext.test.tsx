@@ -1,5 +1,5 @@
 import { renderHook, waitFor, act } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach, type Mock } from "vitest";
 import { UserProvider, useUser } from "@/context/UserContext";
 import { API_ROUTES } from "@/constants/routes";
 import { apiClient } from "@/lib/api-client";
@@ -51,7 +51,7 @@ describe("UserContext", () => {
       businessName: "Test Biz",
     };
 
-    (apiClient.get as any).mockResolvedValue({
+    (apiClient.get as Mock).mockResolvedValue({
       success: true,
       data: mockUser,
     });
@@ -63,7 +63,7 @@ describe("UserContext", () => {
   });
 
   it("provides null user if fetching fails", async () => {
-    (apiClient.get as any).mockRejectedValue(new Error("Unauthorized"));
+    (apiClient.get as Mock).mockRejectedValue(new Error("Unauthorized"));
 
     const { result } = renderHook(() => useUser(), { wrapper });
 
@@ -71,7 +71,7 @@ describe("UserContext", () => {
   });
 
   it("manages selectedBranchId state", async () => {
-    (apiClient.get as any).mockResolvedValue({
+    (apiClient.get as Mock).mockResolvedValue({
       success: true,
       data: { userId: "1", role: "STAFF" },
     });
@@ -88,11 +88,11 @@ describe("UserContext", () => {
   });
 
   it("handles logout successfully", async () => {
-    (apiClient.get as any).mockResolvedValue({
+    (apiClient.get as Mock).mockResolvedValue({
       success: true,
       data: { userId: "1", role: "OWNER" },
     });
-    (apiClient.post as any).mockResolvedValue({ success: true });
+    (apiClient.post as Mock).mockResolvedValue({ success: true });
 
     const sessionStorageRemoveSpy = vi.spyOn(Storage.prototype, "removeItem");
 

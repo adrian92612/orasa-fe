@@ -8,7 +8,19 @@ import {
 } from "@/hooks/useServices";
 import { useUser } from "@/context/UserContext";
 import { Q_KEYS } from "@/constants/queryKeys";
-import type { ServiceResponse, BranchServiceResponse } from "@/types/service";
+import type { 
+  ServiceResponse, 
+  BranchServiceResponse,
+  AssignServiceToBranchRequest,
+  UpdateBranchServiceRequest,
+  UpdateServiceRequest
+} from "@/types/service";
+
+type ServiceMutationVariables = 
+  | string 
+  | { id: string; data: UpdateServiceRequest }
+  | { branchId: string; data: AssignServiceToBranchRequest }
+  | { branchId: string; linkId: string; data: UpdateBranchServiceRequest };
 
 // Hook for UI state that doesn't trigger suspense
 export const useServicesState = () => {
@@ -54,13 +66,21 @@ export const useServicesData = (state: ReturnType<typeof useServicesState>) => {
 
   const pendingMutations = useMutationState({
     filters: { status: "pending", mutationKey: [Q_KEYS.SERVICES] },
-    select: (mutation) => mutation.state.variables as any,
+    select: (mutation) => mutation.state.variables as ServiceMutationVariables,
   });
 
   const checkIsSaving = (id: string) =>
     pendingMutations.some((vars) => {
       if (typeof vars === "string") return vars === id;
-      return vars?.id === id || vars?.data?.serviceId === id;
+      if (!vars) return false;
+      
+      // UpdateService variables check
+      if ("id" in vars && vars.id === id) return true;
+      
+      // Assign/UpdateLink variables check
+      if ("data" in vars && "serviceId" in vars.data && vars.data.serviceId === id) return true;
+      
+      return false;
     });
 
   // --- Categorize services ---

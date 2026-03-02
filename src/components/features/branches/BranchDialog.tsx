@@ -5,13 +5,7 @@ import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Field,
-  FieldLabel,
-  FieldError,
-  FieldGroup,
-  FieldSet,
-} from "@/components/ui/field";
+import { Field, FieldLabel, FieldError, FieldGroup, FieldSet } from "@/components/ui/field";
 
 import {
   Dialog,
@@ -63,13 +57,7 @@ type Props = {
   serviceList: ServiceResponse[];
 };
 
-const BranchDialog = ({
-  open,
-  onOpenChange,
-  branchToEdit,
-  staffList,
-  serviceList,
-}: Props) => {
+const BranchDialog = ({ open, onOpenChange, branchToEdit, staffList, serviceList }: Props) => {
   const createMutation = useCreateBranch();
   const updateMutation = useUpdateBranch();
 
@@ -82,8 +70,7 @@ const BranchDialog = ({
       address: branchToEdit?.address || "",
       phoneNumber: branchToEdit?.phoneNumber || "",
       staffIds: branchToEdit?.staffIds || [],
-      serviceIds:
-        branchToEdit?.activeServiceIds || serviceList.map((s) => s.id),
+      serviceIds: branchToEdit?.activeServiceIds || serviceList.map((s) => s.id),
     },
   });
 
@@ -96,28 +83,12 @@ const BranchDialog = ({
 
     const currentValues = watchedValues;
 
-    if ((currentValues.name || "").trim() !== (branchToEdit.name || "").trim())
-      return true;
-    if (
-      (currentValues.address || "").trim() !==
-      (branchToEdit.address || "").trim()
-    )
-      return true;
-    if (
-      (currentValues.phoneNumber || "").trim() !==
-      (branchToEdit.phoneNumber || "").trim()
-    )
-      return true;
+    if ((currentValues.name || "").trim() !== (branchToEdit.name || "").trim()) return true;
+    if ((currentValues.address || "").trim() !== (branchToEdit.address || "").trim()) return true;
+    if ((currentValues.phoneNumber || "").trim() !== (branchToEdit.phoneNumber || "").trim()) return true;
 
-    if (!arraysEqual(currentValues.staffIds || [], branchToEdit.staffIds || []))
-      return true;
-    if (
-      !arraysEqual(
-        currentValues.serviceIds || [],
-        branchToEdit.activeServiceIds || [],
-      )
-    )
-      return true;
+    if (!arraysEqual(currentValues.staffIds || [], branchToEdit.staffIds || [])) return true;
+    if (!arraysEqual(currentValues.serviceIds || [], branchToEdit.activeServiceIds || [])) return true;
 
     return false;
   };
@@ -144,7 +115,7 @@ const BranchDialog = ({
         serviceIds: serviceList.map((s) => s.id),
       });
     }
-  }, [open, branchToEdit, reset]);
+  }, [open, branchToEdit, reset, serviceList]);
 
   const onSubmit = (data: FormValues) => {
     const trimmedData: FormValues = {
@@ -182,12 +153,8 @@ const BranchDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-125">
         <DialogHeader>
-          <DialogTitle>
-            {isEditing ? "Edit Branch" : "Add New Branch"}
-          </DialogTitle>
-          <DialogDescription>
-            Manage branch info and assignments.
-          </DialogDescription>
+          <DialogTitle>{isEditing ? "Edit Branch" : "Add New Branch"}</DialogTitle>
+          <DialogDescription>Manage branch info and assignments.</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4">
@@ -199,14 +166,8 @@ const BranchDialog = ({
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor={field.name}>Branch Name</FieldLabel>
-                    <Input
-                      {...field}
-                      id={field.name}
-                      aria-invalid={fieldState.invalid}
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
+                    <Input {...field} id={field.name} aria-invalid={fieldState.invalid} />
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
                 )}
               />
@@ -217,15 +178,8 @@ const BranchDialog = ({
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor={field.name}>Address</FieldLabel>
-                    <Input
-                      {...field}
-                      id={field.name}
-                      value={field.value || ""}
-                      aria-invalid={fieldState.invalid}
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
+                    <Input {...field} id={field.name} value={field.value || ""} aria-invalid={fieldState.invalid} />
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
                 )}
               />
@@ -250,9 +204,7 @@ const BranchDialog = ({
                       }}
                       aria-invalid={fieldState.invalid}
                     />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
                 )}
               />
@@ -265,34 +217,19 @@ const BranchDialog = ({
 
                   return (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel className="flex items-center gap-2">
-                        Staffs
-                      </FieldLabel>
+                      <FieldLabel className="flex items-center gap-2">Staffs</FieldLabel>
 
                       <div className="flex gap-2 mb-2">
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="outline"
-                          onClick={() => field.onChange(allStaffIds)}
-                        >
+                        <Button type="button" size="sm" variant="outline" onClick={() => field.onChange(allStaffIds)}>
                           Select all
                         </Button>
 
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => field.onChange([])}
-                        >
+                        <Button type="button" size="sm" variant="ghost" onClick={() => field.onChange([])}>
                           Clear
                         </Button>
                       </div>
 
-                      <MultiSelect
-                        values={field.value}
-                        onValuesChange={field.onChange}
-                      >
+                      <MultiSelect values={field.value} onValuesChange={field.onChange}>
                         <MultiSelectTrigger>
                           <MultiSelectValue placeholder="Select staff" />
                         </MultiSelectTrigger>
@@ -307,9 +244,7 @@ const BranchDialog = ({
                           </MultiSelectGroup>
                         </MultiSelectContent>
                       </MultiSelect>
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
                   );
                 }}
@@ -323,34 +258,19 @@ const BranchDialog = ({
 
                   return (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel className="flex items-center gap-2">
-                        Services
-                      </FieldLabel>
+                      <FieldLabel className="flex items-center gap-2">Services</FieldLabel>
 
                       <div className="flex gap-2 mb-2">
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="outline"
-                          onClick={() => field.onChange(allServiceIds)}
-                        >
+                        <Button type="button" size="sm" variant="outline" onClick={() => field.onChange(allServiceIds)}>
                           Select all
                         </Button>
 
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => field.onChange([])}
-                        >
+                        <Button type="button" size="sm" variant="ghost" onClick={() => field.onChange([])}>
                           Clear
                         </Button>
                       </div>
 
-                      <MultiSelect
-                        values={field.value}
-                        onValuesChange={field.onChange}
-                      >
+                      <MultiSelect values={field.value} onValuesChange={field.onChange}>
                         <MultiSelectTrigger>
                           <MultiSelectValue placeholder="Select services" />
                         </MultiSelectTrigger>
@@ -365,9 +285,7 @@ const BranchDialog = ({
                           </MultiSelectGroup>
                         </MultiSelectContent>
                       </MultiSelect>
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
                   );
                 }}
@@ -375,11 +293,7 @@ const BranchDialog = ({
             </FieldGroup>
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
 
@@ -396,9 +310,7 @@ const BranchDialog = ({
               <div className="mt-6 border-t pt-6">
                 <div className="flex justify-between gap-2">
                   <div>
-                    <h4 className="text-sm font-medium text-destructive">
-                      Danger Zone
-                    </h4>
+                    <h4 className="text-sm font-medium text-destructive">Danger Zone</h4>
                     <p className="text-sm text-muted-foreground">
                       Deleting a branch is irreversible. Please be certain.
                     </p>

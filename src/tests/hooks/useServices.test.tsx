@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach, type Mock } from "vitest";
 import { useCreateService, useUpdateService, useDeleteService } from "@/hooks/useServices";
 import { serviceService } from "@/services/service.service";
 import { Q_KEYS } from "@/constants/queryKeys";
@@ -45,7 +45,7 @@ describe("useServices Hooks", () => {
 
   describe("useCreateService", () => {
     it("successfully creates a service and invalidates caches", async () => {
-      (serviceService.createService as any).mockResolvedValue({
+      (serviceService.createService as Mock).mockResolvedValue({
         success: true,
         message: "Service created successfully",
         data: { id: "s1", name: "New Service" },
@@ -79,7 +79,7 @@ describe("useServices Hooks", () => {
     });
 
     it("handles error and rollbacks cache during creation", async () => {
-      (serviceService.createService as any).mockRejectedValue(new Error("Network Error"));
+      (serviceService.createService as Mock).mockRejectedValue(new Error("Network Error"));
 
       const setQueryDataSpy = vi.spyOn(queryClient, "setQueryData");
 
@@ -97,7 +97,7 @@ describe("useServices Hooks", () => {
 
   describe("useUpdateService", () => {
     it("successfully updates a service and invalidates caches", async () => {
-      (serviceService.updateService as any).mockResolvedValue({
+      (serviceService.updateService as Mock).mockResolvedValue({
         success: true,
         message: "Service updated successfully",
       });
@@ -125,7 +125,7 @@ describe("useServices Hooks", () => {
     });
 
     it("handles error and rollbacks cache during update", async () => {
-      (serviceService.updateService as any).mockRejectedValue(new Error("Network Error"));
+      (serviceService.updateService as Mock).mockRejectedValue(new Error("Network Error"));
 
       const setQueryDataSpy = vi.spyOn(queryClient, "setQueryData");
 
@@ -144,7 +144,7 @@ describe("useServices Hooks", () => {
 
   describe("useDeleteService", () => {
     it("successfully deletes a service and invalidates caches", async () => {
-      (serviceService.deleteService as any).mockResolvedValue({
+      (serviceService.deleteService as Mock).mockResolvedValue({
         success: true,
         message: "Service deleted successfully",
       });

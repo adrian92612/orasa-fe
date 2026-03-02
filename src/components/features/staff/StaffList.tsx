@@ -1,4 +1,3 @@
-import { Skeleton } from "@/components/ui/skeleton";
 import { User } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useMutationState } from "@tanstack/react-query";
@@ -26,7 +25,7 @@ const StaffList = ({
 }: StaffListProps) => {
   const pendingMutations = useMutationState({
     filters: { status: "pending", mutationKey: [Q_KEYS.STAFFS] },
-    select: (mutation) => mutation.state.variables as any,
+    select: (mutation) => mutation.state.variables as unknown as string | { id: string },
   });
 
   const checkIsSaving = (id: string) =>
@@ -39,13 +38,9 @@ const StaffList = ({
     return (
       <Card className="p-8 text-center">
         <User className="mx-auto h-10 w-10 text-muted-foreground/50 mb-3" />
-        <h3 className="font-semibold text-lg">
-          {isSearchActive ? "No results found" : emptyTitle}
-        </h3>
+        <h3 className="font-semibold text-lg">{isSearchActive ? "No results found" : emptyTitle}</h3>
         <p className="text-sm text-muted-foreground mt-1">
-          {isSearchActive
-            ? "Try adjusting your search query."
-            : emptyDescription}
+          {isSearchActive ? "Try adjusting your search query." : emptyDescription}
         </p>
       </Card>
     );

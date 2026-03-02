@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach, type Mock } from "vitest";
 import {
   useCreateAppointment,
   useUpdateAppointment,
@@ -54,7 +54,7 @@ describe("useAppointments Hooks", () => {
 
   describe("useCreateAppointment", () => {
     it("successfully creates an appointment and invalidates caches", async () => {
-      (appointmentService.createAppointment as any).mockResolvedValue({
+      (appointmentService.createAppointment as Mock).mockResolvedValue({
         success: true,
         message: "Appointment created successfully",
         data: { id: "new-appt" },
@@ -91,7 +91,7 @@ describe("useAppointments Hooks", () => {
     });
 
     it("handles error and rollbacks cache during creation", async () => {
-      (appointmentService.createAppointment as any).mockRejectedValue(new Error("Network Error"));
+      (appointmentService.createAppointment as Mock).mockRejectedValue(new Error("Network Error"));
 
       const setQueryDataSpy = vi.spyOn(queryClient, "setQueryData");
 
@@ -117,7 +117,7 @@ describe("useAppointments Hooks", () => {
 
   describe("useUpdateAppointment", () => {
     it("successfully updates an appointment and invalidates caches", async () => {
-      (appointmentService.updateAppointment as any).mockResolvedValue({
+      (appointmentService.updateAppointment as Mock).mockResolvedValue({
         success: true,
         message: "Appointment updated successfully",
       });
@@ -149,7 +149,7 @@ describe("useAppointments Hooks", () => {
     });
 
     it("handles error and rollbacks cache during update", async () => {
-      (appointmentService.updateAppointment as any).mockRejectedValue(new Error("Network Error"));
+      (appointmentService.updateAppointment as Mock).mockRejectedValue(new Error("Network Error"));
 
       const setQueryDataSpy = vi.spyOn(queryClient, "setQueryData");
 
@@ -170,7 +170,7 @@ describe("useAppointments Hooks", () => {
 
   describe("useUpdateAppointmentStatus", () => {
     it("successfully updates an appointment status", async () => {
-      (appointmentService.updateStatus as any).mockResolvedValue({
+      (appointmentService.updateStatus as Mock).mockResolvedValue({
         success: true,
         message: "Appointment status updated successfully",
       });
@@ -199,7 +199,7 @@ describe("useAppointments Hooks", () => {
 
   describe("useDeleteAppointment", () => {
     it("successfully soft-deletes an appointment", async () => {
-      (appointmentService.deleteAppointment as any).mockResolvedValue({
+      (appointmentService.deleteAppointment as Mock).mockResolvedValue({
         success: true,
         message: "Appointment deleted successfully",
       });

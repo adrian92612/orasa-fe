@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { authService } from "@/services/auth.service";
 import { type ChangePasswordRequest } from "@/types/auth";
 import { toast } from "sonner";
+import type { ApiResponse } from "@/types/api";
 
 export const useChangePassword = () => {
   return useMutation({
@@ -10,7 +11,7 @@ export const useChangePassword = () => {
     onSuccess: (response) => {
       toast.success(response.message || "Password changed successfully");
     },
-    onError: (error: any) => {
+    onError: (error: ApiResponse<unknown>) => {
       console.error("Error changing password:", error);
       toast.error(error?.message || "Failed to change password");
     },

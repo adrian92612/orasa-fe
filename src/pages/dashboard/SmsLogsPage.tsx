@@ -4,7 +4,7 @@ import { useSuspenseSmsLogs } from "@/hooks/useSmsLogs";
 import SmsLogList from "@/components/features/sms/SmsLogList";
 import SmsLogFilters from "@/components/features/sms/SmsLogFilters";
 import type { DateRange } from "react-day-picker";
-import type { SmsStatus } from "@/types/sms";
+import type { SmsLogSearchParams, SmsStatus } from "@/types/sms";
 import { useUser } from "@/context/UserContext";
 import CommonPagination from "@/components/common/CommonPagination";
 import SmsLogSkeleton from "@/components/features/sms/SmsLogSkeleton";
@@ -15,7 +15,7 @@ const SmsLogsPageContent = ({
   onPageChange,
   onPageSizeChange,
 }: {
-  params: any;
+  params: SmsLogSearchParams & { page: number; size: number };
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: string) => void;
 }) => {
@@ -43,7 +43,7 @@ const SmsLogsPageBody = () => {
   useSuspenseSmsLogs({
     page: 1,
     size: 1,
-    branchId: selectedBranchId || undefined,
+    branchId: (selectedBranchId as string) || undefined,
   });
 
   const [page, setPage] = useState(1);
@@ -59,9 +59,7 @@ const SmsLogsPageBody = () => {
     size: pageSize,
     branchId: selectedBranchId || undefined,
     status: status === "ALL" ? undefined : (status as SmsStatus),
-    startDate: dateRange?.from
-      ? format(dateRange.from, "yyyy-MM-dd")
-      : undefined,
+    startDate: dateRange?.from ? format(dateRange.from, "yyyy-MM-dd") : undefined,
     endDate: dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : undefined,
   };
 

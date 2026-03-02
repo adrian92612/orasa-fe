@@ -67,7 +67,6 @@ const AppointmentDialog = ({
   const updateMutation = useUpdateAppointment();
 
   const [openCombobox, setOpenCombobox] = useState(false);
-  const [hasAppliedDefaultReminders, setHasAppliedDefaultReminders] = useState(false);
 
   const { control, handleSubmit, reset, setValue } = useForm<AppointmentFormValues>({
     resolver: zodResolver(appointmentSchema),
@@ -98,6 +97,8 @@ const AppointmentDialog = ({
   const { data: reminders = [] } = useReminders(user?.businessId);
 
   useEffect(() => {
+    if (!open) return;
+
     if (appointmentToEdit) {
       const hours = appointmentToEdit.additionalReminderMinutes
         ? Math.floor(appointmentToEdit.additionalReminderMinutes / 60)
@@ -108,7 +109,7 @@ const AppointmentDialog = ({
       reset({
         customerName: appointmentToEdit.customerName,
         customerPhone: appointmentToEdit.customerPhone,
-        branchId: appointmentToEdit.branchId, // Ensure branchId is set when editing
+        branchId: appointmentToEdit.branchId,
         startDateTime: new Date(appointmentToEdit.startDateTime),
         endDateTime: appointmentToEdit.endDateTime ? new Date(appointmentToEdit.endDateTime) : undefined,
         isWalkin: appointmentToEdit.type === "WALK_IN",
@@ -119,10 +120,11 @@ const AppointmentDialog = ({
         reminderLeadTimeMinutes: minutesValue.toString(),
         additionalReminderMinutes: appointmentToEdit.additionalReminderMinutes || 0,
         customReminderEnabled: !!appointmentToEdit.additionalReminderMinutes,
-        additionalReminderTemplate: appointmentToEdit.additionalReminderTemplate || "",
+        additionalReminderTemplate: appointmentToEdit.additionalReminderTemplate || PREDEFINED_TEMPLATES[0].content,
         status: appointmentToEdit.status,
       });
     } else {
+      const defaults = reminders.filter((r) => r.enabled).map((r) => r.id);
       reset({
         customerName: "",
         customerPhone: "",
@@ -131,7 +133,7 @@ const AppointmentDialog = ({
         endDateTime: undefined,
         isWalkin: false,
         serviceId: "",
-        selectedReminderIds: [],
+        selectedReminderIds: defaults,
         notes: "",
         reminderLeadTimeHours: "",
         reminderLeadTimeMinutes: "",
@@ -140,18 +142,8 @@ const AppointmentDialog = ({
         additionalReminderTemplate: PREDEFINED_TEMPLATES[0].content,
         status: "PENDING",
       });
-      setHasAppliedDefaultReminders(false);
     }
-  }, [appointmentToEdit, reset, open, initialBranchId]);
-
-  // Restore deleted effects
-  useEffect(() => {
-    if (!isEditing && open && reminders.length > 0 && !hasAppliedDefaultReminders) {
-      const defaults = reminders.filter((r) => r.enabled).map((r) => r.id);
-      setValue("selectedReminderIds", defaults);
-      setHasAppliedDefaultReminders(true);
-    }
-  }, [reminders, open, isEditing, setValue, hasAppliedDefaultReminders]);
+  }, [appointmentToEdit, reset, open, initialBranchId, reminders]);
 
   const customReminderEnabled = useWatch({
     control,

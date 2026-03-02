@@ -9,12 +9,14 @@ import CommonPagination from "@/components/common/CommonPagination";
 import ActivityLogSkeleton from "@/components/features/activity-logs/ActivityLogSkeleton";
 import ActivityLogsPageSkeleton from "@/components/features/activity-logs/ActivityLogsPageSkeleton";
 
+import type { ActivityLogSearchParams } from "@/types/activity-log";
+
 const ActivityLogsPageContent = ({
   params,
   onPageChange,
   onPageSizeChange,
 }: {
-  params: any;
+  params: ActivityLogSearchParams & { page: number; size: number };
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: string) => void;
 }) => {
@@ -42,7 +44,7 @@ const ActivityLogsPageBody = () => {
   useSuspenseActivityLogs({
     page: 1,
     size: 1,
-    branchId: selectedBranchId || undefined,
+    branchId: (selectedBranchId as string) || undefined,
   });
 
   const [page, setPage] = useState(1);
@@ -58,9 +60,7 @@ const ActivityLogsPageBody = () => {
     size: pageSize,
     action: action === "ALL" ? undefined : action,
     branchId: selectedBranchId || undefined,
-    startDate: dateRange?.from
-      ? format(dateRange.from, "yyyy-MM-dd")
-      : undefined,
+    startDate: dateRange?.from ? format(dateRange.from, "yyyy-MM-dd") : undefined,
     endDate: dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : undefined,
   };
 

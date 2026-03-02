@@ -3,7 +3,7 @@ import { vi, describe, it, expect, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import StaffDialog from "@/components/features/staff/StaffDialog";
 import { useBranches } from "@/hooks/useBranches";
-import { useStaff, useCreateStaff, useUpdateStaff } from "@/hooks/useStaff";
+import { useCreateStaff, useUpdateStaff } from "@/hooks/useStaff";
 import { useUser } from "@/context/UserContext";
 
 // Mock hooks
@@ -39,10 +39,16 @@ describe("StaffDialog", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    vi.mocked(useBranches).mockReturnValue({ data: mockBranches, isLoading: false } as any);
-    vi.mocked(useCreateStaff).mockReturnValue({ mutate: vi.fn(), isPending: false } as any);
-    vi.mocked(useUpdateStaff).mockReturnValue({ mutate: vi.fn(), isPending: false } as any);
-    vi.mocked(useUser).mockReturnValue(mockUserContext as any);
+    vi.mocked(useBranches).mockReturnValue({ data: mockBranches, isLoading: false } as unknown as ReturnType<
+      typeof useBranches
+    >);
+    vi.mocked(useCreateStaff).mockReturnValue({ mutate: vi.fn(), isPending: false } as unknown as ReturnType<
+      typeof useCreateStaff
+    >);
+    vi.mocked(useUpdateStaff).mockReturnValue({ mutate: vi.fn(), isPending: false } as unknown as ReturnType<
+      typeof useUpdateStaff
+    >);
+    vi.mocked(useUser).mockReturnValue(mockUserContext as unknown as ReturnType<typeof useUser>);
 
     // Mock ResizeObserver for Radix UI
     class ResizeObserverMock {
@@ -90,7 +96,10 @@ describe("StaffDialog", () => {
 
   it("calls createMutation when form is valid", async () => {
     const mockCreate = vi.fn();
-    vi.mocked(useCreateStaff).mockReturnValue({ mutate: mockCreate, isPending: false } as any);
+    vi.mocked(useCreateStaff).mockReturnValue({
+      mutate: mockCreate,
+      isPending: false,
+    } as unknown as ReturnType<typeof useCreateStaff>);
 
     renderDialog();
 

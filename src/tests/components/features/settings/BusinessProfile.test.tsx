@@ -36,7 +36,7 @@ describe("BusinessProfile", () => {
       data: mockBusiness,
     } as unknown as ReturnType<typeof useSuspenseMyBusiness>);
     vi.mocked(useUser).mockReturnValue({
-      user: mockUser as any, // User type is complex, using any here for the user object but typing the hook return
+      user: mockUser as unknown as ReturnType<typeof useUser>["user"],
       logout: vi.fn(),
       refetchUser: vi.fn(),
       selectedBranchId: null,

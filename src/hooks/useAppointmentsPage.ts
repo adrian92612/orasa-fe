@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { addDays, startOfDay, endOfDay, addMonths } from "date-fns";
 import { useUser } from "@/context/UserContext";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -10,8 +10,19 @@ export const useAppointmentsPage = () => {
   const [pageSize, setPageSize] = useState(10);
   const [prevBranchId, setPrevBranchId] = useState(selectedBranchId);
 
+  const [statusFilter, setStatusFilter] = useState<string>("ALL");
+  const [typeFilter, setTypeFilter] = useState<string>("ALL");
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearch = useDebounce(searchInput);
+  const [prevSearch, setPrevSearch] = useState("");
+
   if (selectedBranchId !== prevBranchId) {
     setPrevBranchId(selectedBranchId);
+    setPage(0);
+  }
+
+  if (debouncedSearch !== prevSearch) {
+    setPrevSearch(debouncedSearch);
     setPage(0);
   }
 
@@ -22,15 +33,6 @@ export const useAppointmentsPage = () => {
     from: new Date(),
     to: addMonths(new Date(), 1),
   });
-
-  const [statusFilter, setStatusFilter] = useState<string>("ALL");
-  const [typeFilter, setTypeFilter] = useState<string>("ALL");
-  const [searchInput, setSearchInput] = useState("");
-  const debouncedSearch = useDebounce(searchInput);
-
-  useEffect(() => {
-    setPage(0);
-  }, [debouncedSearch]);
 
   const effectiveDateRange = () => {
     const today = new Date();

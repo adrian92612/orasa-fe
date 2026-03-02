@@ -154,7 +154,7 @@ test.describe("Appointment Management Flow", () => {
     });
 
     // Mock create appointment endpoint
-    let createdPayload: any = null;
+    let createdPayload: unknown = null;
     await page.route("**/api/appointments", async (route) => {
       if (route.request().method() === "POST") {
         createdPayload = route.request().postDataJSON();
@@ -222,7 +222,7 @@ test.describe("Appointment Management Flow", () => {
     });
 
     // Mock create appointment endpoint
-    let createdPayload: any = null;
+    let createdPayload: unknown = null;
     await page.route("**/api/appointments", async (route) => {
       if (route.request().method() === "POST") {
         createdPayload = route.request().postDataJSON();

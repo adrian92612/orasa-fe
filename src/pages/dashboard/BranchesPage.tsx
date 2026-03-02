@@ -13,10 +13,11 @@ import { useSuspenseStaff } from "@/hooks/useStaff";
 
 import { useMutationState } from "@tanstack/react-query";
 import { Q_KEYS } from "@/constants/queryKeys";
+import type { CreateBranchRequest, UpdateBranchRequest } from "@/types/branch";
 
-const BranchDialog = lazy(
-  () => import("@/components/features/branches/BranchDialog"),
-);
+type BranchMutationVariables = string | { id: string; data: UpdateBranchRequest } | CreateBranchRequest;
+
+const BranchDialog = lazy(() => import("@/components/features/branches/BranchDialog"));
 
 type BranchesDataSectionProps = {
   selectedBranch: BranchResponse | null;
@@ -25,12 +26,7 @@ type BranchesDataSectionProps = {
   setIsSheetOpen: (open: boolean) => void;
 };
 
-const BranchesDataSection = ({
-  selectedBranch,
-  onEdit,
-  isSheetOpen,
-  setIsSheetOpen,
-}: BranchesDataSectionProps) => {
+const BranchesDataSection = ({ selectedBranch, onEdit, isSheetOpen, setIsSheetOpen }: BranchesDataSectionProps) => {
   const { data: branches } = useSuspenseBranches();
   const { data: staffList = [] } = useSuspenseStaff();
   const { data: serviceList = [] } = useSuspenseServices();
@@ -40,7 +36,7 @@ const BranchesDataSection = ({
       status: "pending",
       mutationKey: [Q_KEYS.BRANCHES, Q_KEYS.UPDATE],
     },
-    select: (mutation) => mutation.state.variables as any,
+    select: (mutation) => mutation.state.variables as BranchMutationVariables,
   });
 
   const pendingDeleteMutations = useMutationState({
@@ -48,24 +44,23 @@ const BranchesDataSection = ({
       status: "pending",
       mutationKey: [Q_KEYS.BRANCHES, Q_KEYS.DELETE],
     },
-    select: (mutation) => mutation.state.variables as any,
+    select: (mutation) => mutation.state.variables as BranchMutationVariables,
   });
 
   const checkIsSaving = (branchId: string) => {
-    const isUpdating = pendingUpdateMutations.some(
-      (vars) => vars?.id === branchId,
-    );
+    const isUpdating = pendingUpdateMutations.some((vars) => {
+      if (vars && typeof vars === "object" && "id" in vars) {
+        return vars.id === branchId;
+      }
+      return false;
+    });
     const isDeleting = pendingDeleteMutations.some((id) => id === branchId);
     return isUpdating || isDeleting;
   };
 
   return (
     <>
-      <BranchList
-        branches={branches || []}
-        onEdit={onEdit}
-        checkIsSaving={checkIsSaving}
-      />
+      <BranchList branches={branches || []} onEdit={onEdit} checkIsSaving={checkIsSaving} />
 
       <Suspense fallback={null}>
         <BranchDialog
@@ -83,9 +78,7 @@ const BranchesDataSection = ({
 
 const BranchesPage = () => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [selectedBranch, setSelectedBranch] = useState<BranchResponse | null>(
-    null,
-  );
+  const [selectedBranch, setSelectedBranch] = useState<BranchResponse | null>(null);
 
   const handleCreate = () => {
     setSelectedBranch(null);
@@ -100,9 +93,7 @@ const BranchesPage = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-muted-foreground">
-          Manage your business branches and locations.
-        </p>
+        <p className="text-muted-foreground">Manage your business branches and locations.</p>
 
         <Button onClick={handleCreate}>
           <Plus className="mr-2 h-4 w-4" />

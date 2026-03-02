@@ -57,8 +57,7 @@ describe("Appointment Zod Schema", () => {
     });
 
     it("should require a startDateTime", () => {
-      const { startDateTime, ...rest } = validBaseAppointment;
-      const result = appointmentSchema.safeParse(rest);
+      const result = appointmentSchema.safeParse({ ...validBaseAppointment, startDateTime: undefined });
       expect(result.success).toBe(false);
     });
   });
