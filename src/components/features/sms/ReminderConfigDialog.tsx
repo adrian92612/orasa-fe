@@ -4,10 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import * as z from "zod";
 
-import {
-  useCreateReminderConfig,
-  useUpdateReminderConfig,
-} from "@/hooks/useSms";
+import { useCreateReminderConfig, useUpdateReminderConfig } from "@/hooks/useSms";
 
 import type { ReminderConfigResponse } from "@/types/sms";
 
@@ -20,21 +17,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Field,
-  FieldContent,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
 import { PREDEFINED_TEMPLATES } from "@/constants/sms";
@@ -46,13 +31,10 @@ const reminderConfigSchema = z
     messageTemplate: z.string().min(1, "Message template is required"),
     enabled: z.boolean(),
   })
-  .refine(
-    (data) => Number(data.hours || 0) > 0 || Number(data.minutes || 0) > 0,
-    {
-      message: "At least one of hours or minutes must be greater than 0",
-      path: ["minutes"],
-    },
-  );
+  .refine((data) => Number(data.hours || 0) > 0 || Number(data.minutes || 0) > 0, {
+    message: "At least one of hours or minutes must be greater than 0",
+    path: ["minutes"],
+  });
 
 type FormValues = z.infer<typeof reminderConfigSchema>;
 
@@ -62,11 +44,7 @@ type ReminderConfigDialogProps = {
   config?: ReminderConfigResponse | null;
 };
 
-const ReminderConfigDialog = ({
-  open,
-  onOpenChange,
-  config,
-}: ReminderConfigDialogProps) => {
+const ReminderConfigDialog = ({ open, onOpenChange, config }: ReminderConfigDialogProps) => {
   const isEditing = !!config;
 
   const createMutation = useCreateReminderConfig();
@@ -88,8 +66,8 @@ const ReminderConfigDialog = ({
         const hours = Math.floor(config.leadTimeMinutes / 60).toString();
         const minutes = (config.leadTimeMinutes % 60).toString();
         const templateMatch =
-          PREDEFINED_TEMPLATES.find((t) => t.content === config.messageTemplate)
-            ?.content || PREDEFINED_TEMPLATES[0].content;
+          PREDEFINED_TEMPLATES.find((t) => t.content === config.messageTemplate)?.content ||
+          PREDEFINED_TEMPLATES[0].content;
 
         reset({
           hours,
@@ -111,8 +89,7 @@ const ReminderConfigDialog = ({
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   const onSubmit = (data: FormValues) => {
-    const leadTimeMinutes =
-      Number(data.hours || 0) * 60 + Number(data.minutes || 0);
+    const leadTimeMinutes = Number(data.hours || 0) * 60 + Number(data.minutes || 0);
 
     if (isEditing && config) {
       updateMutation.mutate({
@@ -138,13 +115,9 @@ const ReminderConfigDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle>
-            {isEditing ? "Edit Reminder" : "Add Reminder"}
-          </DialogTitle>
+          <DialogTitle>{isEditing ? "Edit Reminder" : "Add Reminder"}</DialogTitle>
           <DialogDescription>
-            {isEditing
-              ? "Update the reminder settings."
-              : "Configure when and what to send as an SMS reminder."}
+            {isEditing ? "Update the reminder settings." : "Configure when and what to send as an SMS reminder."}
           </DialogDescription>
         </DialogHeader>
 
@@ -213,13 +186,7 @@ const ReminderConfigDialog = ({
                 <Controller
                   control={control}
                   name="minutes"
-                  render={({ fieldState }) => (
-                    <>
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </>
-                  )}
+                  render={({ fieldState }) => <>{fieldState.invalid && <FieldError errors={[fieldState.error]} />}</>}
                 />
               </FieldContent>
             </Field>
@@ -229,9 +196,7 @@ const ReminderConfigDialog = ({
               name="messageTemplate"
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel htmlFor="message-template">
-                    Message Template
-                  </FieldLabel>
+                  <FieldLabel htmlFor="message-template">Message Template</FieldLabel>
                   <FieldContent>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger id="message-template">
@@ -250,9 +215,7 @@ const ReminderConfigDialog = ({
                         &quot;{field.value}&quot;
                       </div>
                     </div>
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </FieldContent>
                 </Field>
               )}
@@ -264,17 +227,15 @@ const ReminderConfigDialog = ({
               render={({ field }) => (
                 <Field className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                   <div className="space-y-0.5">
-                    <FieldLabel className="text-base">Active</FieldLabel>
+                    <FieldLabel className="text-base" htmlFor="reminder-active">
+                      Active
+                    </FieldLabel>
                     <p className="text-sm text-muted-foreground">
-                      Whether this reminder is currently active and will be
-                      sent.
+                      Whether this reminder is currently active and will be sent.
                     </p>
                   </div>
                   <FieldContent>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                    <Switch id="reminder-active" checked={field.value} onCheckedChange={field.onChange} />
                   </FieldContent>
                 </Field>
               )}
@@ -282,12 +243,7 @@ const ReminderConfigDialog = ({
           </FieldGroup>
 
           <DialogFooter className="mt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={isPending}
-            >
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
               Cancel
             </Button>
             <Button type="submit" disabled={isPending}>
