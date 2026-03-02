@@ -5,9 +5,7 @@ import { Navigate, useLocation } from "react-router";
 
 import { NAV_ITEMS } from "@/constants/navigation";
 
-const STAFF_ALLOWED_ROUTES = NAV_ITEMS.filter((item) =>
-  item.allowedRoles.includes("STAFF"),
-).map((item) => item.url);
+const STAFF_ALLOWED_ROUTES = NAV_ITEMS.filter((item) => item.allowedRoles.includes("STAFF")).map((item) => item.url);
 
 type RouteGuardProps = {
   children: ReactNode;
@@ -18,9 +16,7 @@ const RouteGuard = ({ children, variant = "private" }: RouteGuardProps) => {
   const { user } = useUser();
   const location = useLocation();
 
-  const staffInAllowedRoute = STAFF_ALLOWED_ROUTES.some((route) =>
-    location.pathname.startsWith(route),
-  );
+  const staffInAllowedRoute = STAFF_ALLOWED_ROUTES.some((route) => location.pathname.startsWith(route));
 
   const getRedirect = () => {
     switch (variant) {
@@ -28,8 +24,7 @@ const RouteGuard = ({ children, variant = "private" }: RouteGuardProps) => {
         if (!user) return APP_ROUTES.LOGIN;
         if (user.role === "ADMIN") return APP_ROUTES.ADMIN.DASHBOARD; // Admin shouldn't be in private user dashboard
         if (!user.businessId) return APP_ROUTES.ONBOARDING;
-        if (user.role === "STAFF" && !staffInAllowedRoute)
-          return APP_ROUTES.DASHBOARD.APPOINTMENTS;
+        if (user.role === "STAFF" && !staffInAllowedRoute) return APP_ROUTES.DASHBOARD.APPOINTMENTS;
         break;
 
       case "public":
@@ -45,9 +40,7 @@ const RouteGuard = ({ children, variant = "private" }: RouteGuardProps) => {
         if (!user) return APP_ROUTES.LOGIN;
         if (user.role === "ADMIN") return APP_ROUTES.ADMIN.DASHBOARD;
         if (user.businessId) {
-          return user.role === "STAFF"
-            ? APP_ROUTES.DASHBOARD.APPOINTMENTS
-            : APP_ROUTES.DASHBOARD.ANALYTICS;
+          return user.role === "STAFF" ? APP_ROUTES.DASHBOARD.APPOINTMENTS : APP_ROUTES.DASHBOARD.ANALYTICS;
         }
         break;
 
