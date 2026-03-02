@@ -9,8 +9,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
+import { useSidebar } from "@/context/sidebar-context";
 import { BranchSwitcher } from "./BranchSwitcher";
 import { useUser } from "@/context/UserContext";
 import { useBranches } from "@/hooks/useBranches";
@@ -29,9 +29,7 @@ const AppSidebar = ({ onLogout, ...props }: AppSidebarProps) => {
   const location = useLocation();
   const { isMobile, setOpenMobile } = useSidebar();
 
-  const filteredNavItems = NAV_ITEMS.filter(
-    (item) => user?.role && item.allowedRoles.includes(user.role),
-  );
+  const filteredNavItems = NAV_ITEMS.filter((item) => user?.role && item.allowedRoles.includes(user.role));
 
   const displayBusinessName = user?.businessName || "Orasa";
 
@@ -77,11 +75,7 @@ const AppSidebar = ({ onLogout, ...props }: AppSidebarProps) => {
             <SidebarMenu>
               {filteredNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={location.pathname === item.url}
-                    tooltip={item.title}
-                  >
+                  <SidebarMenuButton asChild isActive={location.pathname === item.url} tooltip={item.title}>
                     <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>

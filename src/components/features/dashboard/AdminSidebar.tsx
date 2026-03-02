@@ -9,8 +9,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
+import { useSidebar } from "@/context/sidebar-context";
 import { useUser } from "@/context/UserContext";
 import { LogOut, X, LayoutDashboard } from "lucide-react";
 import { Link, useLocation } from "react-router";
@@ -45,12 +45,8 @@ export function AdminSidebar({ onLogout, ...props }: AdminSidebarProps) {
                 A
               </div>
               <div className="flex flex-col gap-0.5 leading-none ">
-                <span className="font-semibold text-sm tracking-tight">
-                  Orasa Admin
-                </span>
-                <span className="text-xs text-muted-foreground truncate max-w-40 block">
-                  {user?.username}
-                </span>
+                <span className="font-semibold text-sm tracking-tight">Orasa Admin</span>
+                <span className="text-xs text-muted-foreground truncate max-w-40 block">{user?.username}</span>
               </div>
             </div>
             {isMobile && (
@@ -71,11 +67,7 @@ export function AdminSidebar({ onLogout, ...props }: AdminSidebarProps) {
             <SidebarMenu>
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={location.pathname === item.url}
-                    tooltip={item.title}
-                  >
+                  <SidebarMenuButton asChild isActive={location.pathname === item.url} tooltip={item.title}>
                     <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>

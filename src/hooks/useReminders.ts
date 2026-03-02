@@ -7,7 +7,7 @@ export const useReminders = (businessId?: string | null) => {
     queryKey: [Q_KEYS.REMINDER_CONFIGS, businessId],
     queryFn: () => {
       if (!businessId) return Promise.resolve([]);
-      return reminderService.getConfigs(businessId);
+      return reminderService.getConfigs();
     },
     enabled: !!businessId,
   });
