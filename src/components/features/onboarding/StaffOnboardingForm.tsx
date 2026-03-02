@@ -1,54 +1,24 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Field,
-  FieldContent,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldSet,
-} from "@/components/ui/field";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Field, FieldContent, FieldError, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
 
 import { useCreateStaff } from "@/hooks/useStaff";
 
-const staffSchema = z
-  .object({
-    username: z.string().min(3, "Username must be at least 3 characters"),
-    temporaryPassword: z
-      .string()
-      .min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.temporaryPassword === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
-
-type StaffValues = z.infer<typeof staffSchema>;
+import { staffOnboardingSchema, type StaffOnboardingValues } from "@/schemas/onboarding.schema";
 
 type StaffOnboardingFormProps = {
   onFinish: () => void;
   branchId: string;
 };
 
-const StaffOnboardingForm = ({
-  onFinish,
-  branchId,
-}: StaffOnboardingFormProps) => {
-  const { control, handleSubmit } = useForm<StaffValues>({
-    resolver: zodResolver(staffSchema),
+const StaffOnboardingForm = ({ onFinish, branchId }: StaffOnboardingFormProps) => {
+  const { control, handleSubmit } = useForm<StaffOnboardingValues>({
+    resolver: zodResolver(staffOnboardingSchema),
     defaultValues: {
       username: "",
       temporaryPassword: "",
@@ -60,7 +30,7 @@ const StaffOnboardingForm = ({
 
   const { mutate: createStaff, isPending } = useCreateStaff();
 
-  const onSubmit = (data: StaffValues) => {
+  const onSubmit = (data: StaffOnboardingValues) => {
     createStaff(
       {
         username: data.username,
@@ -79,9 +49,7 @@ const StaffOnboardingForm = ({
     <Card className="w-full max-w-md shadow-lg">
       <CardHeader className="text-center">
         <CardTitle>Add Staff Member</CardTitle>
-        <CardDescription>
-          Create an account for your staff, or skip to finish.
-        </CardDescription>
+        <CardDescription>Create an account for your staff, or skip to finish.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4">
@@ -103,9 +71,7 @@ const StaffOnboardingForm = ({
                         {...field}
                         aria-invalid={fieldState.invalid}
                       />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </FieldContent>
                   </Field>
                 )}
@@ -143,9 +109,7 @@ const StaffOnboardingForm = ({
                           )}
                         </Button>
                       </div>
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </FieldContent>
                   </Field>
                 )}
@@ -170,9 +134,7 @@ const StaffOnboardingForm = ({
                           aria-invalid={fieldState.invalid}
                         />
                       </div>
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </FieldContent>
                   </Field>
                 )}
@@ -189,13 +151,7 @@ const StaffOnboardingForm = ({
                     "Create & Finish"
                   )}
                 </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="w-full"
-                  onClick={onFinish}
-                  disabled={isPending}
-                >
+                <Button type="button" variant="ghost" className="w-full" onClick={onFinish} disabled={isPending}>
                   Skip & Finish
                 </Button>
               </div>

@@ -14,23 +14,10 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
-import { useUser } from "@/context/UserContext";
 
 import { useCreateBusiness } from "@/hooks/useBusiness";
-import { isValidPHPhone } from "@/lib/utils";
 
-const onboardingSchema = z.object({
-  businessName: z.string().min(1, "Business name is required"),
-  branchName: z.string().min(1, "Branch name is required"),
-  branchAddress: z.string().min(1, "Branch address is required"),
-  branchPhone: z
-    .string()
-    .min(1, "Branch phone number is required")
-    .refine(isValidPHPhone, "Phone number must start with 09 and be 11 digits long"),
-});
-
-type OnboardingValues = z.infer<typeof onboardingSchema>;
+import { businessOnboardingSchema, type BusinessOnboardingValues } from "@/schemas/onboarding.schema";
 
 type BusinessOnboardingFormProps = {
   termsAcceptedAt: string;
@@ -38,8 +25,8 @@ type BusinessOnboardingFormProps = {
 };
 
 const BusinessOnboardingForm = ({ termsAcceptedAt, onSuccess }: BusinessOnboardingFormProps) => {
-  const { control, handleSubmit } = useForm<OnboardingValues>({
-    resolver: zodResolver(onboardingSchema),
+  const { control, handleSubmit } = useForm<BusinessOnboardingValues>({
+    resolver: zodResolver(businessOnboardingSchema),
     defaultValues: {
       businessName: "",
       branchName: "",
@@ -48,10 +35,9 @@ const BusinessOnboardingForm = ({ termsAcceptedAt, onSuccess }: BusinessOnboardi
     },
   });
 
-  const { refetchUser } = useUser();
   const { mutate: createBusiness, isPending } = useCreateBusiness();
 
-  const onSubmit = (data: OnboardingValues) => {
+  const onSubmit = (data: BusinessOnboardingValues) => {
     createBusiness(
       {
         name: data.businessName,
@@ -63,8 +49,7 @@ const BusinessOnboardingForm = ({ termsAcceptedAt, onSuccess }: BusinessOnboardi
         },
       },
       {
-        onSuccess: async (result) => {
-          await refetchUser();
+        onSuccess: (result) => {
           onSuccess(result.data?.firstBranchId || "");
         },
       },

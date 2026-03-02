@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { appointmentSchema, type AppointmentFormValues } from "@/schemas/appointment.schema";
 import {
   Dialog,
   DialogContent,
@@ -10,54 +10,24 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import {
-  Field,
-  FieldLabel,
-  FieldError,
-  FieldGroup,
-  FieldSet,
-} from "@/components/ui/field";
+import { Field, FieldLabel, FieldError, FieldGroup, FieldSet } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TimeInput } from "@/components/ui/time-input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import type {
-  AppointmentResponse,
-  AppointmentStatus,
-} from "@/types/appointment";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { AppointmentResponse, AppointmentStatus } from "@/types/appointment";
 import LoadingButton from "@/components/common/LoadingButton";
-import {
-  useCreateAppointment,
-  useUpdateAppointment,
-} from "@/hooks/useAppointments";
+import { useCreateAppointment, useUpdateAppointment } from "@/hooks/useAppointments";
 import { useUser } from "@/context/UserContext";
-import { isValidPHPhone } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useBranchServices } from "@/hooks/useServices";
 import { useReminders } from "@/hooks/useReminders";
 import { useBranches } from "@/hooks/useBranches";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown, CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -74,35 +44,6 @@ const formatDuration = (minutes: number) => {
   if (mins) parts.push(`${mins} min`);
   return parts.join(" ") || "0 min";
 };
-
-const appointmentSchema = z.object({
-  customerName: z.string().trim().min(1, "Customer name is required"),
-  customerPhone: z
-    .string()
-    .trim()
-    .min(1, "Customer phone is required")
-    .refine(
-      isValidPHPhone,
-      "Phone number must start with 09 and be 11 digits long",
-    ),
-  branchId: z.string().min(1, "Branch is required"),
-  startDateTime: z.date({ message: "Start time is required" }),
-  endDateTime: z.date().optional(),
-  isWalkin: z.boolean(),
-  serviceId: z.string().min(1, "Service is required"),
-  selectedReminderIds: z.array(z.string()).optional(),
-  notes: z.string().trim().optional(),
-  reminderLeadTimeHours: z.string().optional(),
-  reminderLeadTimeMinutes: z.string().optional(),
-  additionalReminderMinutes: z.number().optional(),
-  customReminderEnabled: z.boolean().optional(),
-  additionalReminderTemplate: z.string().trim().optional(),
-  status: z
-    .enum(["PENDING", "CONFIRMED", "CANCELLED", "NO_SHOW", "COMPLETED"])
-    .optional(),
-});
-
-type AppointmentFormValues = z.infer<typeof appointmentSchema>;
 
 type AppointmentDialogProps = {
   open: boolean;
@@ -126,27 +67,25 @@ const AppointmentDialog = ({
   const updateMutation = useUpdateAppointment();
 
   const [openCombobox, setOpenCombobox] = useState(false);
-  const [hasAppliedDefaultReminders, setHasAppliedDefaultReminders] =
-    useState(false);
+  const [hasAppliedDefaultReminders, setHasAppliedDefaultReminders] = useState(false);
 
-  const { control, handleSubmit, reset, setValue } =
-    useForm<AppointmentFormValues>({
-      resolver: zodResolver(appointmentSchema),
-      defaultValues: {
-        customerName: "",
-        customerPhone: "",
-        branchId: initialBranchId || "",
-        // Date fields are undefined initially for react-hook-form when using Date objects
-        isWalkin: false,
-        serviceId: "",
-        selectedReminderIds: [],
-        notes: "",
-        additionalReminderMinutes: 0,
-        customReminderEnabled: false,
-        additionalReminderTemplate: PREDEFINED_TEMPLATES[0].content,
-        status: "PENDING",
-      },
-    });
+  const { control, handleSubmit, reset, setValue } = useForm<AppointmentFormValues>({
+    resolver: zodResolver(appointmentSchema),
+    defaultValues: {
+      customerName: "",
+      customerPhone: "",
+      branchId: initialBranchId || "",
+      // Date fields are undefined initially for react-hook-form when using Date objects
+      isWalkin: false,
+      serviceId: "",
+      selectedReminderIds: [],
+      notes: "",
+      additionalReminderMinutes: 0,
+      customReminderEnabled: false,
+      additionalReminderTemplate: PREDEFINED_TEMPLATES[0].content,
+      status: "PENDING",
+    },
+  });
 
   const isWalkin = useWatch({ control, name: "isWalkin" });
   const startDateTime = useWatch({ control, name: "startDateTime" });
@@ -171,20 +110,16 @@ const AppointmentDialog = ({
         customerPhone: appointmentToEdit.customerPhone,
         branchId: appointmentToEdit.branchId, // Ensure branchId is set when editing
         startDateTime: new Date(appointmentToEdit.startDateTime),
-        endDateTime: appointmentToEdit.endDateTime
-          ? new Date(appointmentToEdit.endDateTime)
-          : undefined,
+        endDateTime: appointmentToEdit.endDateTime ? new Date(appointmentToEdit.endDateTime) : undefined,
         isWalkin: appointmentToEdit.type === "WALK_IN",
         serviceId: appointmentToEdit.serviceId || "",
         selectedReminderIds: appointmentToEdit.selectedReminderIds || [],
         notes: appointmentToEdit.notes || "",
         reminderLeadTimeHours: hours.toString(),
         reminderLeadTimeMinutes: minutesValue.toString(),
-        additionalReminderMinutes:
-          appointmentToEdit.additionalReminderMinutes || 0,
+        additionalReminderMinutes: appointmentToEdit.additionalReminderMinutes || 0,
         customReminderEnabled: !!appointmentToEdit.additionalReminderMinutes,
-        additionalReminderTemplate:
-          appointmentToEdit.additionalReminderTemplate || "",
+        additionalReminderTemplate: appointmentToEdit.additionalReminderTemplate || "",
         status: appointmentToEdit.status,
       });
     } else {
@@ -211,12 +146,7 @@ const AppointmentDialog = ({
 
   // Restore deleted effects
   useEffect(() => {
-    if (
-      !isEditing &&
-      open &&
-      reminders.length > 0 &&
-      !hasAppliedDefaultReminders
-    ) {
+    if (!isEditing && open && reminders.length > 0 && !hasAppliedDefaultReminders) {
       const defaults = reminders.filter((r) => r.enabled).map((r) => r.id);
       setValue("selectedReminderIds", defaults);
       setHasAppliedDefaultReminders(true);
@@ -265,25 +195,20 @@ const AppointmentDialog = ({
     }
 
     const additionalReminderValue = data.customReminderEnabled
-      ? Number(data.reminderLeadTimeHours || 0) * 60 +
-        Number(data.reminderLeadTimeMinutes || 0)
+      ? Number(data.reminderLeadTimeHours || 0) * 60 + Number(data.reminderLeadTimeMinutes || 0)
       : 0;
 
     const payload = {
       customerName: data.customerName,
       customerPhone: data.customerPhone,
       startDateTime: data.startDateTime.toISOString(),
-      endDateTime: data.endDateTime
-        ? data.endDateTime.toISOString()
-        : data.startDateTime.toISOString(),
+      endDateTime: data.endDateTime ? data.endDateTime.toISOString() : data.startDateTime.toISOString(),
       status: data.status as AppointmentStatus,
       serviceId: data.serviceId,
       selectedReminderIds: data.selectedReminderIds,
       notes: data.notes,
       additionalReminderMinutes: additionalReminderValue,
-      additionalReminderTemplate: data.customReminderEnabled
-        ? data.additionalReminderTemplate
-        : undefined,
+      additionalReminderTemplate: data.customReminderEnabled ? data.additionalReminderTemplate : undefined,
     };
 
     if (isEditing && appointmentToEdit) {
@@ -305,13 +230,9 @@ const AppointmentDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-125">
         <DialogHeader>
-          <DialogTitle>
-            {isEditing ? "Edit Appointment" : "New Appointment"}
-          </DialogTitle>
+          <DialogTitle>{isEditing ? "Edit Appointment" : "New Appointment"}</DialogTitle>
           <DialogDescription>
-            {isEditing
-              ? "Update appointment details or status."
-              : "Create a new appointment."}
+            {isEditing ? "Update appointment details or status." : "Create a new appointment."}
           </DialogDescription>
         </DialogHeader>
 
@@ -326,10 +247,7 @@ const AppointmentDialog = ({
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel required>Branch</FieldLabel>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
+                      <Select value={field.value} onValueChange={field.onChange}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a branch" />
                         </SelectTrigger>
@@ -341,9 +259,7 @@ const AppointmentDialog = ({
                           ))}
                         </SelectContent>
                       </Select>
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
                   )}
                 />
@@ -352,25 +268,14 @@ const AppointmentDialog = ({
               {/* Walk-in Switch */}
               <div className="flex items-center justify-between space-x-2">
                 <div className="flex flex-col gap-1">
-                  <FieldLabel htmlFor="isWalkin">
-                    Walk-in Appointment
-                  </FieldLabel>
-                  {isEditing && (
-                    <span className="text-xs text-muted-foreground">
-                      Type cannot be changed
-                    </span>
-                  )}
+                  <FieldLabel htmlFor="isWalkin">Walk-in Appointment</FieldLabel>
+                  {isEditing && <span className="text-xs text-muted-foreground">Type cannot be changed</span>}
                 </div>
                 <Controller
                   name="isWalkin"
                   control={control}
                   render={({ field }) => (
-                    <Switch
-                      id="isWalkin"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      disabled={isEditing}
-                    />
+                    <Switch id="isWalkin" checked={field.value} onCheckedChange={field.onChange} disabled={isEditing} />
                   )}
                 />
               </div>
@@ -385,15 +290,8 @@ const AppointmentDialog = ({
                       <FieldLabel htmlFor={field.name} required>
                         Customer Name
                       </FieldLabel>
-                      <Input
-                        {...field}
-                        id={field.name}
-                        placeholder="John Doe"
-                        aria-invalid={fieldState.invalid}
-                      />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      <Input {...field} id={field.name} placeholder="John Doe" aria-invalid={fieldState.invalid} />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
                   )}
                 />
@@ -419,9 +317,7 @@ const AppointmentDialog = ({
                         }}
                         aria-invalid={fieldState.invalid}
                       />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
                   )}
                 />
@@ -447,9 +343,7 @@ const AppointmentDialog = ({
                           )}
                         >
                           {field.value
-                            ? (branchServices.find(
-                                (s) => s.serviceId === field.value,
-                              )?.serviceName ??
+                            ? (branchServices.find((s) => s.serviceId === field.value)?.serviceName ??
                               (appointmentToEdit?.serviceDeleted
                                 ? "⚠ Service was deleted — select a new one"
                                 : "Select a service"))
@@ -477,13 +371,10 @@ const AppointmentDialog = ({
                                     <Check
                                       className={cn(
                                         "mr-2 h-4 w-4",
-                                        service.serviceId === field.value
-                                          ? "opacity-100"
-                                          : "opacity-0",
+                                        service.serviceId === field.value ? "opacity-100" : "opacity-0",
                                       )}
                                     />
-                                    {service.serviceName} (
-                                    {service.durationMinutes} min)
+                                    {service.serviceName} ({service.durationMinutes} min)
                                   </CommandItem>
                                 ))}
                             </CommandGroup>
@@ -491,9 +382,7 @@ const AppointmentDialog = ({
                         </Command>
                       </PopoverContent>
                     </Popover>
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
                 )}
               />
@@ -516,11 +405,7 @@ const AppointmentDialog = ({
                             )}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
+                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
@@ -551,9 +436,7 @@ const AppointmentDialog = ({
                         value={field.value ? format(field.value, "HH:mm") : ""}
                         onChange={(time) => {
                           if (time) {
-                            const [hours, minutes] = time
-                              .split(":")
-                              .map(Number);
+                            const [hours, minutes] = time.split(":").map(Number);
                             const newDate = new Date(field.value || new Date());
                             newDate.setHours(hours);
                             newDate.setMinutes(minutes);
@@ -565,9 +448,7 @@ const AppointmentDialog = ({
                         }}
                       />
                     </div>
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
                 )}
               />
@@ -576,11 +457,7 @@ const AppointmentDialog = ({
                   name="endDateTime"
                   control={control}
                   render={({ field }) => (
-                    <Input
-                      {...field}
-                      value={field.value ? field.value.toISOString() : ""}
-                      type="hidden"
-                    />
+                    <Input {...field} value={field.value ? field.value.toISOString() : ""} type="hidden" />
                   )}
                 />
               </div>
@@ -592,11 +469,7 @@ const AppointmentDialog = ({
                 render={({ field }) => (
                   <Field>
                     <FieldLabel htmlFor={field.name}>Notes</FieldLabel>
-                    <Textarea
-                      {...field}
-                      id={field.name}
-                      placeholder="Any special instructions..."
-                    />
+                    <Textarea {...field} id={field.name} placeholder="Any special instructions..." />
                   </Field>
                 )}
               />
@@ -604,9 +477,7 @@ const AppointmentDialog = ({
               {/* Reminders */}
               {!isWalkin && reminders.length > 0 && (
                 <div className="space-y-4 rounded-md border border-primary p-4">
-                  <div className="text-sm font-medium text-foreground">
-                    Reminders
-                  </div>
+                  <div className="text-sm font-medium text-foreground">Reminders</div>
                   <Controller
                     name="selectedReminderIds"
                     control={control}
@@ -615,10 +486,7 @@ const AppointmentDialog = ({
                         {reminders
                           .filter((r) => r.enabled)
                           .map((reminder) => (
-                            <div
-                              key={reminder.id}
-                              className="flex items-start space-x-2"
-                            >
+                            <div key={reminder.id} className="flex items-start space-x-2">
                               <Checkbox
                                 id={reminder.id}
                                 checked={field.value?.includes(reminder.id)}
@@ -626,9 +494,7 @@ const AppointmentDialog = ({
                                   const current = field.value || [];
                                   const updated = checked
                                     ? [...current, reminder.id]
-                                    : current.filter(
-                                        (id) => id !== reminder.id,
-                                      );
+                                    : current.filter((id) => id !== reminder.id);
                                   field.onChange(updated);
                                 }}
                               />
@@ -637,8 +503,7 @@ const AppointmentDialog = ({
                                   htmlFor={reminder.id}
                                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                 >
-                                  {formatDuration(reminder.leadTimeMinutes)}{" "}
-                                  before
+                                  {formatDuration(reminder.leadTimeMinutes)} before
                                 </Label>
                               </div>
                             </div>
@@ -656,11 +521,7 @@ const AppointmentDialog = ({
                   control={control}
                   render={({ field }) => (
                     <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="customReminderEnabled"
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
+                      <Checkbox id="customReminderEnabled" checked={field.value} onCheckedChange={field.onChange} />
                       <Label
                         htmlFor="customReminderEnabled"
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -675,9 +536,7 @@ const AppointmentDialog = ({
               {/* Extra Reminder Fields */}
               {!isWalkin && customReminderEnabled && (
                 <div className="space-y-4 rounded-md border p-4 border-primary animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="text-sm font-medium text-foreground">
-                    Extra Reminder Settings
-                  </div>
+                  <div className="text-sm font-medium text-foreground">Extra Reminder Settings</div>
                   <div className="grid grid-cols-2 gap-4">
                     <Controller
                       name="reminderLeadTimeHours"
@@ -690,8 +549,7 @@ const AppointmentDialog = ({
                             value={field.value ?? ""}
                             onChange={(e) => {
                               const val = e.target.value;
-                              if (val === "" || /^\d+$/.test(val))
-                                field.onChange(val);
+                              if (val === "" || /^\d+$/.test(val)) field.onChange(val);
                             }}
                           />
                         </Field>
@@ -708,8 +566,7 @@ const AppointmentDialog = ({
                             value={field.value ?? ""}
                             onChange={(e) => {
                               const val = e.target.value;
-                              if (val === "" || /^\d+$/.test(val))
-                                field.onChange(val);
+                              if (val === "" || /^\d+$/.test(val)) field.onChange(val);
                             }}
                           />
                         </Field>
@@ -723,10 +580,7 @@ const AppointmentDialog = ({
                     render={({ field, fieldState }) => (
                       <Field>
                         <FieldLabel>Message Template</FieldLabel>
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        >
+                        <Select value={field.value} onValueChange={field.onChange}>
                           <SelectTrigger>
                             <SelectValue placeholder="Pick a template" />
                           </SelectTrigger>
@@ -743,9 +597,7 @@ const AppointmentDialog = ({
                             &quot;{field.value || "No template selected"}&quot;
                           </div>
                         </div>
-                        {fieldState.invalid && (
-                          <FieldError errors={[fieldState.error]} />
-                        )}
+                        {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                       </Field>
                     )}
                   />
@@ -754,12 +606,7 @@ const AppointmentDialog = ({
             </FieldGroup>
 
             <DialogFooter className="pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                disabled={isPending}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
                 Cancel
               </Button>
               <LoadingButton

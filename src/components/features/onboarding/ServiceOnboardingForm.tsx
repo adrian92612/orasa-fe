@@ -1,37 +1,14 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Field,
-  FieldContent,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldSet,
-} from "@/components/ui/field";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Field, FieldContent, FieldError, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
 
 import { useCreateService } from "@/hooks/useServices";
 
-const serviceSchema = z.object({
-  name: z.string().min(1, "Service name is required"),
-  description: z.string().optional(),
-  basePrice: z.coerce.number().min(1, "Price must be at least 1"),
-  durationMinutes: z.coerce
-    .number()
-    .min(1, "Duration must be at least 1 minute"),
-});
-
-type ServiceValues = z.infer<typeof serviceSchema>;
+import { serviceOnboardingSchema, type ServiceOnboardingValues } from "@/schemas/onboarding.schema";
 
 type ServiceOnboardingFormProps = {
   onNext: () => void;
@@ -39,7 +16,7 @@ type ServiceOnboardingFormProps = {
 
 const ServiceOnboardingForm = ({ onNext }: ServiceOnboardingFormProps) => {
   const { control, handleSubmit } = useForm({
-    resolver: zodResolver(serviceSchema),
+    resolver: zodResolver(serviceOnboardingSchema),
     defaultValues: {
       name: "",
       description: "",
@@ -50,7 +27,7 @@ const ServiceOnboardingForm = ({ onNext }: ServiceOnboardingFormProps) => {
 
   const { mutate: createService, isPending } = useCreateService();
 
-  const onSubmit = (data: ServiceValues) => {
+  const onSubmit = (data: ServiceOnboardingValues) => {
     createService(data, {
       onSuccess: () => {
         onNext();
@@ -62,9 +39,7 @@ const ServiceOnboardingForm = ({ onNext }: ServiceOnboardingFormProps) => {
     <Card className="w-full max-w-md shadow-lg">
       <CardHeader className="text-center">
         <CardTitle>Add Your First Service</CardTitle>
-        <CardDescription>
-          Create a service to get started, or skip this step.
-        </CardDescription>
+        <CardDescription>Create a service to get started, or skip this step.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4">
@@ -79,15 +54,8 @@ const ServiceOnboardingForm = ({ onNext }: ServiceOnboardingFormProps) => {
                       Service Name
                     </FieldLabel>
                     <FieldContent>
-                      <Input
-                        id="name"
-                        placeholder="e.g. Basic Haircut"
-                        {...field}
-                        aria-invalid={fieldState.invalid}
-                      />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      <Input id="name" placeholder="e.g. Basic Haircut" {...field} aria-invalid={fieldState.invalid} />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </FieldContent>
                   </Field>
                 )}
@@ -106,9 +74,7 @@ const ServiceOnboardingForm = ({ onNext }: ServiceOnboardingFormProps) => {
                         {...field}
                         aria-invalid={fieldState.invalid}
                       />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </FieldContent>
                   </Field>
                 )}
@@ -131,9 +97,7 @@ const ServiceOnboardingForm = ({ onNext }: ServiceOnboardingFormProps) => {
                         value={field.value as string | number | undefined}
                         aria-invalid={fieldState.invalid}
                       />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </FieldContent>
                   </Field>
                 )}
@@ -156,9 +120,7 @@ const ServiceOnboardingForm = ({ onNext }: ServiceOnboardingFormProps) => {
                         value={field.value as string | number | undefined}
                         aria-invalid={fieldState.invalid}
                       />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </FieldContent>
                   </Field>
                 )}
@@ -175,13 +137,7 @@ const ServiceOnboardingForm = ({ onNext }: ServiceOnboardingFormProps) => {
                     "Create & Continue"
                   )}
                 </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="w-full"
-                  onClick={onNext}
-                  disabled={isPending}
-                >
+                <Button type="button" variant="ghost" className="w-full" onClick={onNext} disabled={isPending}>
                   Skip for now
                 </Button>
               </div>
