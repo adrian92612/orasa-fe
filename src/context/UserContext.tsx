@@ -3,6 +3,7 @@ import { API_ROUTES } from "@/constants/routes";
 import { apiClient } from "@/lib/api-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createContext, type ReactNode, useContext, useState } from "react";
+import { getCookie, decodeJwt } from "@/lib/jwt-utils";
 
 export type UserRole = "OWNER" | "STAFF" | "ADMIN";
 
@@ -11,6 +12,14 @@ export type User = {
   username: string;
   role: UserRole;
   businessId: string | null;
+  businessName: string | null;
+};
+
+type JwtPayload = {
+  sub: string;
+  username: string;
+  role: UserRole;
+  businessId?: string;
   businessName?: string;
 };
 
@@ -26,6 +35,20 @@ type UserContextType = {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
+  // Try to get initial user from JWT cookie for immediate route guarding
+  const token = getCookie("token");
+  const payload = token ? decodeJwt<JwtPayload>(token) : null;
+
+  const initialUserFromToken = payload
+    ? {
+        userId: payload.sub,
+        username: payload.username,
+        role: payload.role,
+        businessId: payload.businessId || null,
+        businessName: payload.businessName || null,
+      }
+    : null;
+
   const {
     data: user,
     error,
@@ -62,7 +85,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   return (
     <UserContext.Provider
       value={{
-        user: user || null,
+        user: user || initialUserFromToken,
         error: error as Error | null,
         refetchUser: refetch,
         logout,

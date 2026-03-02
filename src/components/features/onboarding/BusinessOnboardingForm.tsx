@@ -1,11 +1,5 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Field,
   FieldContent,
@@ -21,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+import { useUser } from "@/context/UserContext";
 
 import { useCreateBusiness } from "@/hooks/useBusiness";
 import { isValidPHPhone } from "@/lib/utils";
@@ -32,10 +27,7 @@ const onboardingSchema = z.object({
   branchPhone: z
     .string()
     .min(1, "Branch phone number is required")
-    .refine(
-      isValidPHPhone,
-      "Phone number must start with 09 and be 11 digits long",
-    ),
+    .refine(isValidPHPhone, "Phone number must start with 09 and be 11 digits long"),
 });
 
 type OnboardingValues = z.infer<typeof onboardingSchema>;
@@ -45,10 +37,7 @@ type BusinessOnboardingFormProps = {
   onSuccess: (firstBranchId: string) => void;
 };
 
-const BusinessOnboardingForm = ({
-  termsAcceptedAt,
-  onSuccess,
-}: BusinessOnboardingFormProps) => {
+const BusinessOnboardingForm = ({ termsAcceptedAt, onSuccess }: BusinessOnboardingFormProps) => {
   const { control, handleSubmit } = useForm<OnboardingValues>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
@@ -59,6 +48,7 @@ const BusinessOnboardingForm = ({
     },
   });
 
+  const { refetchUser } = useUser();
   const { mutate: createBusiness, isPending } = useCreateBusiness();
 
   const onSubmit = (data: OnboardingValues) => {
@@ -73,7 +63,8 @@ const BusinessOnboardingForm = ({
         },
       },
       {
-        onSuccess: (result) => {
+        onSuccess: async (result) => {
+          await refetchUser();
           onSuccess(result.data?.firstBranchId || "");
         },
       },
@@ -84,9 +75,7 @@ const BusinessOnboardingForm = ({
     <Card className="w-full max-w-md shadow-lg">
       <CardHeader className="text-center">
         <CardTitle>Welcome to Orasa</CardTitle>
-        <CardDescription>
-          Let's set up your business and main branch.
-        </CardDescription>
+        <CardDescription>Let's set up your business and main branch.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4">
@@ -108,9 +97,7 @@ const BusinessOnboardingForm = ({
                         {...field}
                         aria-invalid={fieldState.invalid}
                       />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </FieldContent>
                   </Field>
                 )}
@@ -128,15 +115,8 @@ const BusinessOnboardingForm = ({
                       Branch Name
                     </FieldLabel>
                     <FieldContent>
-                      <Input
-                        id="branchName"
-                        placeholder="e.g. Main"
-                        {...field}
-                        aria-invalid={fieldState.invalid}
-                      />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      <Input id="branchName" placeholder="e.g. Main" {...field} aria-invalid={fieldState.invalid} />
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </FieldContent>
                   </Field>
                 )}
@@ -157,9 +137,7 @@ const BusinessOnboardingForm = ({
                         {...field}
                         aria-invalid={fieldState.invalid}
                       />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </FieldContent>
                   </Field>
                 )}
@@ -188,9 +166,7 @@ const BusinessOnboardingForm = ({
                         }}
                         aria-invalid={fieldState.invalid}
                       />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </FieldContent>
                   </Field>
                 )}
