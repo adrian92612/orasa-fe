@@ -28,17 +28,11 @@ FROM nginx:alpine
 # Copy built assets from build stage
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Add nginx configuration for SSL, SPA routing, API proxy, and WebSocket support
-# Note: The SSL certificate paths will be populated by Certbot volumes
+# Add nginx configuration for SSL (Cloudflare Origin), SPA routing, API proxy, and WebSocket support
 COPY <<'EOF' /etc/nginx/conf.d/default.conf
 server {
     listen 80;
-    server_name orasa.duckdns.org;
-
-    # For Certbot validation
-    location /.well-known/acme-challenge/ {
-        root /var/www/certbot;
-    }
+    server_name orasa.app;
 
     # Redirect all HTTP traffic to HTTPS
     location / {
@@ -48,10 +42,11 @@ server {
 
 server {
     listen 443 ssl;
-    server_name orasa.duckdns.org;
+    server_name orasa.app;
 
-    ssl_certificate /etc/letsencrypt/live/orasa.duckdns.org/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/orasa.duckdns.org/privkey.pem;
+    # Cloudflare Origin Certificates (mounted via volume)
+    ssl_certificate /etc/nginx/ssl/cert.pem;
+    ssl_certificate_key /etc/nginx/ssl/key.pem;
 
     # Basic SSL security settings
     ssl_protocols TLSv1.2 TLSv1.3;
