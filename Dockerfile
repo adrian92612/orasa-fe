@@ -28,10 +28,35 @@ FROM nginx:alpine
 # Copy built assets from build stage
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Add nginx configuration for SPA routing, API reverse proxy, and WebSocket support
+# Add nginx configuration for SSL, SPA routing, API proxy, and WebSocket support
+# Note: The SSL certificate paths will be populated by Certbot volumes
 COPY <<'EOF' /etc/nginx/conf.d/default.conf
 server {
     listen 80;
+    server_name orasa.duckdns.org;
+
+    # For Certbot validation
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    # Redirect all HTTP traffic to HTTPS
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name orasa.duckdns.org;
+
+    ssl_certificate /etc/letsencrypt/live/orasa.duckdns.org/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/orasa.duckdns.org/privkey.pem;
+
+    # Basic SSL security settings
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
 
     location / {
         root /usr/share/nginx/html;
@@ -58,7 +83,6 @@ server {
 }
 EOF
 
-
-EXPOSE 80
+EXPOSE 80 443
 
 CMD ["nginx", "-g", "daemon off;"]
