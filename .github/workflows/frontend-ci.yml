@@ -98,7 +98,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            cd ~/orasa-deploy
-            docker-compose pull frontend
-            docker-compose up -d frontend
+            cd ~/orasa-deploy/orasa
+            # Refresh everything
+            docker-compose pull
+            docker-compose up -d
             docker image prune -f
