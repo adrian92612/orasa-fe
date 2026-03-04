@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { APP_ROUTES } from "@/constants/routes";
+import orasaLogoIcon from "@/assets/orasa_logo_icon.webp";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -26,9 +27,7 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex flex-col items-center gap-2">
             <div className="flex items-center gap-2">
-              <div className="bg-primary p-1.5 rounded-lg">
-                <Calendar className="text-primary-foreground size-5" />
-              </div>
+              <img src={orasaLogoIcon} alt="Orasa Logo" className="size-8" />
               <span className="text-xl font-bold tracking-tight text-primary italic">Orasa</span>
             </div>
           </div>
@@ -222,9 +221,7 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="flex items-center gap-2">
-              <div className="bg-primary p-1 rounded-md">
-                <Calendar className="text-primary-foreground size-4" />
-              </div>
+              <img src={orasaLogoIcon} alt="Orasa Logo" className="size-6" />
               <span className="text-lg font-bold tracking-tight text-primary italic">Orasa</span>
             </div>
 

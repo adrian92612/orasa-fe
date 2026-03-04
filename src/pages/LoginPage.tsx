@@ -1,4 +1,4 @@
-import { Calendar } from "lucide-react";
+import orasaLogoIcon from "@/assets/orasa_logo_icon.webp";
 import OwnerLoginForm from "@/components/features/auth/OwnerLoginForm";
 import StaffLoginForm from "@/components/features/auth/StaffLoginForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,21 +9,13 @@ export const LoginPage = () => {
       <div className="flex flex-col items-center justify-center p-8 w-full order-1 lg:order-2 grow lg:grow-0">
         <div className="w-full max-w-sm space-y-8 animate-in fade-in slide-in-from-right-4 duration-700">
           <div className="lg:hidden flex items-center gap-2 mb-8">
-            <div className="bg-primary p-1 rounded-md">
-              <Calendar className="text-primary-foreground size-4" />
-            </div>
-            <span className="text-xl font-bold tracking-tight italic text-primary">
-              Orasa
-            </span>
+            <img src={orasaLogoIcon} alt="Orasa Logo" className="size-8" />
+            <span className="text-xl font-bold tracking-tight italic text-primary">Orasa</span>
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight text-white">
-              Welcome back
-            </h1>
-            <p className="text-slate-400">
-              Please enter your details to sign in
-            </p>
+            <h1 className="text-3xl font-bold tracking-tight text-white">Welcome back</h1>
+            <p className="text-slate-400">Please enter your details to sign in</p>
           </div>
 
           <Tabs defaultValue="owner" className="w-full">
@@ -42,19 +34,13 @@ export const LoginPage = () => {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent
-              value="owner"
-              className="mt-6 ring-offset-background focus-visible:outline-none"
-            >
+            <TabsContent value="owner" className="mt-6 ring-offset-background focus-visible:outline-none">
               <div className="min-h-75">
                 <OwnerLoginForm />
               </div>
             </TabsContent>
 
-            <TabsContent
-              value="staff"
-              className="mt-6 ring-offset-background focus-visible:outline-none"
-            >
+            <TabsContent value="staff" className="mt-6 ring-offset-background focus-visible:outline-none">
               <div className="min-h-75">
                 <StaffLoginForm />
               </div>
@@ -65,12 +51,8 @@ export const LoginPage = () => {
 
       <div className="flex flex-col justify-between p-8 lg:p-12 bg-primary text-primary-foreground relative overflow-hidden order-2 lg:order-1 rounded-t-3xl lg:rounded-none">
         <div className="hidden lg:flex items-center gap-2 relative z-10">
-          <div className="bg-white/20 p-1 rounded-md">
-            <Calendar className="text-white size-5" />
-          </div>
-          <span className="text-2xl font-bold tracking-tight italic text-white">
-            Orasa
-          </span>
+          <img src={orasaLogoIcon} alt="Orasa Logo" className="size-10" />
+          <span className="text-2xl font-bold tracking-tight italic text-white">Orasa</span>
         </div>
 
         <div className="space-y-6 relative z-10 max-w-lg mt-4 lg:mt-0">
@@ -78,17 +60,15 @@ export const LoginPage = () => {
             Digitalizing appointment management for small businesses.
           </h2>
           <p className="text-foreground/90 text-base lg:text-lg leading-relaxed">
-            "Orasa helps you focus on what matters—your clients. Stop worrying
-            about forgotten appointments and manual logs."
+            "Orasa helps you focus on what matters—your clients. Stop worrying about forgotten appointments and manual
+            logs."
           </p>
           <div className="flex items-center gap-3 pt-6 border-t border-slate-800/50">
             <div className="size-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0">
               <span className="text-xs font-bold text-slate-400">M</span>
             </div>
             <div>
-              <p className="font-semibold text-slate-200 text-sm">
-                Grow your business
-              </p>
+              <p className="font-semibold text-slate-200 text-sm">Grow your business</p>
               <p className="text-xs text-slate-400">Simplified Operations</p>
             </div>
           </div>
