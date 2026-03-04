@@ -1,11 +1,7 @@
 import { Suspense } from "react";
 import { useUser } from "@/context/UserContext";
 import { AdminSidebar } from "@/components/features/dashboard/AdminSidebar";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Outlet } from "react-router";
 
@@ -22,7 +18,7 @@ const AdminLayout = () => {
           <Separator orientation="vertical" className="mr-2 h-4" />
 
           <div className="flex flex-1 items-center justify-between">
-            <h1 className="font-semibold text-lg">Platform Administration</h1>
+            <h1 className="font-semibold text-lg text-foreground">Platform Administration</h1>
           </div>
         </header>
 

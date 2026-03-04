@@ -13,14 +13,11 @@ export const API_ROUTES = {
   },
   ADMIN: {
     BUSINESSES: `${ENV.API_URL}/admin/businesses`,
-    EXTEND_SUBSCRIPTION: (businessId: string) =>
-      `${ENV.API_URL}/admin/businesses/${businessId}/subscription/extend`,
+    EXTEND_SUBSCRIPTION: (businessId: string) => `${ENV.API_URL}/admin/businesses/${businessId}/subscription/extend`,
     ACTIVATE_SUBSCRIPTION: (businessId: string) =>
       `${ENV.API_URL}/admin/businesses/${businessId}/subscription/activate`,
-    CANCEL_SUBSCRIPTION: (businessId: string) =>
-      `${ENV.API_URL}/admin/businesses/${businessId}/subscription/cancel`,
-    ADD_CREDITS: (id: string) =>
-      `${ENV.API_URL}/admin/businesses/${id}/add-credits`,
+    CANCEL_SUBSCRIPTION: (businessId: string) => `${ENV.API_URL}/admin/businesses/${businessId}/subscription/cancel`,
+    ADD_CREDITS: (id: string) => `${ENV.API_URL}/admin/businesses/${id}/add-credits`,
     SEED_DEMO: `${ENV.API_URL}/admin/demo/seed`,
     SMS_BALANCE: `${ENV.API_URL}/admin/sms-balance`,
   },
@@ -32,10 +29,8 @@ export const API_ROUTES = {
     BASE: `${ENV.API_URL}/branches`,
     BY_ID: (id: string) => `${ENV.API_URL}/branches/${id}`,
     SERVICES: {
-      BASE: (branchId: string) =>
-        `${ENV.API_URL}/branches/${branchId}/services`,
-      BY_ID: (branchId: string, serviceId: string) =>
-        `${ENV.API_URL}/branches/${branchId}/services/${serviceId}`,
+      BASE: (branchId: string) => `${ENV.API_URL}/branches/${branchId}/services`,
+      BY_ID: (branchId: string, serviceId: string) => `${ENV.API_URL}/branches/${branchId}/services/${serviceId}`,
     },
   },
   SERVICES: {
@@ -55,26 +50,22 @@ export const API_ROUTES = {
   APPOINTMENTS: {
     BASE: `${ENV.API_URL}/appointments`,
     BY_ID: (id: string) => `${ENV.API_URL}/appointments/${id}`,
-    BY_BRANCH: (branchId: string) =>
-      `${ENV.API_URL}/appointments/branch/${branchId}`,
-    BY_BUSINESS: (businessId: string) =>
-      `${ENV.API_URL}/appointments/business/${businessId}`,
-    SEARCH: (branchId: string) =>
-      `${ENV.API_URL}/appointments/branch/${branchId}/search`,
+    BY_BRANCH: (branchId: string) => `${ENV.API_URL}/appointments/branch/${branchId}`,
+    BY_BUSINESS: (businessId: string) => `${ENV.API_URL}/appointments/business/${businessId}`,
+    SEARCH: (branchId: string) => `${ENV.API_URL}/appointments/branch/${branchId}/search`,
   },
   ANALYTICS: {
     DASHBOARD: `${ENV.API_URL}/analytics/dashboard`,
   },
   ACTIVITY_LOGS: {
-    BY_BUSINESS: (businessId: string) =>
-      `${ENV.API_URL}/activity-logs/business/${businessId}`,
-    SEARCH: (businessId: string) =>
-      `${ENV.API_URL}/activity-logs/business/${businessId}/search`,
+    BY_BUSINESS: (businessId: string) => `${ENV.API_URL}/activity-logs/business/${businessId}`,
+    SEARCH: (businessId: string) => `${ENV.API_URL}/activity-logs/business/${businessId}/search`,
   },
   SMS_LOGS: {
     BASE: `${ENV.API_URL}/sms/logs`,
   },
   PAYMENTS: {
+    BASE: `${ENV.API_URL}/payments`,
     SUBSCRIPTION: `${ENV.API_URL}/payments/subscription`,
     CREDITS: `${ENV.API_URL}/payments/credits`,
   },

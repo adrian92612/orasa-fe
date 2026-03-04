@@ -1,6 +1,7 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { paymentService } from "@/services/payment.service";
 import { toast } from "sonner";
+import { Q_KEYS } from "@/constants/queryKeys";
 
 export const usePaymentMutations = () => {
   const createSubscriptionPayment = useMutation({
@@ -31,4 +32,14 @@ export const usePaymentMutations = () => {
     createSubscriptionPayment,
     createCreditsPayment,
   };
+};
+
+export const usePaymentHistory = () => {
+  return useQuery({
+    queryKey: [Q_KEYS.PAYMENTS, "history"],
+    queryFn: async () => {
+      const response = await paymentService.getPaymentHistory();
+      return response.data || [];
+    },
+  });
 };

@@ -29,7 +29,7 @@ const ServiceList = ({
         <div className="mb-4 rounded-full bg-muted p-3">
           <Search className="h-6 w-6 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold italic">
+        <h3 className="text-lg font-semibold italic text-foreground">
           {isSearchActive ? "No services matching your search" : emptyTitle}
         </h3>
         <p className="max-w-xs text-sm text-muted-foreground">

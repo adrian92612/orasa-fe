@@ -29,9 +29,7 @@ const HomePage = () => {
               <div className="bg-primary p-1.5 rounded-lg">
                 <Calendar className="text-primary-foreground size-5" />
               </div>
-              <span className="text-xl font-bold tracking-tight text-primary italic">
-                Orasa
-              </span>
+              <span className="text-xl font-bold tracking-tight text-primary italic">Orasa</span>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -49,22 +47,14 @@ const HomePage = () => {
               <span>Modernize your appointment logs</span>
             </div>
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-tight animate-in fade-in slide-in-from-bottom-4 duration-700">
-              Stop using paper logs.{" "}
-              <span className="text-slate-300 italic">
-                Start growing your business.
-              </span>
+              Stop using paper logs. <span className="text-slate-300 italic">Start growing your business.</span>
             </h1>
             <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-6 duration-1000">
-              Orasa helps service-based businesses track appointments and
-              automate SMS reminders with zero hassle. Simple, structured, and
-              effective.
+              Orasa helps service-based businesses track appointments and automate SMS reminders with zero hassle.
+              Simple, structured, and effective.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-              <Button
-                size="lg"
-                className="h-12 px-8 text-base shadow-lg shadow-black/10"
-                onClick={handleGetStarted}
-              >
+              <Button size="lg" className="h-12 px-8 text-base shadow-lg shadow-black/10" onClick={handleGetStarted}>
                 Get Started for Free
                 <ArrowRight className="ml-2 size-4" />
               </Button>
@@ -82,9 +72,7 @@ const HomePage = () => {
               <div className="aspect-video rounded-xl bg-slate-950 flex items-center justify-center border border-slate-800 overflow-hidden">
                 <div className="flex flex-col items-center gap-4">
                   <LayoutDashboard className="size-16 text-slate-800" />
-                  <p className="text-slate-600 font-medium italic">
-                    Clean & Intuitive Dashboard View
-                  </p>
+                  <p className="text-slate-600 font-medium italic">Clean & Intuitive Dashboard View</p>
                 </div>
               </div>
               {/* Floating elements for visual interest */}
@@ -94,12 +82,8 @@ const HomePage = () => {
                     <MessageSquare className="size-5 text-slate-400" />
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-slate-100">
-                      SMS Reminder Sent
-                    </p>
-                    <p className="text-[10px] text-slate-400">
-                      To: +63 917 **** 5678
-                    </p>
+                    <p className="text-xs font-semibold text-slate-100">SMS Reminder Sent</p>
+                    <p className="text-[10px] text-slate-400">To: +63 917 **** 5678</p>
                   </div>
                 </div>
               </div>
@@ -108,15 +92,12 @@ const HomePage = () => {
         </section>
 
         {/* Features Section */}
-        <section className="py-24 bg-slate-900 border-y border-slate-800">
+        <section className="dark py-24 bg-slate-900 border-y border-slate-800">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center space-y-4 mb-16">
-              <h2 className="text-3xl font-bold tracking-tight text-white">
-                Why businesses choose Orasa
-              </h2>
+              <h2 className="text-3xl font-bold tracking-tight">Why businesses choose Orasa</h2>
               <p className="text-slate-400 max-w-2xl mx-auto">
-                Focused on solving the manual entry problem without adding
-                unnecessary complexity.
+                Focused on solving the manual entry problem without adding unnecessary complexity.
               </p>
             </div>
 
@@ -137,8 +118,7 @@ const HomePage = () => {
                 {
                   icon: LayoutDashboard,
                   title: "Multi-branch Ready",
-                  description:
-                    "Manage multiple branches under one account with branch-specific staff and analytics.",
+                  description: "Manage multiple branches under one account with branch-specific staff and analytics.",
                 },
               ].map((feature, i) => (
                 <div
@@ -148,12 +128,8 @@ const HomePage = () => {
                   <div className="bg-slate-800 p-3 rounded-xl w-fit mb-6 group-hover:bg-slate-700 transition-colors">
                     <feature.icon className="size-6 text-slate-100" />
                   </div>
-                  <h3 className="text-xl font-bold mb-3 text-white">
-                    {feature.title}
-                  </h3>
-                  <p className="text-slate-400 leading-relaxed">
-                    {feature.description}
-                  </p>
+                  <h3 className="text-xl font-bold mb-3 text-white">{feature.title}</h3>
+                  <p className="text-slate-400 leading-relaxed">{feature.description}</p>
                 </div>
               ))}
             </div>
@@ -204,18 +180,13 @@ const HomePage = () => {
                 <div className="bg-primary rounded-3xl p-8 text-primary-foreground space-y-8 shadow-2xl overflow-hidden relative">
                   <div className="absolute top-0 right-0 -mr-16 -mt-16 size-64 bg-white/5 rounded-full blur-3xl" />
 
-                  <h3 className="text-2xl font-bold relative z-10">
-                    Simple Pricing
-                  </h3>
+                  <h3 className="text-2xl font-bold relative z-10">Simple Pricing</h3>
                   <div className="flex items-baseline gap-2 relative z-10">
-                    <span className="text-5xl font-extrabold text-white">
-                      ₱299
-                    </span>
+                    <span className="text-5xl font-extrabold text-white">₱299</span>
                     <span className="text-slate-400">/ month</span>
                   </div>
                   <p className="text-slate-300 relative z-10">
-                    One subscription covers your entire business, regardless of
-                    branches or staff.
+                    One subscription covers your entire business, regardless of branches or staff.
                   </p>
 
                   <ul className="space-y-4 relative z-10">
@@ -254,9 +225,7 @@ const HomePage = () => {
               <div className="bg-primary p-1 rounded-md">
                 <Calendar className="text-primary-foreground size-4" />
               </div>
-              <span className="text-lg font-bold tracking-tight text-primary italic">
-                Orasa
-              </span>
+              <span className="text-lg font-bold tracking-tight text-primary italic">Orasa</span>
             </div>
 
             <div className="flex gap-8 text-sm text-slate-400 font-medium">
@@ -271,9 +240,7 @@ const HomePage = () => {
               </a>
             </div>
 
-            <p className="text-sm text-slate-500">
-              © {new Date().getFullYear()} Orasa. All rights reserved.
-            </p>
+            <p className="text-sm text-slate-500">© {new Date().getFullYear()} Orasa. All rights reserved.</p>
           </div>
         </div>
       </footer>

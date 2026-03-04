@@ -21,4 +21,5 @@ export const Q_KEYS = {
   ALL: "all",
   TODAY: "today",
   UPCOMING: "upcoming",
+  PAYMENTS: "payments",
 };
