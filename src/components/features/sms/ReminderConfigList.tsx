@@ -1,10 +1,7 @@
 import { useState, Suspense } from "react";
 import { Bell, Plus } from "lucide-react";
 
-import {
-  useDeleteReminderConfig,
-  useSuspenseReminderConfigs,
-} from "@/hooks/useSms";
+import { useDeleteReminderConfig, useSuspenseReminderConfigs } from "@/hooks/useSms";
 
 import type { ReminderConfigResponse } from "@/types/sms";
 
@@ -29,16 +26,11 @@ type ReminderConfigItemsProps = {
   onDelete: (config: ReminderConfigResponse) => void;
 };
 
-const ReminderConfigItems = ({
-  onEdit,
-  onDelete,
-}: ReminderConfigItemsProps) => {
+const ReminderConfigItems = ({ onEdit, onDelete }: ReminderConfigItemsProps) => {
   const { data: configs } = useSuspenseReminderConfigs();
 
   const sortedConfigs = Array.isArray(configs)
-    ? [...configs].sort(
-        (a, b) => (a.leadTimeMinutes ?? 0) - (b.leadTimeMinutes ?? 0),
-      )
+    ? [...configs].sort((a, b) => (a.leadTimeMinutes ?? 0) - (b.leadTimeMinutes ?? 0))
     : [];
 
   if (sortedConfigs.length === 0) {
@@ -47,8 +39,7 @@ const ReminderConfigItems = ({
         <Bell className="mx-auto h-10 w-10 text-muted-foreground/50 mb-3" />
         <h3 className="font-semibold text-lg">No reminders configured</h3>
         <p className="text-sm text-muted-foreground mt-1">
-          Add your first reminder to automatically notify customers before their
-          appointments.
+          Add your first reminder to automatically notify customers before their appointments.
         </p>
       </div>
     );
@@ -57,12 +48,7 @@ const ReminderConfigItems = ({
   return (
     <div className="space-y-3">
       {sortedConfigs.map((config) => (
-        <ReminderConfigCard
-          key={config.id}
-          config={config}
-          onEdit={onEdit}
-          onDelete={onDelete}
-        />
+        <ReminderConfigCard key={config.id} config={config} onEdit={onEdit} onDelete={onDelete} />
       ))}
     </div>
   );
@@ -72,10 +58,8 @@ const ReminderConfigList = () => {
   const deleteMutation = useDeleteReminderConfig();
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingConfig, setEditingConfig] =
-    useState<ReminderConfigResponse | null>(null);
-  const [deletingConfig, setDeletingConfig] =
-    useState<ReminderConfigResponse | null>(null);
+  const [editingConfig, setEditingConfig] = useState<ReminderConfigResponse | null>(null);
+  const [deletingConfig, setDeletingConfig] = useState<ReminderConfigResponse | null>(null);
 
   const handleEdit = (config: ReminderConfigResponse) => {
     setEditingConfig(config);
@@ -106,9 +90,7 @@ const ReminderConfigList = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold">SMS Reminders</h2>
-          <p className="text-sm text-muted-foreground">
-            Configure when appointment reminders are sent via SMS.
-          </p>
+          <p className="text-sm text-muted-foreground">Configure when appointment reminders are sent via SMS.</p>
         </div>
         <Button onClick={handleAdd} size="sm">
           <Plus className="mr-2 h-4 w-4" />
@@ -120,32 +102,22 @@ const ReminderConfigList = () => {
         <ReminderConfigItems onEdit={handleEdit} onDelete={setDeletingConfig} />
       </Suspense>
 
-      <ReminderConfigDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        config={editingConfig}
-      />
+      <ReminderConfigDialog open={dialogOpen} onOpenChange={setDialogOpen} config={editingConfig} />
 
-      <AlertDialog
-        open={!!deletingConfig}
-        onOpenChange={(open) => !open && setDeletingConfig(null)}
-      >
+      <AlertDialog open={!!deletingConfig} onOpenChange={(open) => !open && setDeletingConfig(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Reminder</AlertDialogTitle>
             <AlertDialogDescription>
               This will permanently delete the{" "}
               <span className="font-semibold text-foreground">
-                {deletingConfig &&
-                  formatLeadTimeShort(deletingConfig.leadTimeMinutes)}
+                {deletingConfig && formatLeadTimeShort(deletingConfig.leadTimeMinutes)}
               </span>{" "}
               reminder. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleteMutation.isPending}>
-              Cancel
-            </AlertDialogCancel>
+            <AlertDialogCancel disabled={deleteMutation.isPending}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={(e) => {
                 e.preventDefault();

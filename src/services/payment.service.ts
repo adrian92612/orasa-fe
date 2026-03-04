@@ -4,24 +4,21 @@ import type {
   PayloroResponse,
   CreateSubscriptionPaymentRequest,
   CreateCreditsPaymentRequest,
+  PaymentHistoryResponse,
 } from "@/types/payment";
 
 export const paymentService = {
   createSubscriptionPayment: async (
     request: CreateSubscriptionPaymentRequest,
   ): Promise<ApiResponse<PayloroResponse>> => {
-    return await apiClient.post<PayloroResponse>(
-      API_ROUTES.PAYMENTS.SUBSCRIPTION,
-      request,
-    );
+    return await apiClient.post<PayloroResponse>(API_ROUTES.PAYMENTS.SUBSCRIPTION, request);
   },
 
-  createCreditsPayment: async (
-    request: CreateCreditsPaymentRequest,
-  ): Promise<ApiResponse<PayloroResponse>> => {
-    return await apiClient.post<PayloroResponse>(
-      API_ROUTES.PAYMENTS.CREDITS,
-      request,
-    );
+  createCreditsPayment: async (request: CreateCreditsPaymentRequest): Promise<ApiResponse<PayloroResponse>> => {
+    return await apiClient.post<PayloroResponse>(API_ROUTES.PAYMENTS.CREDITS, request);
+  },
+
+  getPaymentHistory: async (): Promise<ApiResponse<PaymentHistoryResponse[]>> => {
+    return await apiClient.get<PaymentHistoryResponse[]>(`${API_ROUTES.PAYMENTS.BASE}/history`);
   },
 };

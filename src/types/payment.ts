@@ -20,3 +20,15 @@ export type PaymentStatusUpdate = {
   status: "PENDING" | "SUCCESS" | "FAILED" | "EXPIRED";
   type: "SUBSCRIPTION_RENEWAL" | "CREDIT_TOPUP";
 };
+
+export type PaymentHistoryResponse = {
+  id: string;
+  merchantOrderNo: string;
+  platOrderNo: string | null;
+  amount: number;
+  description: string;
+  method: string;
+  type: "SUBSCRIPTION_RENEWAL" | "CREDIT_TOPUP";
+  status: "PENDING" | "SUCCESS" | "FAILED" | "EXPIRED";
+  createdAt: string;
+};

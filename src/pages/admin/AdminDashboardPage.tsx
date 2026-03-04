@@ -24,8 +24,7 @@ import AdminExtendDialog from "@/components/features/admin/AdminExtendDialog";
 
 const AdminDashboardPage = () => {
   const [extendMonths, setExtendMonths] = useState(1);
-  const [selectedBusiness, setSelectedBusiness] =
-    useState<BusinessResponse | null>(null);
+  const [selectedBusiness, setSelectedBusiness] = useState<BusinessResponse | null>(null);
   const [confirmationState, setConfirmationState] = useState<{
     type: "ACTIVATE" | "CANCEL";
     business: BusinessResponse;
@@ -126,18 +125,10 @@ const AdminDashboardPage = () => {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">
-            Business Management
-          </h2>
-          <p className="text-muted-foreground">
-            Manage all registered businesses and subscriptions.
-          </p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">Business Management</h2>
+          <p className="text-muted-foreground">Manage all registered businesses and subscriptions.</p>
         </div>
-        <Button
-          variant="outline"
-          onClick={() => seedMutation.mutate()}
-          disabled={seedMutation.isPending}
-        >
+        <Button variant="outline" onClick={() => seedMutation.mutate()} disabled={seedMutation.isPending}>
           <Database className="mr-2 h-4 w-4" />
           {seedMutation.isPending ? "Seeding..." : "Seed Demo Data"}
         </Button>
@@ -149,13 +140,9 @@ const AdminDashboardPage = () => {
             <MessageSquare className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-sm font-medium text-muted-foreground">
-              PhilSMS Balance
-            </p>
+            <p className="text-sm font-medium text-muted-foreground">PhilSMS Balance</p>
             <div className="flex items-baseline gap-2">
-              <h3 className="text-2xl font-bold">
-                {isLoadingBalance ? "..." : (smsBalance?.remainingCredits ?? 0)}
-              </h3>
+              <h3 className="text-2xl font-bold">{isLoadingBalance ? "..." : (smsBalance?.remainingCredits ?? 0)}</h3>
               <span className="text-xs text-muted-foreground">credits</span>
             </div>
           </div>
@@ -174,10 +161,7 @@ const AdminDashboardPage = () => {
         <>
           <div className="flex flex-col gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-24 w-full rounded-lg border bg-muted animate-pulse"
-              />
+              <div key={i} className="h-24 w-full rounded-lg border bg-muted animate-pulse" />
             ))}
           </div>
           <CommonPaginationSkeleton />
@@ -186,9 +170,7 @@ const AdminDashboardPage = () => {
         <div className="flex flex-col items-center justify-center py-12 text-center rounded-lg border bg-white border-dashed">
           <Building2 className="h-12 w-12 text-muted-foreground/50 mb-4" />
           <h3 className="text-lg font-semibold">No businesses found</h3>
-          <p className="text-muted-foreground">
-            Try adjusting your search or filters.
-          </p>
+          <p className="text-muted-foreground">Try adjusting your search or filters.</p>
         </div>
       ) : (
         <div className="flex flex-col gap-4">
