@@ -99,7 +99,6 @@ jobs:
           script: |
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             cd ~/orasa-deploy/orasa
-            # Refresh everything
-            docker-compose pull
-            docker-compose up -d
+            docker compose pull
+            docker compose up -d
             docker image prune -f
