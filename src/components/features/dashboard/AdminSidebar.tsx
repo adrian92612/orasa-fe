@@ -16,6 +16,7 @@ import { LogOut, X, LayoutDashboard } from "lucide-react";
 import { Link, useLocation } from "react-router";
 import { APP_ROUTES } from "@/constants/routes";
 import { ModeToggle } from "@/components/mode-toggle";
+import orasaLogoIcon from "@/assets/orasa_logo_icon.webp";
 
 interface AdminSidebarProps extends React.ComponentProps<typeof Sidebar> {
   onLogout: () => void;
@@ -41,8 +42,8 @@ export function AdminSidebar({ onLogout, ...props }: AdminSidebarProps) {
         <div className="flex flex-col gap-2 p-2">
           <div className="flex items-center justify-between px-2">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground font-bold shrink-0">
-                A
+              <div className="flex h-8 w-8 items-center justify-center shrink-0">
+                <img src={orasaLogoIcon} alt="Orasa Logo" className="size-8" />
               </div>
               <div className="flex flex-col gap-0.5 leading-none ">
                 <span className="font-semibold text-sm tracking-tight">Orasa Admin</span>
