@@ -73,7 +73,7 @@ const OnboardingPage = () => {
   };
 
   return (
-    <main className="min-h-dvh w-full flex flex-col items-center justify-center py-12 bg-slate-50">
+    <main className="dark bg-background min-h-dvh w-full flex flex-col items-center justify-center py-12 ">
       <div className="w-full max-w-xl px-4">
         <nav className="mb-12 relative" aria-label="Progress">
           <ol className="flex items-center justify-between w-full">
@@ -82,10 +82,7 @@ const OnboardingPage = () => {
               const isActive = index === currentStepIndex;
 
               return (
-                <li
-                  key={s.id}
-                  className="relative flex flex-col items-center flex-1"
-                >
+                <li key={s.id} className="relative flex flex-col items-center flex-1">
                   {index !== STEPS.length - 1 && (
                     <div
                       className={`absolute top-4 left-1/2 w-full h-0.5 -translate-y-1/2 transition-colors duration-500 ${
@@ -98,8 +95,8 @@ const OnboardingPage = () => {
                   <div
                     className={`relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 transition-all duration-500 ${
                       isActive || isCompleted
-                        ? "bg-primary border-primary text-white"
-                        : "bg-white border-slate-300 text-slate-400"
+                        ? "bg-primary border-primary text-foreground"
+                        : "bg-background border-slate-300 text-foreground"
                     }`}
                   >
                     {isCompleted ? (
@@ -124,30 +121,18 @@ const OnboardingPage = () => {
 
         <div className="flex flex-col items-center">
           <header className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
-              {currentStepData.title}
-            </h1>
-            <p className="mt-2 text-slate-600">{currentStepData.description}</p>
+            <h1 className="text-2xl font-bold text-foreground sm:text-3xl">{currentStepData.title}</h1>
+            <p className="mt-2 text-foreground/80">{currentStepData.description}</p>
           </header>
 
           <div className="w-full flex justify-center">
-            {step === "terms" && (
-              <TermsOnboardingForm onAccept={handleTermsAccept} />
-            )}
+            {step === "terms" && <TermsOnboardingForm onAccept={handleTermsAccept} />}
             {step === "business" && (
-              <BusinessOnboardingForm
-                termsAcceptedAt={termsAcceptedAt}
-                onSuccess={handleBusinessSuccess}
-              />
+              <BusinessOnboardingForm termsAcceptedAt={termsAcceptedAt} onSuccess={handleBusinessSuccess} />
             )}
-            {step === "service" && (
-              <ServiceOnboardingForm onNext={handleServiceNext} />
-            )}
+            {step === "service" && <ServiceOnboardingForm onNext={handleServiceNext} />}
             {step === "staff" && firstBranchId && (
-              <StaffOnboardingForm
-                branchId={firstBranchId}
-                onFinish={handleFinish}
-              />
+              <StaffOnboardingForm branchId={firstBranchId} onFinish={handleFinish} />
             )}
           </div>
         </div>

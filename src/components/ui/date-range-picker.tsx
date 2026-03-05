@@ -20,7 +20,11 @@ type DateRangePickerProps = {
   disabled?: React.ComponentProps<typeof Calendar>["disabled"];
 };
 
+import { useIsMobile } from "@/hooks/use-mobile";
+
 export function DateRangePicker({ className, date, setDate, presets, disabled }: DateRangePickerProps) {
+  const isMobile = useIsMobile();
+
   return (
     <div className={cn("grid gap-2", className)}>
       <Popover>
@@ -48,10 +52,10 @@ export function DateRangePicker({ className, date, setDate, presets, disabled }:
           </Button>
         </PopoverTrigger>
 
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent className="w-auto p-0 max-h-[85vh] overflow-y-auto" align="start">
           <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-primary/75">
             {presets && presets.length > 0 && (
-              <div className="flex flex-col gap-1 p-3 w-full sm:w-37.5">
+              <div className="flex flex-col gap-1 p-3 w-full sm:w-37.5 shrink-0">
                 {presets.map((preset) => (
                   <Button
                     key={preset.label}
@@ -73,7 +77,7 @@ export function DateRangePicker({ className, date, setDate, presets, disabled }:
                 defaultMonth={date?.from}
                 selected={date}
                 onSelect={setDate}
-                numberOfMonths={2}
+                numberOfMonths={isMobile ? 1 : 2}
                 disabled={disabled}
               />
             </div>

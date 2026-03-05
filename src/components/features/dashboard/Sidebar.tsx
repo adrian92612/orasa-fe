@@ -18,7 +18,7 @@ import { LogOut, X } from "lucide-react";
 import { Link, useLocation } from "react-router";
 import { NAV_ITEMS } from "@/constants/navigation";
 import { ModeToggle } from "@/components/mode-toggle";
-import orasaLogoIcon from "@/assets/orasa_logo_icon.webp";
+import orasaLogoLight from "@/assets/orasa_logo_light.webp";
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   onLogout: () => void;
@@ -41,7 +41,7 @@ const AppSidebar = ({ onLogout, ...props }: AppSidebarProps) => {
           <div className="flex items-center justify-between px-2">
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center shrink-0">
-                <img src={orasaLogoIcon} alt="Orasa Logo" className="size-8" />
+                <img src={orasaLogoLight} alt="Orasa Logo" className="size-8" />
               </div>
               <div className="flex flex-col gap-0.5 leading-none ">
                 <span className="font-semibold text-sm tracking-tight line-clamp-1 break-all">
