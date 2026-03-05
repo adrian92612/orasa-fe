@@ -12,7 +12,7 @@ export const appointmentSchema = z.object({
   startDateTime: z.date({ message: "Start time is required" }),
   endDateTime: z.date().optional(),
   isWalkin: z.boolean(),
-  serviceId: z.string().min(1, "Service is required"),
+  serviceIds: z.array(z.string()).min(1, "At least one service is required"),
   selectedReminderIds: z.array(z.string()).optional(),
   notes: z.string().trim().optional(),
   reminderLeadTimeHours: z.string().optional(),

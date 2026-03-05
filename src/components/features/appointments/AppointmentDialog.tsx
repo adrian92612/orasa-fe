@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { appointmentSchema, type AppointmentFormValues } from "@/schemas/appointment.schema";
@@ -26,10 +26,17 @@ import { Label } from "@/components/ui/label";
 import { useBranchServices } from "@/hooks/useServices";
 import { useReminders } from "@/hooks/useReminders";
 import { useBranches } from "@/hooks/useBranches";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import {
+  MultiSelect,
+  MultiSelectContent,
+  MultiSelectItem,
+  MultiSelectGroup,
+  MultiSelectTrigger,
+  MultiSelectValue,
+} from "@/components/ui/multi-select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Check, ChevronsUpDown, CalendarIcon } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format, sub, isSameDay } from "date-fns";
 import { PREDEFINED_TEMPLATES } from "@/constants/sms";
@@ -66,8 +73,6 @@ const AppointmentDialog = ({
   const createMutation = useCreateAppointment();
   const updateMutation = useUpdateAppointment();
 
-  const [openCombobox, setOpenCombobox] = useState(false);
-
   const { control, handleSubmit, reset, setValue } = useForm<AppointmentFormValues>({
     resolver: zodResolver(appointmentSchema),
     defaultValues: {
@@ -76,7 +81,7 @@ const AppointmentDialog = ({
       branchId: initialBranchId || "",
       // Date fields are undefined initially for react-hook-form when using Date objects
       isWalkin: false,
-      serviceId: "",
+      serviceIds: [],
       selectedReminderIds: [],
       notes: "",
       additionalReminderMinutes: 0,
@@ -88,7 +93,7 @@ const AppointmentDialog = ({
 
   const isWalkin = useWatch({ control, name: "isWalkin" });
   const startDateTime = useWatch({ control, name: "startDateTime" });
-  const serviceId = useWatch({ control, name: "serviceId" });
+  const serviceIds = useWatch({ control, name: "serviceIds" });
   const watchedBranchId = useWatch({ control, name: "branchId" }); // Watch branch selection
 
   // Fetch services for the currently engaged branch (either prop or selected in form)
@@ -113,7 +118,7 @@ const AppointmentDialog = ({
         startDateTime: new Date(appointmentToEdit.startDateTime),
         endDateTime: appointmentToEdit.endDateTime ? new Date(appointmentToEdit.endDateTime) : undefined,
         isWalkin: appointmentToEdit.type === "WALK_IN",
-        serviceId: appointmentToEdit.serviceId || "",
+        serviceIds: appointmentToEdit.services?.map((s) => s.id) || [],
         selectedReminderIds: appointmentToEdit.selectedReminderIds || [],
         notes: appointmentToEdit.notes || "",
         reminderLeadTimeHours: hours.toString(),
@@ -132,7 +137,7 @@ const AppointmentDialog = ({
         startDateTime: new Date(),
         endDateTime: undefined,
         isWalkin: false,
-        serviceId: "",
+        serviceIds: [],
         selectedReminderIds: defaults,
         notes: "",
         reminderLeadTimeHours: "",
@@ -150,16 +155,20 @@ const AppointmentDialog = ({
     name: "customReminderEnabled",
   });
 
+  // Auto-calculate end time based on selected services
   useEffect(() => {
-    if (startDateTime && serviceId) {
-      const service = branchServices.find((s) => s.serviceId === serviceId);
-      if (service) {
+    if (startDateTime && serviceIds && serviceIds.length > 0) {
+      const totalDuration = serviceIds.reduce((sum, id) => {
+        const service = branchServices.find((s) => s.serviceId === id);
+        return sum + (service?.durationMinutes || 0);
+      }, 0);
+      if (totalDuration > 0) {
         const start = new Date(startDateTime);
-        const end = new Date(start.getTime() + service.durationMinutes * 60000);
+        const end = new Date(start.getTime() + totalDuration * 60000);
         setValue("endDateTime", end);
       }
     }
-  }, [startDateTime, serviceId, branchServices, setValue]);
+  }, [startDateTime, serviceIds, branchServices, setValue]);
 
   useEffect(() => {
     if (isWalkin) {
@@ -196,7 +205,7 @@ const AppointmentDialog = ({
       startDateTime: data.startDateTime.toISOString(),
       endDateTime: data.endDateTime ? data.endDateTime.toISOString() : data.startDateTime.toISOString(),
       status: data.status as AppointmentStatus,
-      serviceId: data.serviceId,
+      serviceIds: data.serviceIds,
       selectedReminderIds: data.selectedReminderIds,
       notes: data.notes,
       additionalReminderMinutes: additionalReminderValue,
@@ -239,7 +248,14 @@ const AppointmentDialog = ({
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel required>Branch</FieldLabel>
-                      <Select value={field.value} onValueChange={field.onChange}>
+                      <Select
+                        value={field.value}
+                        onValueChange={(val) => {
+                          field.onChange(val);
+                          // Reset services whenever branch changes to prevent invalid selections
+                          setValue("serviceIds", []);
+                        }}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select a branch" />
                         </SelectTrigger>
@@ -315,69 +331,45 @@ const AppointmentDialog = ({
                 />
               </div>
 
-              {/* Service + Start Time */}
-
+              {/* Services Multi-Select */}
               <Controller
-                name="serviceId"
+                name="serviceIds"
                 control={control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel required>Service</FieldLabel>
-                    <Popover open={openCombobox} onOpenChange={setOpenCombobox}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          aria-expanded={openCombobox}
-                          className={cn(
-                            "w-full justify-between font-normal dark:bg-input/30 dark:border-primary",
-                            !field.value && "text-muted-foreground",
-                          )}
-                        >
-                          {field.value
-                            ? (branchServices.find((s) => s.serviceId === field.value)?.serviceName ??
-                              (appointmentToEdit?.serviceDeleted
-                                ? "⚠ Service was deleted — select a new one"
-                                : "Select a service"))
-                            : "Select a service"}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-0" align="start">
-                        <Command>
-                          <CommandInput placeholder="Search service..." />
-                          <CommandList>
-                            <CommandEmpty>No service found.</CommandEmpty>
-                            <CommandGroup>
-                              {branchServices
-                                .filter((s) => s.active)
-                                .map((service) => (
-                                  <CommandItem
-                                    key={service.serviceId}
-                                    value={service.serviceName}
-                                    onSelect={() => {
-                                      field.onChange(service.serviceId);
-                                      setOpenCombobox(false);
-                                    }}
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        service.serviceId === field.value ? "opacity-100" : "opacity-0",
-                                      )}
-                                    />
-                                    {service.serviceName} ({service.durationMinutes} min)
-                                  </CommandItem>
-                                ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
+                    <FieldLabel required>Services</FieldLabel>
+                    <MultiSelect values={field.value} onValuesChange={field.onChange}>
+                      <MultiSelectTrigger
+                        className={cn(
+                          "w-full dark:border-primary",
+                          (!field.value || field.value.length === 0) && "text-muted-foreground",
+                        )}
+                      >
+                        <MultiSelectValue placeholder="Select services" />
+                      </MultiSelectTrigger>
+                      <MultiSelectContent
+                        search={{ placeholder: "Search services...", emptyMessage: "No service found." }}
+                      >
+                        <MultiSelectGroup>
+                          {branchServices
+                            .filter((s) => s.active)
+                            .map((service) => (
+                              <MultiSelectItem
+                                key={service.serviceId}
+                                value={service.serviceId}
+                                badgeLabel={service.serviceName}
+                              >
+                                {service.serviceName} ({service.durationMinutes} min)
+                              </MultiSelectItem>
+                            ))}
+                        </MultiSelectGroup>
+                      </MultiSelectContent>
+                    </MultiSelect>
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
                 )}
               />
+
               <Controller
                 name="startDateTime"
                 control={control}
