@@ -1,9 +1,4 @@
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { format, addDays } from "date-fns";
 import { appointmentService } from "@/services/appointment.service";
@@ -72,11 +67,7 @@ export const useAppointments = (
       }
 
       if (businessId) {
-        return appointmentService.getAppointmentsByBusiness(
-          businessId,
-          page,
-          size,
-        );
+        return appointmentService.getAppointmentsByBusiness(businessId, page, size);
       }
 
       return Promise.reject(new Error("No branch or business ID provided"));
@@ -140,11 +131,7 @@ export const useSuspenseAppointments = (
       }
 
       if (businessId) {
-        return appointmentService.getAppointmentsByBusiness(
-          businessId,
-          page,
-          size,
-        );
+        return appointmentService.getAppointmentsByBusiness(businessId, page, size);
       }
 
       return Promise.reject(new Error("No branch or business ID provided"));
@@ -157,8 +144,7 @@ export const useCreateAppointment = () => {
 
   return useMutation({
     mutationKey: [Q_KEYS.APPOINTMENTS, Q_KEYS.CREATE],
-    mutationFn: (data: CreateAppointmentRequest) =>
-      appointmentService.createAppointment(data),
+    mutationFn: (data: CreateAppointmentRequest) => appointmentService.createAppointment(data),
     onMutate: async (newAppointment) => {
       // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
       await queryClient.cancelQueries({ queryKey: [Q_KEYS.APPOINTMENTS] });
@@ -184,12 +170,10 @@ export const useCreateAppointment = () => {
           customerName: newAppointment.customerName,
           customerPhone: newAppointment.customerPhone,
           startDateTime: newAppointment.startDateTime,
-          endDateTime:
-            newAppointment.endDateTime || newAppointment.startDateTime,
+          endDateTime: newAppointment.endDateTime || newAppointment.startDateTime,
           status: "PENDING",
           notes: newAppointment.notes,
-          serviceId: newAppointment.serviceId,
-          serviceName: "...", // Unknown here
+          services: [],
           selectedReminderIds: newAppointment.selectedReminderIds || [],
           additionalReminderMinutes: newAppointment.additionalReminderMinutes,
           additionalReminderTemplate: newAppointment.additionalReminderTemplate,
@@ -234,13 +218,8 @@ export const useUpdateAppointment = () => {
 
   return useMutation({
     mutationKey: [Q_KEYS.APPOINTMENTS, Q_KEYS.UPDATE],
-    mutationFn: ({
-      id,
-      data,
-    }: {
-      id: string;
-      data: UpdateAppointmentRequest;
-    }) => appointmentService.updateAppointment(id, data),
+    mutationFn: ({ id, data }: { id: string; data: UpdateAppointmentRequest }) =>
+      appointmentService.updateAppointment(id, data),
     onMutate: async ({ id, data }) => {
       await queryClient.cancelQueries({ queryKey: [Q_KEYS.APPOINTMENTS] });
 
@@ -248,18 +227,15 @@ export const useUpdateAppointment = () => {
         queryKey: [Q_KEYS.APPOINTMENTS],
       });
 
-      queryClient.setQueriesData<{ content: AppointmentResponse[] }>(
-        { queryKey: [Q_KEYS.APPOINTMENTS] },
-        (old) => {
-          if (!old) return old;
-          return {
-            ...old,
-            content: old.content.map((appointment) =>
-              appointment.id === id ? { ...appointment, ...data } : appointment,
-            ),
-          };
-        },
-      );
+      queryClient.setQueriesData<{ content: AppointmentResponse[] }>({ queryKey: [Q_KEYS.APPOINTMENTS] }, (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          content: old.content.map((appointment) =>
+            appointment.id === id ? { ...appointment, ...data } : appointment,
+          ),
+        };
+      });
 
       return { previousAppointments };
     },
@@ -294,18 +270,13 @@ export const useUpdateAppointmentStatus = () => {
         queryKey: [Q_KEYS.APPOINTMENTS],
       });
 
-      queryClient.setQueriesData<{ content: AppointmentResponse[] }>(
-        { queryKey: [Q_KEYS.APPOINTMENTS] },
-        (old) => {
-          if (!old) return old;
-          return {
-            ...old,
-            content: old.content.map((appointment) =>
-              appointment.id === id ? { ...appointment, status } : appointment,
-            ),
-          };
-        },
-      );
+      queryClient.setQueriesData<{ content: AppointmentResponse[] }>({ queryKey: [Q_KEYS.APPOINTMENTS] }, (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          content: old.content.map((appointment) => (appointment.id === id ? { ...appointment, status } : appointment)),
+        };
+      });
 
       return { previousAppointments };
     },
@@ -322,9 +293,7 @@ export const useUpdateAppointmentStatus = () => {
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENT_COUNTS] });
     },
     onSuccess: (response) => {
-      toast.success(
-        response.message || "Appointment status updated successfully",
-      );
+      toast.success(response.message || "Appointment status updated successfully");
     },
   });
 };
@@ -373,10 +342,7 @@ export const useDeleteAppointment = () => {
   });
 };
 
-export const useAppointmentCounts = (
-  branchId: string | null,
-  businessId: string | null,
-) => {
+export const useAppointmentCounts = (branchId: string | null, businessId: string | null) => {
   const today = new Date();
   const todayStr = format(today, "yyyy-MM-dd");
 
@@ -386,58 +352,21 @@ export const useAppointmentCounts = (
   const upcomingEndStr = format(nextWeek, "yyyy-MM-dd");
 
   const { data: todayData, isLoading: isLoadingToday } = useQuery({
-    queryKey: [
-      Q_KEYS.APPOINTMENT_COUNTS,
-      branchId || Q_KEYS.ALL,
-      businessId,
-      Q_KEYS.TODAY,
-    ],
+    queryKey: [Q_KEYS.APPOINTMENT_COUNTS, branchId || Q_KEYS.ALL, businessId, Q_KEYS.TODAY],
     queryFn: () => {
       if (branchId) {
-        return appointmentService.searchAppointments(
-          branchId,
-          "",
-          todayStr,
-          todayStr,
-          null,
-          null,
-          0,
-          1,
-        );
+        return appointmentService.searchAppointments(branchId, "", todayStr, todayStr, null, null, 0, 1);
       }
-      return appointmentService.searchAppointmentsByBusiness(
-        businessId!,
-        "",
-        todayStr,
-        todayStr,
-        null,
-        null,
-        0,
-        1,
-      );
+      return appointmentService.searchAppointmentsByBusiness(businessId!, "", todayStr, todayStr, null, null, 0, 1);
     },
     enabled: !!(branchId || businessId),
   });
 
   const { data: upcomingData, isLoading: isLoadingUpcoming } = useQuery({
-    queryKey: [
-      Q_KEYS.APPOINTMENT_COUNTS,
-      branchId || Q_KEYS.ALL,
-      businessId,
-      Q_KEYS.UPCOMING,
-    ],
+    queryKey: [Q_KEYS.APPOINTMENT_COUNTS, branchId || Q_KEYS.ALL, businessId, Q_KEYS.UPCOMING],
     queryFn: () => {
       if (branchId) {
-        return appointmentService.searchAppointments(
-          branchId,
-          "",
-          upcomingStartStr,
-          upcomingEndStr,
-          null,
-          null,
-          0,
-          1,
-        );
+        return appointmentService.searchAppointments(branchId, "", upcomingStartStr, upcomingEndStr, null, null, 0, 1);
       }
       return appointmentService.searchAppointmentsByBusiness(
         businessId!,
@@ -460,10 +389,7 @@ export const useAppointmentCounts = (
   };
 };
 
-export const useSuspenseAppointmentCounts = (
-  branchId: string | null,
-  businessId: string | null,
-) => {
+export const useSuspenseAppointmentCounts = (branchId: string | null, businessId: string | null) => {
   const today = new Date();
   const todayStr = format(today, "yyyy-MM-dd");
 
@@ -473,57 +399,20 @@ export const useSuspenseAppointmentCounts = (
   const upcomingEndStr = format(nextWeek, "yyyy-MM-dd");
 
   const { data: todayData } = useSuspenseQuery({
-    queryKey: [
-      Q_KEYS.APPOINTMENT_COUNTS,
-      branchId || Q_KEYS.ALL,
-      businessId,
-      Q_KEYS.TODAY,
-    ],
+    queryKey: [Q_KEYS.APPOINTMENT_COUNTS, branchId || Q_KEYS.ALL, businessId, Q_KEYS.TODAY],
     queryFn: () => {
       if (branchId) {
-        return appointmentService.searchAppointments(
-          branchId,
-          "",
-          todayStr,
-          todayStr,
-          null,
-          null,
-          0,
-          1,
-        );
+        return appointmentService.searchAppointments(branchId, "", todayStr, todayStr, null, null, 0, 1);
       }
-      return appointmentService.searchAppointmentsByBusiness(
-        businessId!,
-        "",
-        todayStr,
-        todayStr,
-        null,
-        null,
-        0,
-        1,
-      );
+      return appointmentService.searchAppointmentsByBusiness(businessId!, "", todayStr, todayStr, null, null, 0, 1);
     },
   });
 
   const { data: upcomingData } = useSuspenseQuery({
-    queryKey: [
-      Q_KEYS.APPOINTMENT_COUNTS,
-      branchId || Q_KEYS.ALL,
-      businessId,
-      Q_KEYS.UPCOMING,
-    ],
+    queryKey: [Q_KEYS.APPOINTMENT_COUNTS, branchId || Q_KEYS.ALL, businessId, Q_KEYS.UPCOMING],
     queryFn: () => {
       if (branchId) {
-        return appointmentService.searchAppointments(
-          branchId,
-          "",
-          upcomingStartStr,
-          upcomingEndStr,
-          null,
-          null,
-          0,
-          1,
-        );
+        return appointmentService.searchAppointments(branchId, "", upcomingStartStr, upcomingEndStr, null, null, 0, 1);
       }
       return appointmentService.searchAppointmentsByBusiness(
         businessId!,

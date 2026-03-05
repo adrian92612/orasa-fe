@@ -72,7 +72,7 @@ describe("useAppointments Hooks", () => {
         customerName: "John Doe",
         customerPhone: "1234567890",
         startDateTime: "2024-01-01T10:00:00",
-        serviceId: "srv-1",
+        serviceIds: ["srv-1"],
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -104,7 +104,7 @@ describe("useAppointments Hooks", () => {
         customerName: "Error Test",
         customerPhone: "1234567890",
         startDateTime: "2024-01-01T10:00:00",
-        serviceId: "srv-1",
+        serviceIds: ["srv-1"],
       });
 
       await waitFor(() => expect(result.current.isError).toBe(true));

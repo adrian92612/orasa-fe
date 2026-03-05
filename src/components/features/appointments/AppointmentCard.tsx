@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-  MoreVertical,
-  Calendar,
-  Phone,
-  Clock,
-  ChevronDown,
-} from "lucide-react";
+import { MoreVertical, Calendar, Phone, Clock, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -17,10 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DeleteDialog from "@/components/common/DeleteDialog";
-import type {
-  AppointmentResponse,
-  AppointmentStatus,
-} from "@/types/appointment";
+import type { AppointmentResponse, AppointmentStatus } from "@/types/appointment";
 import { cn } from "@/lib/utils";
 import { useMyBusiness } from "@/hooks/useBusiness";
 
@@ -37,19 +28,10 @@ type AppointmentCardProps = {
   isSaving?: boolean;
   onEdit: (appointment: AppointmentResponse) => void;
   onDelete: (id: string) => void;
-  onStatusChange?: (
-    appointment: AppointmentResponse,
-    status: AppointmentStatus,
-  ) => void;
+  onStatusChange?: (appointment: AppointmentResponse, status: AppointmentStatus) => void;
 };
 
-const AppointmentCard = ({
-  appointment,
-  isSaving,
-  onEdit,
-  onDelete,
-  onStatusChange,
-}: AppointmentCardProps) => {
+const AppointmentCard = ({ appointment, isSaving, onEdit, onDelete, onStatusChange }: AppointmentCardProps) => {
   const { data: business } = useMyBusiness();
   const canManageAppointments = business?.subscriptionStatus === "ACTIVE";
 
@@ -97,9 +79,7 @@ const AppointmentCard = ({
 
         <div className="flex-1 space-y-1.5">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-semibold text-lg">
-              {appointment.customerName}
-            </span>
+            <span className="font-semibold text-lg">{appointment.customerName}</span>
             {appointment.type === "WALK_IN" && (
               <Badge
                 variant="outline"
@@ -115,47 +95,40 @@ const AppointmentCard = ({
               <Phone className="h-3.5 w-3.5" />
               <span>{appointment.customerPhone}</span>
             </div>
-            {(appointment.serviceName || appointment.serviceDeleted) && (
+            {appointment.services && appointment.services.length > 0 && (
               <div className="hidden sm:block text-border">|</div>
             )}
-            {appointment.serviceName && (
-              <div className="font-medium text-foreground/80">
-                {appointment.serviceName}
-              </div>
-            )}
-            {!appointment.serviceName && appointment.serviceDeleted && (
-              <div className="font-medium text-destructive/70 italic">
-                Deleted service
+            {appointment.services && appointment.services.length > 0 && (
+              <div className="flex items-center gap-1">
+                <span className="font-medium text-foreground/80">
+                  {appointment.services
+                    .filter((s) => !s.deleted)
+                    .map((s) => s.name)
+                    .join(", ")}
+                </span>
+                {appointment.services.some((s) => s.deleted) && (
+                  <span className="font-medium text-destructive/70 italic ml-1">(+ deleted service)</span>
+                )}
               </div>
             )}
           </div>
 
           {appointment.notes && (
-            <div className="text-xs text-muted-foreground italic truncate max-w-md">
-              Note: {appointment.notes}
-            </div>
+            <div className="text-xs text-muted-foreground italic truncate max-w-md">Note: {appointment.notes}</div>
           )}
         </div>
 
         <div className="flex items-center justify-between md:justify-end gap-3 pt-3 md:pt-0 border-t md:border-t-0 mt-1 md:mt-0">
           {showSaving && <SavingIndicator />}
           <DropdownMenu>
-            <DropdownMenuTrigger
-              asChild
-              disabled={showSaving || !canManageAppointments}
-            >
+            <DropdownMenuTrigger asChild disabled={showSaving || !canManageAppointments}>
               <button
-                title={
-                  !canManageAppointments
-                    ? "Subscription required to change status"
-                    : ""
-                }
+                title={!canManageAppointments ? "Subscription required to change status" : ""}
                 className={cn(
                   statusColors[appointment.status],
                   "flex items-center gap-1.5 px-3 py-1.5 rounded-full",
                   "text-[11px] font-bold uppercase tracking-wider transition-all",
-                  !showSaving &&
-                    "hover:ring-2 hover:ring-offset-1 hover:ring-muted-foreground/20 active:scale-95",
+                  !showSaving && "hover:ring-2 hover:ring-offset-1 hover:ring-muted-foreground/20 active:scale-95",
                   showSaving
                     ? "cursor-wait"
                     : !canManageAppointments
@@ -165,18 +138,14 @@ const AppointmentCard = ({
                 disabled={!canManageAppointments}
               >
                 {appointment.status.replace("_", " ")}
-                {!showSaving && canManageAppointments && (
-                  <ChevronDown className="h-3 w-3 opacity-60" />
-                )}
+                {!showSaving && canManageAppointments && <ChevronDown className="h-3 w-3 opacity-60" />}
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               {Object.keys(statusColors).map((status) => (
                 <DropdownMenuItem
                   key={status}
-                  onClick={() =>
-                    onStatusChange?.(appointment, status as AppointmentStatus)
-                  }
+                  onClick={() => onStatusChange?.(appointment, status as AppointmentStatus)}
                   disabled={status === appointment.status}
                 >
                   {status.replace("_", " ")}
@@ -186,18 +155,11 @@ const AppointmentCard = ({
           </DropdownMenu>
 
           <DropdownMenu>
-            <DropdownMenuTrigger
-              asChild
-              disabled={showSaving || !canManageAppointments}
-            >
+            <DropdownMenuTrigger asChild disabled={showSaving || !canManageAppointments}>
               <Button
                 variant="ghost"
                 size="icon"
-                title={
-                  !canManageAppointments
-                    ? "Subscription required to edit appointments"
-                    : ""
-                }
+                title={!canManageAppointments ? "Subscription required to edit appointments" : ""}
                 className={cn(
                   "h-8 w-8 text-muted-foreground hover:text-foreground",
                   !canManageAppointments && "opacity-50",
@@ -208,9 +170,7 @@ const AppointmentCard = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onEdit(appointment)}>
-                Edit
-              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onEdit(appointment)}>Edit</DropdownMenuItem>
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
                 onSelect={(e) => {
@@ -231,12 +191,8 @@ const AppointmentCard = ({
         onConfirm={() => onDelete(appointment.id)}
         description={
           <>
-            This action cannot be undone. This will permanently delete the
-            appointment for{" "}
-            <span className="font-medium text-foreground">
-              {appointment.customerName}
-            </span>
-            .
+            This action cannot be undone. This will permanently delete the appointment for{" "}
+            <span className="font-medium text-foreground">{appointment.customerName}</span>.
           </>
         }
       />

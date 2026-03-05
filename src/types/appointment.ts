@@ -1,9 +1,10 @@
-export type AppointmentStatus =
-  | "PENDING"
-  | "CONFIRMED"
-  | "CANCELLED"
-  | "NO_SHOW"
-  | "COMPLETED";
+export type AppointmentStatus = "PENDING" | "CONFIRMED" | "CANCELLED" | "NO_SHOW" | "COMPLETED";
+
+export type AppointmentServiceInfo = {
+  id: string;
+  name: string;
+  deleted: boolean;
+};
 
 export type AppointmentResponse = {
   id: string;
@@ -17,9 +18,7 @@ export type AppointmentResponse = {
   endDateTime: string;
   status: AppointmentStatus;
   notes?: string;
-  serviceId?: string;
-  serviceName?: string;
-  serviceDeleted?: boolean;
+  services: AppointmentServiceInfo[];
   selectedReminderIds: string[];
   additionalReminderMinutes?: number;
   additionalReminderTemplate?: string;
@@ -35,7 +34,7 @@ export type CreateAppointmentRequest = {
   startDateTime: string;
   endDateTime?: string;
   isWalkin: boolean;
-  serviceId?: string;
+  serviceIds: string[];
   selectedReminderIds?: string[];
   notes?: string;
   additionalReminderMinutes?: number;
@@ -48,7 +47,7 @@ export type UpdateAppointmentRequest = {
   startDateTime?: string;
   endDateTime?: string;
   status?: AppointmentStatus;
-  serviceId?: string;
+  serviceIds?: string[];
   selectedReminderIds?: string[];
   notes?: string;
   additionalReminderMinutes?: number;

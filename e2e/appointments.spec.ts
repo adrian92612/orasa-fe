@@ -1,7 +1,10 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Appointment Management Flow", () => {
-  const mockBranches = [{ id: "branch-1", name: "Main Branch" }];
+  const mockBranches = [
+    { id: "branch-1", name: "Main Branch" },
+    { id: "branch-2", name: "Second Branch" },
+  ];
 
   const mockServices = [
     {
@@ -181,9 +184,14 @@ test.describe("Appointment Management Flow", () => {
     await page.getByLabel("Customer name").fill("John Doe");
     await page.getByLabel("Customer Phone").fill("09123456789");
 
+    // Select Branch
+    await page.getByText("Select a branch").click();
+    await page.getByRole("option", { name: "Main Branch" }).click();
+
     // Select Service (Combobox)
-    await page.getByText("Select a service").click();
-    await page.getByRole("option", { name: "Consultation (30 min)" }).click();
+    await page.getByText("Select services").click();
+    await page.getByRole("option").filter({ hasText: "Consultation (30 min)" }).click();
+    await page.keyboard.press("Escape"); // Close the multi-select dropdown
 
     // Reminders should be visible for scheduled appointments
     await expect(page.getByText("Reminders", { exact: true })).toBeVisible();
@@ -199,7 +207,7 @@ test.describe("Appointment Management Flow", () => {
     expect(createdPayload).toMatchObject({
       customerName: "John Doe",
       customerPhone: "09123456789",
-      serviceId: "srv-1",
+      serviceIds: ["srv-1"],
       isWalkin: false,
     });
   });
@@ -256,9 +264,14 @@ test.describe("Appointment Management Flow", () => {
     await page.getByLabel("Customer name").fill("Jane Smith");
     await page.getByLabel("Customer Phone").fill("09987654321");
 
+    // Select Branch
+    await page.getByText("Select a branch").click();
+    await page.getByRole("option", { name: "Main Branch" }).click();
+
     // Select Service (Combobox)
-    await page.getByText("Select a service").click();
-    await page.getByRole("option", { name: "Consultation (30 min)" }).click();
+    await page.getByText("Select services").click();
+    await page.getByRole("option").filter({ hasText: "Consultation (30 min)" }).click();
+    await page.keyboard.press("Escape"); // Close the multi-select dropdown
 
     // 5. Submit
     await page.getByRole("button", { name: "Create Appointment" }).click();
@@ -271,8 +284,52 @@ test.describe("Appointment Management Flow", () => {
     expect(createdPayload).toMatchObject({
       customerName: "Jane Smith",
       customerPhone: "09987654321",
-      serviceId: "srv-1",
+      serviceIds: ["srv-1"],
       isWalkin: true,
     });
+  });
+
+  test("Owner can change branch and services clear", async ({ page }) => {
+    // 1. Mock Auth as Owner
+    await page.route("**/api/auth/me", async (route) => {
+      await route.fulfill({
+        status: 200,
+        json: {
+          success: true,
+          data: {
+            id: "owner-1",
+            role: "OWNER",
+            businessId: "biz-1",
+          },
+        },
+      });
+    });
+
+    // 2. Go to Appointments Page
+    await page.goto("/dashboard/appointments");
+    await expect(page.getByRole("heading", { name: "Appointments" })).toBeVisible();
+
+    // 3. Click New Appointment
+    await page.getByRole("button", { name: "New Appointment" }).click();
+    await expect(page.getByRole("dialog")).toBeVisible();
+
+    // 4. Select initial branch and service
+    await page.getByText("Select a branch").click();
+    await page.getByRole("option", { name: "Main Branch" }).click();
+
+    await page.getByText("Select services").click();
+    await page.getByRole("option").filter({ hasText: "Consultation (30 min)" }).click();
+    await page.keyboard.press("Escape"); // Close multi-select
+
+    // Verify service is selected (we check for the badge that gets added)
+    await expect(page.getByText("Consultation", { exact: true })).toBeVisible();
+
+    // 5. Change branch
+    await page.locator("button", { hasText: "Main Branch" }).click(); // Re-open branch selector
+    await page.getByRole("option", { name: "Second Branch" }).click();
+
+    // 6. Verify service is cleared
+    await expect(page.getByText("Consultation", { exact: true })).not.toBeVisible();
+    await expect(page.getByText("Select services")).toBeVisible();
   });
 });

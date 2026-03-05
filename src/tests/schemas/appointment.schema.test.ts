@@ -8,7 +8,7 @@ describe("Appointment Zod Schema", () => {
     branchId: "branch-1",
     startDateTime: new Date("2024-01-01T10:00:00"),
     isWalkin: false,
-    serviceId: "srv-1",
+    serviceIds: ["srv-1"],
   };
 
   it("should validate a completely valid appointment", () => {
@@ -51,8 +51,8 @@ describe("Appointment Zod Schema", () => {
       expect(result.success).toBe(false);
     });
 
-    it("should require a service ID", () => {
-      const result = appointmentSchema.safeParse({ ...validBaseAppointment, serviceId: "" });
+    it("should require at least one service", () => {
+      const result = appointmentSchema.safeParse({ ...validBaseAppointment, serviceIds: [] });
       expect(result.success).toBe(false);
     });
 
