@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { API_ROUTES } from "@/constants/routes";
+import { LegalDialog } from "@/components/common/LegalDialog";
 
 const OwnerLoginForm = () => {
   return (
@@ -33,13 +34,19 @@ const OwnerLoginForm = () => {
 
       <p className="text-[11px] text-center text-slate-400 w-full leading-relaxed">
         By clicking continue, you agree to our{" "}
-        <a href="#" className="underline hover:text-white transition-colors">
-          Terms of Service
-        </a>{" "}
+        <LegalDialog
+          type="terms"
+          trigger={
+            <button className="underline hover:text-white transition-colors cursor-pointer">Terms of Service</button>
+          }
+        />{" "}
         and{" "}
-        <a href="#" className="underline hover:text-white transition-colors">
-          Privacy Policy
-        </a>
+        <LegalDialog
+          type="privacy"
+          trigger={
+            <button className="underline hover:text-white transition-colors cursor-pointer">Privacy Policy</button>
+          }
+        />
         .
       </p>
     </div>

@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import {
   Calendar,
   MessageSquare,
@@ -13,6 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { APP_ROUTES } from "@/constants/routes";
 import orasaLogoIcon from "@/assets/orasa_logo_icon.webp";
+import orasaLogoLight from "@/assets/orasa_logo_light.webp";
+import { LegalDialog } from "@/components/common/LegalDialog";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -25,12 +27,10 @@ const HomePage = () => {
     <div className="flex flex-col min-h-screen bg-slate-950 text-slate-50">
       <header className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex flex-col items-center gap-2">
-            <div className="flex items-center gap-2">
-              <img src={orasaLogoIcon} alt="Orasa Logo" className="size-8" />
-              <span className="text-xl font-bold tracking-tight text-primary italic">Orasa</span>
-            </div>
-          </div>
+          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <img src={orasaLogoLight} alt="Orasa Logo" className="size-8" />
+            <span className="text-xl font-bold tracking-tight text-brand-light italic">Orasa</span>
+          </Link>
           <div className="flex items-center gap-4">
             <Button onClick={handleGetStarted}>Log In</Button>
           </div>
@@ -220,18 +220,24 @@ const HomePage = () => {
       <footer className="bg-slate-900 border-t border-slate-800 py-12">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="flex items-center gap-2">
+            <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <img src={orasaLogoIcon} alt="Orasa Logo" className="size-6" />
               <span className="text-lg font-bold tracking-tight text-primary italic">Orasa</span>
-            </div>
+            </Link>
 
             <div className="flex gap-8 text-sm text-slate-400 font-medium">
-              <a href="#" className="hover:text-primary transition-colors">
-                Privacy Policy
-              </a>
-              <a href="#" className="hover:text-primary transition-colors">
-                Terms of Service
-              </a>
+              <LegalDialog
+                type="privacy"
+                trigger={
+                  <button className="hover:text-primary transition-colors cursor-pointer">Privacy Policy</button>
+                }
+              />
+              <LegalDialog
+                type="terms"
+                trigger={
+                  <button className="hover:text-primary transition-colors cursor-pointer">Terms of Service</button>
+                }
+              />
               <a href="#" className="hover:text-primary transition-colors">
                 Contact Support
               </a>
