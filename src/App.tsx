@@ -32,26 +32,16 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider>
-        <ThemeProvider defaultTheme="system" storageKey="orasa-ui-theme">
+        <ThemeProvider defaultTheme="dark" storageKey="orasa-ui-theme">
           <BrowserRouter>
             <Suspense fallback={<FullPageLoading />}>
               <Routes>
                 <Route path={APP_ROUTES.HOME} element={<HomePage />} />
 
-                <Route
-                  path={APP_ROUTES.LOGIN}
-                  element={
-                    <RouteGuard variant="public" children={<LoginPage />} />
-                  }
-                />
+                <Route path={APP_ROUTES.LOGIN} element={<RouteGuard variant="public" children={<LoginPage />} />} />
                 <Route
                   path={APP_ROUTES.ONBOARDING}
-                  element={
-                    <RouteGuard
-                      variant="onboarding"
-                      children={<OnboardingPage />}
-                    />
-                  }
+                  element={<RouteGuard variant="onboarding" children={<OnboardingPage />} />}
                 />
 
                 <Route
@@ -75,18 +65,8 @@ function App() {
                   <Route path="settings" element={<SettingsPage />} />
                 </Route>
 
-                <Route
-                  path="/admin"
-                  element={
-                    <RouteGuard variant="admin" children={<AdminLayout />} />
-                  }
-                >
-                  <Route
-                    index
-                    element={
-                      <Navigate to={APP_ROUTES.ADMIN.DASHBOARD} replace />
-                    }
-                  />
+                <Route path="/admin" element={<RouteGuard variant="admin" children={<AdminLayout />} />}>
+                  <Route index element={<Navigate to={APP_ROUTES.ADMIN.DASHBOARD} replace />} />
                   <Route path="dashboard" element={<AdminDashboardPage />} />
                 </Route>
               </Routes>
