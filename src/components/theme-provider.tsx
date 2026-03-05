@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useUser } from "@/context/UserContext";
 import { type Theme, ThemeProviderContext } from "@/context/ThemeContext";
 
 type ThemeProviderProps = {
@@ -16,15 +15,8 @@ export function ThemeProvider({
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem(storageKey) as Theme) || defaultTheme);
 
-  const { user } = useUser();
-
-  const activeTheme = !user
-    ? "light"
-    : theme === "system"
-      ? window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light"
-      : theme;
+  const activeTheme =
+    theme === "system" ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : theme;
 
   useEffect(() => {
     const root = window.document.documentElement;
