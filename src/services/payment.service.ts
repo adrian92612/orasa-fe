@@ -5,6 +5,7 @@ import type {
   CreateSubscriptionPaymentRequest,
   CreateCreditsPaymentRequest,
   PaymentHistoryResponse,
+  PaymentStatusUpdate,
 } from "@/types/payment";
 
 export const paymentService = {
@@ -20,5 +21,9 @@ export const paymentService = {
 
   getPaymentHistory: async (): Promise<ApiResponse<PaymentHistoryResponse[]>> => {
     return await apiClient.get<PaymentHistoryResponse[]>(`${API_ROUTES.PAYMENTS.BASE}/history`);
+  },
+
+  checkPaymentStatus: async (platOrderNo: string): Promise<ApiResponse<PaymentStatusUpdate>> => {
+    return await apiClient.get<PaymentStatusUpdate>(`${API_ROUTES.PAYMENTS.STATUS}?platOrderNo=${platOrderNo}`);
   },
 };
