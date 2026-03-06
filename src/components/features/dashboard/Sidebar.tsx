@@ -19,6 +19,7 @@ import { Link, useLocation } from "react-router";
 import { NAV_ITEMS } from "@/constants/navigation";
 import { ModeToggle } from "@/components/mode-toggle";
 import orasaLogoLight from "@/assets/orasa_logo_light.webp";
+import { Button } from "@/components/ui/button";
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   onLogout: () => void;
@@ -47,18 +48,19 @@ const AppSidebar = ({ onLogout, ...props }: AppSidebarProps) => {
                 <span className="font-semibold text-sm tracking-tight line-clamp-1 break-all">
                   {displayBusinessName}
                 </span>
-                <span className="text-xs text-muted-foreground truncate max-w-40 block">
+                <span className="text-xs text-sidebar-foreground/75 truncate max-w-40 block">
                   {user?.role === "OWNER" ? "Owner" : "Staff"} {user?.username}
                 </span>
               </div>
             </div>
             {isMobile && (
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => setOpenMobile(false)}
-                className="md:hidden p-2 text-muted-foreground hover:text-foreground"
+                className="md:hidden p-2 text-sidebar-foreground/50"
               >
-                <X className="h-6 w-6" />
-              </button>
+                <X className="size-6" />
+              </Button>
             )}
           </div>
 
@@ -77,7 +79,7 @@ const AppSidebar = ({ onLogout, ...props }: AppSidebarProps) => {
               {filteredNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={location.pathname === item.url} tooltip={item.title}>
-                    <Link to={item.url}>
+                    <Link to={item.url} onClick={() => setOpenMobile(false)}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>

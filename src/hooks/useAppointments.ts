@@ -250,6 +250,7 @@ export const useUpdateAppointment = () => {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENTS] });
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENT_COUNTS] });
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.ANALYTICS] });
     },
     onSuccess: (response) => {
       toast.success(response.message || "Appointment updated successfully");
@@ -291,6 +292,7 @@ export const useUpdateAppointmentStatus = () => {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENTS] });
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENT_COUNTS] });
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.ANALYTICS] });
     },
     onSuccess: (response) => {
       toast.success(response.message || "Appointment status updated successfully");
@@ -335,6 +337,7 @@ export const useDeleteAppointment = () => {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENTS] });
       queryClient.invalidateQueries({ queryKey: [Q_KEYS.APPOINTMENT_COUNTS] });
+      queryClient.invalidateQueries({ queryKey: [Q_KEYS.ANALYTICS] });
     },
     onSuccess: (response) => {
       toast.success(response.message || "Appointment deleted successfully");

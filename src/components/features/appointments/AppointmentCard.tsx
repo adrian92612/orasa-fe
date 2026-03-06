@@ -62,7 +62,7 @@ const AppointmentCard = ({ appointment, isSaving, onEdit, onDelete, onStatusChan
     <>
       <Card
         className={cn(
-          "group flex flex-col min-h-64 md:max-h-24 md:min-h-0 md:flex-row md:items-center justify-between p-4 gap-4 transition-all hover:shadow-md",
+          "group flex flex-col md:flex-row md:items-start justify-between p-4 gap-4 transition-all hover:shadow-md",
           showSaving && "opacity-70 grayscale-[0.5]",
         )}
       >
@@ -77,7 +77,7 @@ const AppointmentCard = ({ appointment, isSaving, onEdit, onDelete, onStatusChan
           </div>
         </div>
 
-        <div className="flex-1 space-y-1.5">
+        <div className="flex-1 space-y-1.5 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-semibold text-lg">{appointment.customerName}</span>
             {appointment.type === "WALK_IN" && (
@@ -90,7 +90,7 @@ const AppointmentCard = ({ appointment, isSaving, onEdit, onDelete, onStatusChan
             )}
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center gap-y-1 gap-x-4 text-sm text-muted-foreground">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-y-1 gap-x-4 text-sm text-muted-foreground min-w-0">
             <div className="flex items-center gap-1.5">
               <Phone className="h-3.5 w-3.5" />
               <span>{appointment.customerPhone}</span>
@@ -99,8 +99,8 @@ const AppointmentCard = ({ appointment, isSaving, onEdit, onDelete, onStatusChan
               <div className="hidden sm:block text-border">|</div>
             )}
             {appointment.services && appointment.services.length > 0 && (
-              <div className="flex items-center gap-1">
-                <span className="font-medium text-foreground/80">
+              <div className="flex items-center gap-1 truncate">
+                <span className="font-medium text-foreground/80 truncate">
                   {appointment.services
                     .filter((s) => !s.deleted)
                     .map((s) => s.name)
@@ -114,7 +114,9 @@ const AppointmentCard = ({ appointment, isSaving, onEdit, onDelete, onStatusChan
           </div>
 
           {appointment.notes && (
-            <div className="text-xs text-muted-foreground italic truncate max-w-md">Note: {appointment.notes}</div>
+            <div className="text-xs text-muted-foreground italic whitespace-pre-wrap line-clamp-3 max-w-2xl mt-1">
+              Note: {appointment.notes}
+            </div>
           )}
         </div>
 
@@ -122,11 +124,12 @@ const AppointmentCard = ({ appointment, isSaving, onEdit, onDelete, onStatusChan
           {showSaving && <SavingIndicator />}
           <DropdownMenu>
             <DropdownMenuTrigger asChild disabled={showSaving || !canManageAppointments}>
-              <button
+              <Button
+                variant="ghost"
                 title={!canManageAppointments ? "Subscription required to change status" : ""}
                 className={cn(
                   statusColors[appointment.status],
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-full",
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-full h-auto",
                   "text-[11px] font-bold uppercase tracking-wider transition-all",
                   !showSaving && "hover:ring-2 hover:ring-offset-1 hover:ring-muted-foreground/20 active:scale-95",
                   showSaving
@@ -139,7 +142,7 @@ const AppointmentCard = ({ appointment, isSaving, onEdit, onDelete, onStatusChan
               >
                 {appointment.status.replace("_", " ")}
                 {!showSaving && canManageAppointments && <ChevronDown className="h-3 w-3 opacity-60" />}
-              </button>
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               {Object.keys(statusColors).map((status) => (
