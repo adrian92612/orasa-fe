@@ -68,6 +68,7 @@ export const API_ROUTES = {
     BASE: `${ENV.API_URL}/payments`,
     SUBSCRIPTION: `${ENV.API_URL}/payments/subscription`,
     CREDITS: `${ENV.API_URL}/payments/credits`,
+    STATUS: `${ENV.API_URL}/payments/status`,
   },
 } as const;
 

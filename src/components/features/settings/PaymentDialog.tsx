@@ -1,9 +1,10 @@
 import type { PayloroResponse } from "@/types/payment";
 import { usePaymentStatus } from "@/hooks/usePaymentStatus";
-import { QRCodeSVG } from "qrcode.react";
-import { CheckCircle2, Loader2, XCircle } from "lucide-react";
+import { QRCodeCanvas } from "qrcode.react";
+import { CheckCircle2, Download, Loader2, XCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useEffect, useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 type PaymentDialogProps = {
   isOpen: boolean;
@@ -14,7 +15,8 @@ type PaymentDialogProps = {
 };
 
 const PaymentDialog = ({ isOpen, onClose, isLoading, paymentData, onPaymentSuccess }: PaymentDialogProps) => {
-  const { paymentStatus, reset } = usePaymentStatus(isOpen);
+  const { paymentStatus, reset } = usePaymentStatus(isOpen, paymentData?.platOrderNo);
+  const qrRef = useRef<HTMLCanvasElement>(null);
 
   const isSuccess = paymentStatus?.status === "SUCCESS";
   const isFailed = paymentStatus?.status === "FAILED" || paymentStatus?.status === "EXPIRED";
@@ -23,6 +25,19 @@ const PaymentDialog = ({ isOpen, onClose, isLoading, paymentData, onPaymentSucce
     reset();
     onClose();
   }, [reset, onClose]);
+
+  const handleDownloadQR = () => {
+    if (!qrRef.current) return;
+
+    const canvas = qrRef.current;
+    const url = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `orasa-payment-qr-${paymentData?.platOrderNo || "code"}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   useEffect(() => {
     if (isSuccess) {
@@ -74,17 +89,29 @@ const PaymentDialog = ({ isOpen, onClose, isLoading, paymentData, onPaymentSucce
             </div>
           ) : paymentData?.success ? (
             <>
-              {paymentData.paymentImage && (
-                <div className="bg-white p-6 rounded-2xl shadow-sm border-2 border-primary/10 max-w-[280px] w-full aspect-square flex items-center justify-center">
-                  <QRCodeSVG
-                    value={paymentData.paymentImage}
-                    size={240}
-                    level="H"
-                    includeMargin={false}
-                    className="w-full h-full"
-                  />
-                </div>
-              )}
+              <div className="flex flex-col items-center gap-4 w-full">
+                {paymentData.paymentImage && (
+                  <div className="bg-white p-6 rounded-2xl shadow-sm border-2 border-primary/10 max-w-[280px] w-full aspect-square flex items-center justify-center">
+                    <QRCodeCanvas
+                      ref={qrRef}
+                      value={paymentData.paymentImage}
+                      size={240}
+                      level="H"
+                      includeMargin={false}
+                      className="w-full h-full"
+                    />
+                  </div>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDownloadQR}
+                  className="w-full max-w-[280px] font-bold"
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Download QR Code
+                </Button>
+              </div>
 
               <div className="bg-muted/50 p-4 rounded-xl border w-full text-center space-y-2">
                 <p className="text-[11px] font-bold text-primary uppercase tracking-wider">Reference No.</p>
