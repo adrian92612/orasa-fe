@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "validate": "pnpm lint && pnpm test && pnpm test:e2e"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
