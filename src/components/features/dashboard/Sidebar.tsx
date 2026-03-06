@@ -14,12 +14,11 @@ import { useSidebar } from "@/context/sidebar-context";
 import { BranchSwitcher } from "./BranchSwitcher";
 import { useUser } from "@/context/UserContext";
 import { useBranches } from "@/hooks/useBranches";
-import { LogOut, X } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router";
 import { NAV_ITEMS } from "@/constants/navigation";
 import { ModeToggle } from "@/components/mode-toggle";
-import orasaLogoLight from "@/assets/orasa_logo_light.webp";
-import { Button } from "@/components/ui/button";
+import { SidebarHeaderBrand } from "./SidebarHeaderBrand";
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   onLogout: () => void;
@@ -29,7 +28,7 @@ const AppSidebar = ({ onLogout, ...props }: AppSidebarProps) => {
   const { user } = useUser();
   const { data: branches = [] } = useBranches();
   const location = useLocation();
-  const { isMobile, setOpenMobile } = useSidebar();
+  const { setOpenMobile } = useSidebar();
 
   const filteredNavItems = NAV_ITEMS.filter((item) => user?.role && item.allowedRoles.includes(user.role));
 
@@ -38,38 +37,16 @@ const AppSidebar = ({ onLogout, ...props }: AppSidebarProps) => {
   return (
     <Sidebar {...props} className="border-primary">
       <SidebarHeader>
-        <div className="flex flex-col gap-2 p-2">
-          <div className="flex items-center justify-between px-2">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center shrink-0">
-                <img src={orasaLogoLight} alt="Orasa Logo" className="size-8" />
-              </div>
-              <div className="flex flex-col gap-0.5 leading-none ">
-                <span className="font-semibold text-sm tracking-tight line-clamp-1 break-all">
-                  {displayBusinessName}
-                </span>
-                <span className="text-xs text-sidebar-foreground/75 truncate max-w-40 block">
-                  {user?.role === "OWNER" ? "Owner" : "Staff"} {user?.username}
-                </span>
-              </div>
-            </div>
-            {isMobile && (
-              <Button
-                variant="ghost"
-                onClick={() => setOpenMobile(false)}
-                className="md:hidden p-2 text-sidebar-foreground/50"
-              >
-                <X className="size-6" />
-              </Button>
-            )}
-          </div>
-
+        <SidebarHeaderBrand
+          title={displayBusinessName}
+          subtitle={`${user?.role === "OWNER" ? "Owner" : "Staff"} ${user?.username}`}
+        >
           {(user?.role === "OWNER" || branches.length > 1) && (
             <div className="mt-2">
               <BranchSwitcher />
             </div>
           )}
-        </div>
+        </SidebarHeaderBrand>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

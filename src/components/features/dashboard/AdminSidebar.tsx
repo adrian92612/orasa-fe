@@ -10,13 +10,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useSidebar } from "@/context/sidebar-context";
 import { useUser } from "@/context/UserContext";
-import { LogOut, X, LayoutDashboard } from "lucide-react";
+import { LogOut, LayoutDashboard } from "lucide-react";
 import { Link, useLocation } from "react-router";
 import { APP_ROUTES } from "@/constants/routes";
 import { ModeToggle } from "@/components/mode-toggle";
-import orasaLogoIcon from "@/assets/orasa_logo_icon.webp";
+import { SidebarHeaderBrand } from "./SidebarHeaderBrand";
 
 interface AdminSidebarProps extends React.ComponentProps<typeof Sidebar> {
   onLogout: () => void;
@@ -25,7 +24,6 @@ interface AdminSidebarProps extends React.ComponentProps<typeof Sidebar> {
 export function AdminSidebar({ onLogout, ...props }: AdminSidebarProps) {
   const { user } = useUser();
   const location = useLocation();
-  const { isMobile, setOpenMobile } = useSidebar();
 
   const navItems = [
     {
@@ -39,27 +37,7 @@ export function AdminSidebar({ onLogout, ...props }: AdminSidebarProps) {
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <div className="flex flex-col gap-2 p-2">
-          <div className="flex items-center justify-between px-2">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center shrink-0">
-                <img src={orasaLogoIcon} alt="Orasa Logo" className="size-8" />
-              </div>
-              <div className="flex flex-col gap-0.5 leading-none ">
-                <span className="font-semibold text-sm tracking-tight">Orasa Admin</span>
-                <span className="text-xs text-muted-foreground truncate max-w-40 block">{user?.username}</span>
-              </div>
-            </div>
-            {isMobile && (
-              <button
-                onClick={() => setOpenMobile(false)}
-                className="md:hidden p-2 text-muted-foreground hover:text-foreground"
-              >
-                <X className="h-6 w-6" />
-              </button>
-            )}
-          </div>
-        </div>
+        <SidebarHeaderBrand title="Orasa Admin" subtitle={user?.username} />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

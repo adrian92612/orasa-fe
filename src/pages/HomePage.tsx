@@ -9,12 +9,26 @@ import {
   ShieldCheck,
   Zap,
   Clock,
+  BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { APP_ROUTES } from "@/constants/routes";
 import orasaLogoIcon from "@/assets/orasa_logo_icon.webp";
 import orasaLogoLight from "@/assets/orasa_logo_light.webp";
+import statsLight from "@/assets/orasa-stats.webp";
+import statsDark from "@/assets/orasa-stats-dark.webp";
+import statsMobileLight from "@/assets/orasa-stats-mobile.webp";
+import statsMobileDark from "@/assets/orasa-stats-mobile-dark.webp";
+import appointmentsLight from "@/assets/orasa-appointments.webp";
+import appointmentsDark from "@/assets/orasa-appointments-dark.webp";
+import appointmentsMobileLight from "@/assets/orasa-appointments-mobile.webp";
+import appointmentsMobileDark from "@/assets/orasa-appointments-mobile-dark.webp";
+import smsLogsLight from "@/assets/orasa-sms-logs.webp";
+import smsLogsDark from "@/assets/orasa-sms-logs-dark.webp";
+import smsLogsMobileLight from "@/assets/orasa-sms-logs-mobile.webp";
+import smsLogsMobileDark from "@/assets/orasa-sms-logs-mobile-dark.webp";
 import { LegalDialog } from "@/components/common/LegalDialog";
+import { useState } from "react";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -22,6 +36,9 @@ const HomePage = () => {
   const handleGetStarted = () => {
     navigate(APP_ROUTES.LOGIN);
   };
+
+  const [activeTab, setActiveTab] = useState<"stats" | "appointments" | "sms">("stats");
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-950 text-slate-50">
@@ -66,23 +83,206 @@ const HomePage = () => {
               </Button>
             </div>
 
-            {/* Visual Teaser */}
-            <div className="mt-16 relative mx-auto max-w-5xl rounded-2xl border border-slate-800 bg-slate-900 p-2 shadow-2xl shadow-black/50 animate-in fade-in zoom-in duration-1000">
-              <div className="aspect-video rounded-xl bg-slate-950 flex items-center justify-center border border-slate-800 overflow-hidden">
-                <div className="flex flex-col items-center gap-4">
-                  <LayoutDashboard className="size-16 text-slate-800" />
-                  <p className="text-slate-600 font-medium italic">Clean & Intuitive Dashboard View</p>
+            {/* Product Showcase */}
+            <div className="mt-20 space-y-10 animate-in fade-in zoom-in duration-1000">
+              <div className="flex flex-col items-center gap-6">
+                {/* Desktop Tabs (Horizontal pills) */}
+                <div className="hidden md:flex p-1 rounded-xl bg-slate-900 border border-slate-800 shadow-inner">
+                  <button
+                    onClick={() => setActiveTab("stats")}
+                    className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-semibold transition-all ${
+                      activeTab === "stats"
+                        ? "bg-slate-800 text-white shadow-md"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    <BarChart3 className="size-4" />
+                    Performance Dashboard
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("appointments")}
+                    className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-semibold transition-all ${
+                      activeTab === "appointments"
+                        ? "bg-slate-800 text-white shadow-md"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    <Calendar className="size-4" />
+                    Appointment Management
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("sms")}
+                    className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-semibold transition-all ${
+                      activeTab === "sms" ? "bg-slate-800 text-white shadow-md" : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    <MessageSquare className="size-4" />
+                    SMS Audit Logs
+                  </button>
+                </div>
+
+                {/* Mobile Tabs (Vertical stack / Large Cards) */}
+                <div className="md:hidden grid grid-cols-1 gap-3 w-full max-w-sm px-4">
+                  {[
+                    { id: "stats", label: "Analytics", icon: BarChart3, desc: "Business metrics" },
+                    { id: "appointments", label: "Appointments", icon: Calendar, desc: "Schedule tracking" },
+                    { id: "sms", label: "SMS Logs", icon: MessageSquare, desc: "Message history" },
+                  ].map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id as any)}
+                      className={`flex items-center gap-4 p-4 rounded-2xl border transition-all text-left ${
+                        activeTab === tab.id
+                          ? "bg-slate-800 border-primary text-white shadow-xl shadow-primary/10"
+                          : "bg-slate-950/50 border-slate-800 text-slate-400 hover:bg-slate-900"
+                      }`}
+                    >
+                      <div
+                        className={`p-2.5 rounded-xl ${activeTab === tab.id ? "bg-primary text-white" : "bg-slate-800 text-slate-300"}`}
+                      >
+                        <tab.icon className="size-5" />
+                      </div>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="font-bold text-sm">{tab.label}</span>
+                        <span className="text-[10px] opacity-70 leading-none">{tab.desc}</span>
+                      </div>
+                      {activeTab === tab.id && (
+                        <div className="ml-auto">
+                          <CheckCircle2 className="size-4 text-primary" />
+                        </div>
+                      )}
+                    </button>
+                  ))}
                 </div>
               </div>
-              {/* Floating elements for visual interest */}
-              <div className="absolute -bottom-6 -left-6 bg-slate-900 p-4 rounded-xl shadow-xl shadow-black/40 border border-slate-800 hidden md:block">
-                <div className="flex items-center gap-3">
-                  <div className="bg-slate-800 p-2 rounded-lg">
-                    <MessageSquare className="size-5 text-slate-400" />
+
+              <div className="relative group mx-auto max-w-5xl">
+                {/* Desktop View (Visible on md+) */}
+                <div className="hidden md:block relative animate-in fade-in slide-in-from-bottom-10 duration-1000">
+                  <div className="absolute -inset-1 bg-linear-to-r from-brand-light/20 to-primary/20 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+
+                  <div className="relative rounded-2xl border border-slate-800 bg-slate-900 p-3 shadow-2xl overflow-hidden">
+                    <div className="absolute bottom-6 right-6 z-10">
+                      <button
+                        onClick={() => setIsDarkMode(!isDarkMode)}
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-950/50 backdrop-blur-md border border-white/10 text-xs font-semibold text-white hover:bg-white/10 transition-colors"
+                      >
+                        {isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                      </button>
+                    </div>
+
+                    <div className="aspect-16/10 rounded-xl overflow-hidden bg-slate-950 flex items-center justify-center relative shadow-inner">
+                      <div
+                        key={`desktop-${activeTab}-${isDarkMode}`}
+                        className="absolute inset-0 transition-all duration-1000 ease-in-out animate-in fade-in fill-mode-both"
+                      >
+                        <img
+                          src={
+                            activeTab === "stats"
+                              ? isDarkMode
+                                ? statsDark
+                                : statsLight
+                              : activeTab === "appointments"
+                                ? isDarkMode
+                                  ? appointmentsDark
+                                  : appointmentsLight
+                                : isDarkMode
+                                  ? smsLogsDark
+                                  : smsLogsLight
+                          }
+                          alt={`${activeTab} ${isDarkMode ? "Dark" : "Light"} mode`}
+                          className="w-full h-full object-contain hover:scale-[1.02] transition-transform duration-1000 ease-out"
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs font-semibold text-slate-100">SMS Reminder Sent</p>
-                    <p className="text-[10px] text-slate-400">To: +63 917 **** 5678</p>
+
+                  {/* Desktop Only Decorative floating cards */}
+                  <div className="absolute -bottom-8 -left-8 bg-slate-900 p-5 rounded-2xl shadow-2xl border border-slate-800 hidden lg:block hover:-translate-y-2 transition-transform duration-500">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20">
+                        <CheckCircle2 className="size-6 text-emerald-500" />
+                      </div>
+                      <div className="text-left">
+                        <p className="text-sm font-bold text-white">SMS Reminder Delivered</p>
+                        <p className="text-xs text-slate-400">Juan Dela Cruz • Confirmed</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="absolute -top-8 -right-8 bg-slate-900 p-5 rounded-2xl shadow-2xl border border-slate-800 hidden lg:block hover:translate-y-2 transition-transform duration-500">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-blue-500/10 p-3 rounded-xl border border-blue-500/20">
+                        <Zap className="size-6 text-blue-500" />
+                      </div>
+                      <div className="text-left">
+                        <p className="text-sm font-bold text-white">+12% Growth</p>
+                        <p className="text-xs text-slate-400">Monthly Revenue Increase</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mobile View (Visible only on mobile) */}
+                <div className="md:hidden flex flex-col items-center animate-in fade-in zoom-in duration-1000">
+                  {/* Mode toggle for mobile */}
+                  <div className="mb-6">
+                    <button
+                      onClick={() => setIsDarkMode(!isDarkMode)}
+                      className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-300 hover:text-white transition-colors"
+                    >
+                      {isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                    </button>
+                  </div>
+
+                  <div className="relative w-64 aspect-[9/18.5] border-none rounded-[2.5rem] overflow-hidden">
+                    <div
+                      key={`mobile-${activeTab}-${isDarkMode}`}
+                      className="absolute inset-0 transition-all duration-1000 ease-in-out animate-in fade-in fill-mode-both"
+                    >
+                      <img
+                        src={
+                          activeTab === "stats"
+                            ? isDarkMode
+                              ? statsMobileDark
+                              : statsMobileLight
+                            : activeTab === "appointments"
+                              ? isDarkMode
+                                ? appointmentsMobileDark
+                                : appointmentsMobileLight
+                              : isDarkMode
+                                ? smsLogsMobileDark
+                                : smsLogsMobileLight
+                        }
+                        alt={`${activeTab} Mobile ${isDarkMode ? "Dark" : "Light"} mode`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Mobile Decorative floating cards */}
+                  <div className="absolute -bottom-6 left-2 bg-slate-900 p-3 rounded-xl shadow-2xl border border-slate-800 animate-in fade-in slide-in-from-left-5 duration-1000 delay-500">
+                    <div className="flex items-center gap-2">
+                      <div className="bg-emerald-500/10 p-1.5 rounded-lg border border-emerald-500/20 shadow-emerald-500/10 shadow-inner">
+                        <CheckCircle2 className="size-4 text-emerald-500" />
+                      </div>
+                      <div className="text-left">
+                        <p className="text-[10px] font-bold text-white leading-tight">SMS Delivered</p>
+                        <p className="text-[8px] text-slate-400">Juan • Confirmed</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="absolute top-10 right-4 bg-slate-900 p-3 rounded-xl shadow-2xl border border-slate-800 animate-in fade-in slide-in-from-right-5 duration-1000 delay-700">
+                    <div className="flex items-center gap-2">
+                      <div className="bg-blue-500/10 p-1.5 rounded-lg border border-blue-500/20 shadow-blue-500/10 shadow-inner">
+                        <Zap className="size-4 text-blue-500" />
+                      </div>
+                      <div className="text-left">
+                        <p className="text-[10px] font-bold text-white leading-tight">+12% Growth</p>
+                        <p className="text-[8px] text-slate-400">Revenue Update</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
