@@ -130,7 +130,7 @@ const HomePage = () => {
                   ].map((tab) => (
                     <button
                       key={tab.id}
-                      onClick={() => setActiveTab(tab.id as any)}
+                      onClick={() => setActiveTab(tab.id as "stats" | "appointments" | "sms")}
                       className={`flex items-center gap-4 p-4 rounded-2xl border transition-all text-left ${
                         activeTab === tab.id
                           ? "bg-slate-800 border-primary text-white shadow-xl shadow-primary/10"
