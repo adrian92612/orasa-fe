@@ -32,7 +32,7 @@ export const usePaymentStatus = (enabled: boolean, platOrderNo?: string | null) 
       }
     };
 
-    const wsUrl = ENV.API_URL.replace("/api", "/api/ws");
+    const wsUrl = ENV.IS_PROD ? ENV.API_URL.replace("/api", "/ws") : `${ENV.API_URL}/ws`;
 
     const client = new Client({
       webSocketFactory: () => new SockJS(wsUrl) as WebSocket,
