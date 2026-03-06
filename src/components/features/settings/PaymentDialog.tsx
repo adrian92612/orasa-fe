@@ -91,7 +91,7 @@ const PaymentDialog = ({ isOpen, onClose, isLoading, paymentData, onPaymentSucce
             <>
               <div className="flex flex-col items-center gap-4 w-full">
                 {paymentData.paymentImage && (
-                  <div className="bg-white p-6 rounded-2xl shadow-sm border-2 border-primary/10 max-w-[280px] w-full aspect-square flex items-center justify-center">
+                  <div className="bg-white p-6 rounded-2xl shadow-sm border-2 border-primary/10 max-w-70 w-full aspect-square flex items-center justify-center">
                     <QRCodeCanvas
                       ref={qrRef}
                       value={paymentData.paymentImage}
@@ -102,12 +102,7 @@ const PaymentDialog = ({ isOpen, onClose, isLoading, paymentData, onPaymentSucce
                     />
                   </div>
                 )}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleDownloadQR}
-                  className="w-full max-w-[280px] font-bold"
-                >
+                <Button variant="outline" size="sm" onClick={handleDownloadQR} className="w-full max-w-70 font-bold">
                   <Download className="mr-2 h-4 w-4" />
                   Download QR Code
                 </Button>
