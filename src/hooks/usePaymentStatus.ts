@@ -14,9 +14,6 @@ export const usePaymentStatus = (enabled: boolean, platOrderNo?: string | null) 
   useEffect(() => {
     if (!enabled || !user?.businessId) return;
 
-    // Defined inside the effect so it's never a missing dependency,
-    // and setState is only ever called inside an async callback — not
-    // synchronously in the effect body — which satisfies the linter.
     const checkStatusViaRest = async () => {
       if (!platOrderNo) return;
       try {
