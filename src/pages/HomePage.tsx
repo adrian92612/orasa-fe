@@ -27,6 +27,7 @@ import smsLogsDark from "@/assets/orasa-sms-logs-dark.webp";
 import smsLogsMobileLight from "@/assets/orasa-sms-logs-mobile.webp";
 import smsLogsMobileDark from "@/assets/orasa-sms-logs-mobile-dark.webp";
 import { LegalDialog } from "@/components/common/LegalDialog";
+import { SupportDialog } from "@/components/common/SupportDialog";
 import { useState } from "react";
 
 const HomePage = () => {
@@ -437,9 +438,11 @@ const HomePage = () => {
                   <button className="hover:text-primary transition-colors cursor-pointer">Terms of Service</button>
                 }
               />
-              <a href="#" className="hover:text-primary transition-colors">
-                Contact Support
-              </a>
+              <SupportDialog
+                trigger={
+                  <button className="hover:text-primary transition-colors cursor-pointer">Contact Support</button>
+                }
+              />
             </div>
 
             <p className="text-sm text-slate-500 flex items-center gap-1">
