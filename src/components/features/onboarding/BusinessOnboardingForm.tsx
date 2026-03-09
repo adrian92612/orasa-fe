@@ -80,8 +80,10 @@ const BusinessOnboardingForm = ({ termsAcceptedAt, onSuccess }: BusinessOnboardi
                         id="businessName"
                         placeholder="e.g. Orasa Clinic"
                         {...field}
+                        maxLength={35}
                         aria-invalid={fieldState.invalid}
                       />
+                      <p className="mt-1 text-xs text-muted-foreground">Max 35 characters. Alphanumeric only.</p>
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </FieldContent>
                   </Field>
@@ -100,7 +102,14 @@ const BusinessOnboardingForm = ({ termsAcceptedAt, onSuccess }: BusinessOnboardi
                       Branch Name
                     </FieldLabel>
                     <FieldContent>
-                      <Input id="branchName" placeholder="e.g. Main" {...field} aria-invalid={fieldState.invalid} />
+                      <Input
+                        id="branchName"
+                        placeholder="e.g. Main"
+                        {...field}
+                        maxLength={35}
+                        aria-invalid={fieldState.invalid}
+                      />
+                      <p className="mt-1 text-xs text-muted-foreground">Max 35 characters. Alphanumeric only.</p>
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </FieldContent>
                   </Field>

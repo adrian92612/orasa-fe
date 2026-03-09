@@ -34,7 +34,12 @@ import { useCreateBranch, useUpdateBranch } from "@/hooks/useBranches";
 import { arraysEqual, isValidPHPhone } from "@/lib/utils";
 
 const schema = z.object({
-  name: z.string().trim().min(1, "Branch name is required"),
+  name: z
+    .string()
+    .trim()
+    .min(1, "Branch name is required")
+    .max(35, "Branch name must not exceed 35 characters")
+    .regex(/^[a-zA-Z0-9 ]*$/, "Only alphanumeric characters and spaces are allowed"),
   address: z.string().trim().optional(),
   phoneNumber: z
     .string()
@@ -166,7 +171,8 @@ const BranchDialog = ({ open, onOpenChange, branchToEdit, staffList, serviceList
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor={field.name}>Branch Name</FieldLabel>
-                    <Input {...field} id={field.name} aria-invalid={fieldState.invalid} />
+                    <Input {...field} id={field.name} maxLength={35} aria-invalid={fieldState.invalid} />
+                    <p className="mt-1 text-xs text-muted-foreground">Max 35 characters. Alphanumeric only.</p>
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
                 )}

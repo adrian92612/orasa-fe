@@ -2,8 +2,18 @@ import { z } from "zod";
 import { isValidPHPhone } from "@/lib/utils";
 
 export const businessOnboardingSchema = z.object({
-  businessName: z.string().trim().min(1, "Business name is required"),
-  branchName: z.string().trim().min(1, "Branch name is required"),
+  businessName: z
+    .string()
+    .trim()
+    .min(1, "Business name is required")
+    .max(35, "Business name must not exceed 35 characters")
+    .regex(/^[a-zA-Z0-9 ]*$/, "Only alphanumeric characters and spaces are allowed"),
+  branchName: z
+    .string()
+    .trim()
+    .min(1, "Branch name is required")
+    .max(35, "Branch name must not exceed 35 characters")
+    .regex(/^[a-zA-Z0-9 ]*$/, "Only alphanumeric characters and spaces are allowed"),
   branchAddress: z.string().trim().min(1, "Branch address is required"),
   branchPhone: z
     .string()
