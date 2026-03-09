@@ -1,4 +1,4 @@
-import orasaLogoLight from "@/assets/orasa_logo_light.webp";
+import { BrandLogo } from "@/components/common/BrandLogo";
 import OwnerLoginForm from "@/components/features/auth/OwnerLoginForm";
 import StaffLoginForm from "@/components/features/auth/StaffLoginForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,9 +9,8 @@ export const LoginPage = () => {
     <main className="dark min-h-screen w-full flex flex-col lg:grid lg:grid-cols-2 bg-slate-950 text-slate-50">
       <div className="flex flex-col items-center justify-center p-8 w-full order-1 lg:order-2 grow lg:grow-0">
         <div className="w-full max-w-sm space-y-8 animate-in fade-in slide-in-from-right-4 duration-700">
-          <Link to="/" className="lg:hidden flex items-center gap-2 mb-8 hover:opacity-80 transition-opacity">
-            <img src={orasaLogoLight} alt="Orasa Logo" className="size-8" />
-            <span className="text-xl font-bold tracking-tight italic text-brand-light">Orasa</span>
+          <Link to="/" className="lg:hidden flex items-center mb-8 hover:opacity-80 transition-opacity">
+            <BrandLogo />
           </Link>
 
           <div className="space-y-2">
@@ -51,9 +50,8 @@ export const LoginPage = () => {
       </div>
 
       <div className="flex flex-col justify-between p-8 lg:p-12 bg-primary text-primary-foreground relative overflow-hidden order-2 lg:order-1 rounded-t-3xl lg:rounded-none">
-        <Link to="/" className="hidden lg:flex items-center gap-2 relative z-10 hover:opacity-80 transition-opacity">
-          <img src={orasaLogoLight} alt="Orasa Logo" className="size-10" />
-          <span className="text-2xl font-bold tracking-tight italic text-brand-light">Orasa</span>
+        <Link to="/" className="hidden lg:flex items-center relative z-10 hover:opacity-80 transition-opacity">
+          <BrandLogo logoClassName="size-10" textClassName="text-2xl" />
         </Link>
 
         <div className="space-y-6 relative z-10 max-w-lg mt-4 lg:mt-0">
@@ -75,9 +73,10 @@ export const LoginPage = () => {
           </div>
         </div>
 
-        <p className="text-xs text-foreground relative z-10 mt-12 lg:mt-0 text-center lg:text-left">
-          © {new Date().getFullYear()} Orasa. Built for small businesses.
-        </p>
+        <div className="text-xs text-foreground relative z-10 mt-12 lg:mt-0 flex items-center justify-center lg:justify-start gap-1">
+          © {new Date().getFullYear()} <BrandLogo logoClassName="size-4" textClassName="text-xs mt-0" />. Built for
+          small businesses.
+        </div>
 
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-250 bg-accent/30 rounded-full blur-[120px]" />
       </div>

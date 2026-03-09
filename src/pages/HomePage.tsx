@@ -12,9 +12,8 @@ import {
   BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BrandLogo } from "@/components/common/BrandLogo";
 import { APP_ROUTES } from "@/constants/routes";
-import orasaLogoIcon from "@/assets/orasa_logo_icon.webp";
-import orasaLogoLight from "@/assets/orasa_logo_light.webp";
 import statsLight from "@/assets/orasa-stats.webp";
 import statsDark from "@/assets/orasa-stats-dark.webp";
 import statsMobileLight from "@/assets/orasa-stats-mobile.webp";
@@ -44,9 +43,8 @@ const HomePage = () => {
     <div className="flex flex-col min-h-screen bg-slate-950 text-slate-50">
       <header className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <img src={orasaLogoLight} alt="Orasa Logo" className="size-8" />
-            <span className="text-xl font-bold tracking-tight text-brand-light italic">Orasa</span>
+          <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
+            <BrandLogo />
           </Link>
           <div className="flex items-center gap-4">
             <Button onClick={handleGetStarted}>Log In</Button>
@@ -66,8 +64,8 @@ const HomePage = () => {
               Stop using paper logs. <span className="text-slate-300 italic">Start growing your business.</span>
             </h1>
             <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-6 duration-1000">
-              Orasa helps service-based businesses track appointments and automate SMS reminders with zero hassle.
-              Simple, structured, and effective.
+              <span className="font-urbanist text-brand-light">ORASA</span> helps service-based businesses track
+              appointments and automate SMS reminders with zero hassle. Simple, structured, and effective.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 animate-in fade-in slide-in-from-bottom-8 duration-1000">
               <Button size="lg" className="h-12 px-8 text-base shadow-lg shadow-black/10" onClick={handleGetStarted}>
@@ -294,7 +292,9 @@ const HomePage = () => {
         <section className="dark py-24 bg-slate-900 border-y border-slate-800">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center space-y-4 mb-16">
-              <h2 className="text-3xl font-bold tracking-tight">Why businesses choose Orasa</h2>
+              <h2 className="text-3xl font-bold tracking-tight">
+                Why businesses choose <span className="font-urbanist font-black uppercase">ORASA</span>
+              </h2>
               <p className="text-slate-400 max-w-2xl mx-auto">
                 Focused on solving the manual entry problem without adding unnecessary complexity.
               </p>
@@ -421,8 +421,7 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
             <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <img src={orasaLogoIcon} alt="Orasa Logo" className="size-6" />
-              <span className="text-lg font-bold tracking-tight text-primary italic">Orasa</span>
+              <BrandLogo logoClassName="size-6" textClassName="text-lg" />
             </Link>
 
             <div className="flex gap-8 text-sm text-slate-400 font-medium">
@@ -443,7 +442,11 @@ const HomePage = () => {
               </a>
             </div>
 
-            <p className="text-sm text-slate-500">© {new Date().getFullYear()} Orasa. All rights reserved.</p>
+            <p className="text-sm text-slate-500 flex items-center gap-1">
+              © {new Date().getFullYear()}{" "}
+              <BrandLogo showText logoClassName="size-4" textClassName="text-sm font-black mt-0" />. All rights
+              reserved.
+            </p>
           </div>
         </div>
       </footer>
