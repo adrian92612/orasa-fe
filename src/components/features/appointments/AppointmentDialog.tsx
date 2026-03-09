@@ -38,7 +38,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
-import { format, sub, isSameDay } from "date-fns";
+import { format, sub } from "date-fns";
 import { PREDEFINED_TEMPLATES } from "@/constants/sms";
 
 const formatDuration = (minutes: number) => {
@@ -169,20 +169,6 @@ const AppointmentDialog = ({
       }
     }
   }, [startDateTime, serviceIds, branchServices, setValue]);
-
-  useEffect(() => {
-    if (isWalkin) {
-      const today = new Date();
-      if (!startDateTime) {
-        setValue("startDateTime", today);
-      } else if (!isSameDay(startDateTime, today)) {
-        const newDate = new Date();
-        newDate.setHours(startDateTime.getHours());
-        newDate.setMinutes(startDateTime.getMinutes());
-        setValue("startDateTime", newDate);
-      }
-    }
-  }, [isWalkin, startDateTime, setValue]);
 
   const onSubmit = (data: AppointmentFormValues) => {
     if (!user?.businessId) return;
@@ -408,7 +394,7 @@ const AppointmentDialog = ({
                             disabled={(date) => {
                               const today = new Date();
                               if (isWalkin) {
-                                return !isSameDay(date, today);
+                                return false; // Allow any date for walk-ins
                               }
                               return date < sub(today, { days: 1 });
                             }}
@@ -425,7 +411,7 @@ const AppointmentDialog = ({
                             newDate.setHours(hours);
                             newDate.setMinutes(minutes);
 
-                            if (newDate >= new Date()) {
+                            if (isWalkin || newDate >= new Date()) {
                               field.onChange(newDate);
                             }
                           }
