@@ -70,6 +70,9 @@ export const API_ROUTES = {
     CREDITS: `${ENV.API_URL}/payments/credits`,
     STATUS: `${ENV.API_URL}/payments/status`,
   },
+  EXPORT: {
+    APPOINTMENTS: `${ENV.API_URL}/export/appointments`,
+  },
 } as const;
 
 export const APP_ROUTES = {
