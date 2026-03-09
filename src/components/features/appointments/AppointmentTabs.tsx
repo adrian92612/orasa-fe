@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import type { ReactNode } from "react";
 import { useMyBusiness } from "@/hooks/useBusiness";
+import { useUser } from "@/context/UserContext";
+import { ExportDialog } from "@/components/features/appointments/ExportDialog";
 
 type AppointmentTabsProps = {
   activeTab: string;
@@ -28,7 +30,9 @@ export const AppointmentTabs = ({
   allContent,
 }: AppointmentTabsProps) => {
   const { data: business } = useMyBusiness();
+  const { user } = useUser();
   const canManageAppointments = business?.subscriptionStatus === "ACTIVE";
+  const isOwner = user?.role === "OWNER";
 
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
@@ -43,18 +47,17 @@ export const AppointmentTabs = ({
           <TabsTrigger value="all">All</TabsTrigger>
         </TabsList>
 
-        <Button
-          onClick={onCreate}
-          disabled={!canManageAppointments}
-          title={
-            !canManageAppointments
-              ? "Subscription required to create appointments"
-              : ""
-          }
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          New Appointment
-        </Button>
+        <div className="flex gap-2">
+          {isOwner && canManageAppointments && <ExportDialog />}
+          <Button
+            onClick={onCreate}
+            disabled={!canManageAppointments}
+            title={!canManageAppointments ? "Subscription required to create appointments" : ""}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            New Appointment
+          </Button>
+        </div>
       </div>
 
       <TabsContent value="today">{todayContent}</TabsContent>
