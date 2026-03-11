@@ -10,6 +10,7 @@ export const API_ROUTES = {
     RESET_PASSWORD: `${ENV.API_URL}/auth/reset-password`,
     CHANGE_PASSWORD: `${ENV.API_URL}/profile/change-password`,
     ME: `${ENV.API_URL}/auth/me`,
+    REFRESH: `${ENV.API_URL}/auth/refresh`,
   },
   ADMIN: {
     BUSINESSES: `${ENV.API_URL}/admin/businesses`,
