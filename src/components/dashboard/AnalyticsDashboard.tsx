@@ -3,7 +3,6 @@ import { Users, CalendarCheck, CalendarX, MessageSquare } from "lucide-react";
 import type { DashboardStats } from "@/types/analytics";
 import { StatCard } from "./StatCard";
 import { AppointmentsTrendChart } from "./charts/AppointmentsTrendChart";
-import { RevenueTrendChart } from "./charts/RevenueTrendChart";
 import { PopularServicesChart } from "./charts/PopularServicesChart";
 import { StatusDistributionChart } from "./charts/StatusDistributionChart";
 
@@ -12,11 +11,6 @@ interface AnalyticsDashboardProps {
 }
 
 export function AnalyticsDashboard({ stats }: AnalyticsDashboardProps) {
-  const totalRevenue = stats.dailyStats.reduce(
-    (acc, curr) => acc + curr.estimatedRevenue,
-    0,
-  );
-
   const scheduledRate =
     stats.totalAppointments > 0
       ? Math.round((stats.scheduledCount / stats.totalAppointments) * 100)
@@ -57,10 +51,6 @@ export function AnalyticsDashboard({ stats }: AnalyticsDashboardProps) {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <AppointmentsTrendChart data={stats.dailyStats} />
-        <RevenueTrendChart
-          data={stats.dailyStats}
-          totalRevenue={totalRevenue}
-        />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">

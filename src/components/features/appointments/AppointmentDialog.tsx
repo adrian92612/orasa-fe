@@ -23,7 +23,7 @@ import { useCreateAppointment, useUpdateAppointment } from "@/hooks/useAppointme
 import { useUser } from "@/context/UserContext";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { useBranchServices } from "@/hooks/useServices";
+import { useServices } from "@/hooks/useServices";
 import { useReminders } from "@/hooks/useReminders";
 import { useBranches } from "@/hooks/useBranches";
 import {
@@ -40,17 +40,6 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format, sub } from "date-fns";
 import { PREDEFINED_TEMPLATES } from "@/constants/sms";
-
-const formatDuration = (minutes: number) => {
-  const days = Math.floor(minutes / 1440);
-  const hours = Math.floor((minutes % 1440) / 60);
-  const mins = minutes % 60;
-  const parts = [];
-  if (days) parts.push(`${days} day${days > 1 ? "s" : ""}`);
-  if (hours) parts.push(`${hours} hour${hours > 1 ? "s" : ""}`);
-  if (mins) parts.push(`${mins} min`);
-  return parts.join(" ") || "0 min";
-};
 
 type AppointmentDialogProps = {
   open: boolean;
@@ -82,7 +71,7 @@ const AppointmentDialog = ({
       // Date fields are undefined initially for react-hook-form when using Date objects
       isWalkin: false,
       serviceIds: [],
-      selectedReminderIds: [],
+      remindersEnabled: true,
       notes: "",
       additionalReminderMinutes: 0,
       customReminderEnabled: false,
@@ -92,13 +81,9 @@ const AppointmentDialog = ({
   });
 
   const isWalkin = useWatch({ control, name: "isWalkin" });
-  const startDateTime = useWatch({ control, name: "startDateTime" });
-  const serviceIds = useWatch({ control, name: "serviceIds" });
-  const watchedBranchId = useWatch({ control, name: "branchId" }); // Watch branch selection
 
-  // Fetch services for the currently engaged branch (either prop or selected in form)
-  const effectiveBranchId = watchedBranchId || initialBranchId;
-  const { data: branchServices = [] } = useBranchServices(effectiveBranchId);
+  // Fetch all global services
+  const { data: services = [] } = useServices();
   const { data: reminders = [] } = useReminders(user?.businessId);
 
   useEffect(() => {
@@ -116,10 +101,9 @@ const AppointmentDialog = ({
         customerPhone: appointmentToEdit.customerPhone,
         branchId: appointmentToEdit.branchId,
         startDateTime: new Date(appointmentToEdit.startDateTime),
-        endDateTime: appointmentToEdit.endDateTime ? new Date(appointmentToEdit.endDateTime) : undefined,
         isWalkin: appointmentToEdit.type === "WALK_IN",
         serviceIds: appointmentToEdit.services?.map((s) => s.id) || [],
-        selectedReminderIds: appointmentToEdit.selectedReminderIds || [],
+        remindersEnabled: appointmentToEdit.remindersEnabled ?? true,
         notes: appointmentToEdit.notes || "",
         reminderLeadTimeHours: hours.toString(),
         reminderLeadTimeMinutes: minutesValue.toString(),
@@ -129,16 +113,14 @@ const AppointmentDialog = ({
         status: appointmentToEdit.status,
       });
     } else {
-      const defaults = reminders.filter((r) => r.enabled).map((r) => r.id);
       reset({
         customerName: "",
         customerPhone: "",
         branchId: initialBranchId || "",
         startDateTime: new Date(),
-        endDateTime: undefined,
         isWalkin: false,
         serviceIds: [],
-        selectedReminderIds: defaults,
+        remindersEnabled: true,
         notes: "",
         reminderLeadTimeHours: "",
         reminderLeadTimeMinutes: "",
@@ -155,20 +137,6 @@ const AppointmentDialog = ({
     name: "customReminderEnabled",
   });
 
-  // Auto-calculate end time based on selected services
-  useEffect(() => {
-    if (startDateTime && serviceIds && serviceIds.length > 0) {
-      const totalDuration = serviceIds.reduce((sum, id) => {
-        const service = branchServices.find((s) => s.serviceId === id);
-        return sum + (service?.durationMinutes || 0);
-      }, 0);
-      if (totalDuration > 0) {
-        const start = new Date(startDateTime);
-        const end = new Date(start.getTime() + totalDuration * 60000);
-        setValue("endDateTime", end);
-      }
-    }
-  }, [startDateTime, serviceIds, branchServices, setValue]);
 
   const onSubmit = (data: AppointmentFormValues) => {
     if (!user?.businessId) return;
@@ -189,10 +157,9 @@ const AppointmentDialog = ({
       customerName: data.customerName,
       customerPhone: data.customerPhone,
       startDateTime: data.startDateTime.toISOString(),
-      endDateTime: data.endDateTime ? data.endDateTime.toISOString() : data.startDateTime.toISOString(),
       status: data.status as AppointmentStatus,
       serviceIds: data.serviceIds,
-      selectedReminderIds: data.selectedReminderIds,
+      remindersEnabled: data.remindersEnabled,
       notes: data.notes,
       additionalReminderMinutes: additionalReminderValue,
       additionalReminderTemplate: data.customReminderEnabled ? data.additionalReminderTemplate : undefined,
@@ -337,15 +304,14 @@ const AppointmentDialog = ({
                         search={{ placeholder: "Search services...", emptyMessage: "No service found." }}
                       >
                         <MultiSelectGroup>
-                          {branchServices
-                            .filter((s) => s.active)
+                          {services
                             .map((service) => (
                               <MultiSelectItem
-                                key={service.serviceId}
-                                value={service.serviceId}
-                                badgeLabel={service.serviceName}
+                                key={service.id}
+                                value={service.id}
+                                badgeLabel={service.name}
                               >
-                                {service.serviceName} ({service.durationMinutes} min)
+                                {service.name}
                               </MultiSelectItem>
                             ))}
                         </MultiSelectGroup>
@@ -422,15 +388,6 @@ const AppointmentDialog = ({
                   </Field>
                 )}
               />
-              <div className="hidden">
-                <Controller
-                  name="endDateTime"
-                  control={control}
-                  render={({ field }) => (
-                    <Input {...field} value={field.value ? field.value.toISOString() : ""} type="hidden" />
-                  )}
-                />
-              </div>
 
               {/* Notes */}
               <Controller
@@ -444,41 +401,18 @@ const AppointmentDialog = ({
                 )}
               />
 
-              {/* Reminders */}
+              {/* Reminders Toggle */}
               {!isWalkin && reminders.length > 0 && (
-                <div className="space-y-4 rounded-md border border-primary p-4">
-                  <div className="text-sm font-medium text-foreground">Reminders</div>
+                <div className="flex items-center justify-between space-x-2 rounded-md border border-primary p-4">
+                  <div className="flex flex-col gap-1">
+                    <FieldLabel htmlFor="remindersEnabled">Send SMS Reminders</FieldLabel>
+                    <span className="text-xs text-muted-foreground">Global reminder settings will be used</span>
+                  </div>
                   <Controller
-                    name="selectedReminderIds"
+                    name="remindersEnabled"
                     control={control}
                     render={({ field }) => (
-                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                        {reminders
-                          .filter((r) => r.enabled)
-                          .map((reminder) => (
-                            <div key={reminder.id} className="flex items-start space-x-2">
-                              <Checkbox
-                                id={reminder.id}
-                                checked={field.value?.includes(reminder.id)}
-                                onCheckedChange={(checked) => {
-                                  const current = field.value || [];
-                                  const updated = checked
-                                    ? [...current, reminder.id]
-                                    : current.filter((id) => id !== reminder.id);
-                                  field.onChange(updated);
-                                }}
-                              />
-                              <div className="grid gap-1.5 leading-none">
-                                <Label
-                                  htmlFor={reminder.id}
-                                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                >
-                                  {formatDuration(reminder.leadTimeMinutes)} before
-                                </Label>
-                              </div>
-                            </div>
-                          ))}
-                      </div>
+                      <Switch id="remindersEnabled" checked={field.value} onCheckedChange={field.onChange} />
                     )}
                   />
                 </div>

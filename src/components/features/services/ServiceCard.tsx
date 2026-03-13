@@ -5,8 +5,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Pencil, Trash2, Clock, Tag } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+import { MoreHorizontal, Pencil, Trash2, Tag } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { SavingIndicator } from "@/components/common/SavingIndicator";
 import type { ServiceResponse } from "@/types/service";
@@ -17,7 +16,6 @@ type ServiceCardProps = {
   showSaving?: boolean;
   onEdit: (service: ServiceResponse) => void;
   onDelete?: (service: ServiceResponse) => void;
-  onToggleActive?: (service: ServiceResponse) => void;
 };
 
 const ServiceCard = ({
@@ -25,7 +23,6 @@ const ServiceCard = ({
   showSaving,
   onEdit,
   onDelete,
-  onToggleActive,
 }: ServiceCardProps) => {
   return (
     <Card
@@ -35,17 +32,7 @@ const ServiceCard = ({
       )}
     >
       <div className="flex flex-1 items-center gap-4 min-w-0">
-        {onToggleActive && (
-          <div className="flex items-center">
-            <Switch
-              checked={service.isActive}
-              onCheckedChange={() => onToggleActive(service)}
-              disabled={showSaving}
-              className="mr-2"
-              aria-label="Toggle active status"
-            />
-          </div>
-        )}
+
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
           <Tag className="h-5 w-5" />
         </div>
@@ -57,10 +44,6 @@ const ServiceCard = ({
             </h3>
           </div>
           <div className="flex items-center gap-3 mt-0.5">
-            <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
-              <Clock className="h-3 w-3" />
-              {service.durationMinutes} mins
-            </div>
             {service.description && (
               <p className="text-[11px] text-muted-foreground truncate max-w-[200px] sm:max-w-md italic">
                 • {service.description}
@@ -72,18 +55,7 @@ const ServiceCard = ({
 
       <div className="flex items-center gap-4 shrink-0">
         {showSaving && <SavingIndicator />}
-        <div className="text-right hidden sm:block">
-          <div className="text-xs font-bold text-primary">
-            ₱
-            {(service.effectivePrice ?? service.basePrice).toLocaleString(
-              "en-PH",
-              {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              },
-            )}
-          </div>
-        </div>
+
 
         <div className="flex items-center gap-1">
           <Button

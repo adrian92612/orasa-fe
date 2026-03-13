@@ -40,8 +40,6 @@ export type StaffOnboardingValues = z.infer<typeof staffOnboardingSchema>;
 export const serviceOnboardingSchema = z.object({
   name: z.string().min(1, "Service name is required"),
   description: z.string().optional(),
-  basePrice: z.coerce.number().min(1, "Price must be at least 1"),
-  durationMinutes: z.coerce.number().min(1, "Duration must be at least 1 minute"),
 });
 
 export type ServiceOnboardingValues = z.infer<typeof serviceOnboardingSchema>;

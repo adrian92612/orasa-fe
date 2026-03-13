@@ -33,7 +33,7 @@ interface AppointmentsTrendChartProps {
 
 export function AppointmentsTrendChart({ data }: AppointmentsTrendChartProps) {
   return (
-    <Card className="col-span-4">
+    <Card className="col-span-full lg:col-span-7">
       <CardHeader>
         <CardTitle>Appointments Trend</CardTitle>
         <CardDescription>

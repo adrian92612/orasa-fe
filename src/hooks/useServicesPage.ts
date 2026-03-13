@@ -1,44 +1,30 @@
 import { useState } from "react";
 import { useMutationState } from "@tanstack/react-query";
-import {
-  useSuspenseServices,
-  useSuspenseBranchServices,
-  useAssignServiceToBranch,
-  useUpdateServiceLink,
-} from "@/hooks/useServices";
-import { useUser } from "@/context/UserContext";
+import { useSuspenseServices } from "@/hooks/useServices";
 import { Q_KEYS } from "@/constants/queryKeys";
 import type { 
   ServiceResponse, 
-  BranchServiceResponse,
-  AssignServiceToBranchRequest,
-  UpdateBranchServiceRequest,
-  UpdateServiceRequest
+  UpdateServiceRequest 
 } from "@/types/service";
 
 type ServiceMutationVariables = 
   | string 
-  | { id: string; data: UpdateServiceRequest }
-  | { branchId: string; data: AssignServiceToBranchRequest }
-  | { branchId: string; linkId: string; data: UpdateBranchServiceRequest };
+  | { id: string; data: UpdateServiceRequest };
 
 // Hook for UI state that doesn't trigger suspense
 export const useServicesState = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [otherCurrentPage, setOtherCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
   const handleSearchChange = (val: string) => {
     setSearchQuery(val);
     setCurrentPage(1);
-    setOtherCurrentPage(1);
   };
 
   const handlePageSizeChange = (val: string) => {
     setPageSize(Number(val));
     setCurrentPage(1);
-    setOtherCurrentPage(1);
   };
 
   return {
@@ -46,8 +32,6 @@ export const useServicesState = () => {
     handleSearchChange,
     currentPage,
     setCurrentPage,
-    otherCurrentPage,
-    setOtherCurrentPage,
     pageSize,
     handlePageSizeChange,
   };
@@ -55,14 +39,9 @@ export const useServicesState = () => {
 
 // Hook for data fetching and processing that triggers suspense
 export const useServicesData = (state: ReturnType<typeof useServicesState>) => {
-  const { selectedBranchId, user } = useUser();
-  const { searchQuery, currentPage, otherCurrentPage, pageSize } = state;
+  const { searchQuery, currentPage, pageSize } = state;
 
   const { data: allServices } = useSuspenseServices(null);
-  const { data: branchServices } = useSuspenseBranchServices(selectedBranchId);
-
-  const assignService = useAssignServiceToBranch();
-  const updateServiceLink = useUpdateServiceLink();
 
   const pendingMutations = useMutationState({
     filters: { status: "pending", mutationKey: [Q_KEYS.SERVICES] },
@@ -77,100 +56,10 @@ export const useServicesData = (state: ReturnType<typeof useServicesState>) => {
       // UpdateService variables check
       if ("id" in vars && vars.id === id) return true;
       
-      // Assign/UpdateLink variables check
-      if ("data" in vars && "serviceId" in vars.data && vars.data.serviceId === id) return true;
-      
       return false;
     });
 
-  // --- Categorize services ---
-  const activeServices: ServiceResponse[] = [];
-  const inactiveServices: ServiceResponse[] = [];
-
-  const safeBranchServices = branchServices || [];
   const safeAllServices = allServices || [];
-
-  if (selectedBranchId) {
-    const activeServiceIds = new Set<string>();
-    const serviceLinkMap = new Map<string, string>();
-    const branchServiceMap = new Map<string, BranchServiceResponse>();
-
-    safeBranchServices.forEach((bs: BranchServiceResponse) => {
-      serviceLinkMap.set(bs.serviceId, bs.id);
-      branchServiceMap.set(bs.serviceId, bs);
-      if (bs.active) {
-        activeServiceIds.add(bs.serviceId);
-        activeServices.push({
-          id: bs.serviceId,
-          businessId: user?.businessId || "",
-          name: bs.serviceName,
-          description: bs.serviceDescription,
-          basePrice: bs.basePrice,
-          customPrice: bs.customPrice,
-          effectivePrice: bs.effectivePrice,
-          durationMinutes: bs.durationMinutes,
-          createdAt: bs.createdAt,
-          updatedAt: bs.createdAt,
-          isActive: true,
-          linkId: bs.id,
-        });
-      }
-    });
-
-    safeAllServices.forEach((s) => {
-      if (!activeServiceIds.has(s.id)) {
-        const existingLinkId = serviceLinkMap.get(s.id);
-        const branchService = branchServiceMap.get(s.id);
-
-        inactiveServices.push({
-          ...s,
-          isActive: false,
-          linkId: existingLinkId,
-          customPrice: branchService?.customPrice,
-          effectivePrice: branchService?.effectivePrice,
-        });
-      }
-    });
-  } else {
-    activeServices.push(...safeAllServices);
-  }
-
-  // --- Toggle handler ---
-  const handleToggleActive = (service: ServiceResponse) => {
-    if (!selectedBranchId) return;
-
-    if (service.isActive) {
-      if (service.linkId) {
-        updateServiceLink.mutate({
-          branchId: selectedBranchId,
-          linkId: service.linkId,
-          data: {
-            serviceId: service.id,
-            active: false,
-          },
-        });
-      }
-    } else {
-      if (service.linkId) {
-        updateServiceLink.mutate({
-          branchId: selectedBranchId,
-          linkId: service.linkId,
-          data: {
-            serviceId: service.id,
-            active: true,
-          },
-        });
-      } else {
-        assignService.mutate({
-          branchId: selectedBranchId,
-          data: {
-            serviceId: service.id,
-            active: true,
-          },
-        });
-      }
-    }
-  };
 
   // --- Filter & paginate ---
   const filterList = (list: ServiceResponse[]) => {
@@ -179,30 +68,19 @@ export const useServicesData = (state: ReturnType<typeof useServicesState>) => {
     return list.filter((s) => {
       const nameMatch = s.name.toLowerCase().includes(query);
       const descMatch = s.description?.toLowerCase().includes(query);
-      const priceMatch = s.basePrice.toString().includes(query);
-      return nameMatch || descMatch || priceMatch;
+      return nameMatch || descMatch;
     });
   };
 
-  const filteredActive = filterList(activeServices);
-  const filteredInactive = filterList(inactiveServices);
+  const filteredServices = filterList(safeAllServices);
 
   const start = (currentPage - 1) * pageSize;
-  const paginatedActive = filteredActive.slice(start, start + pageSize);
-
-  const startOther = (otherCurrentPage - 1) * pageSize;
-  const paginatedInactive = filteredInactive.slice(
-    startOther,
-    startOther + pageSize,
-  );
+  const paginatedServices = filteredServices.slice(start, start + pageSize);
 
   return {
-    selectedBranchId,
     checkIsSaving,
-    filteredActive,
-    filteredInactive,
-    paginatedActive,
-    paginatedInactive,
-    handleToggleActive,
+    filteredServices,
+    paginatedServices,
   };
 };
+

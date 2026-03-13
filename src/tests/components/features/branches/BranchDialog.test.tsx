@@ -39,8 +39,8 @@ const mockStaffList = [
 ];
 
 const mockServiceList = [
-  { id: "srv-1", name: "Service One", basePrice: 100, durationMinutes: 30 } as unknown,
-  { id: "srv-2", name: "Service Two", basePrice: 200, durationMinutes: 60 } as unknown,
+  { id: "srv-1", name: "Service One" } as unknown,
+  { id: "srv-2", name: "Service Two" } as unknown,
 ];
 
 describe("BranchDialog", () => {

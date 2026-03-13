@@ -20,8 +20,6 @@ const ServiceOnboardingForm = ({ onNext }: ServiceOnboardingFormProps) => {
     defaultValues: {
       name: "",
       description: "",
-      basePrice: 0,
-      durationMinutes: 30,
     },
   });
 
@@ -80,51 +78,6 @@ const ServiceOnboardingForm = ({ onNext }: ServiceOnboardingFormProps) => {
                 )}
               />
 
-              <Controller
-                control={control}
-                name="basePrice"
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="basePrice" required>
-                      Base Price
-                    </FieldLabel>
-                    <FieldContent>
-                      <Input
-                        id="basePrice"
-                        type="number"
-                        placeholder="0.00"
-                        {...field}
-                        value={field.value as string | number | undefined}
-                        aria-invalid={fieldState.invalid}
-                      />
-                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                    </FieldContent>
-                  </Field>
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="durationMinutes"
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="durationMinutes" required>
-                      Duration (min)
-                    </FieldLabel>
-                    <FieldContent>
-                      <Input
-                        id="durationMinutes"
-                        type="number"
-                        placeholder="30"
-                        {...field}
-                        value={field.value as string | number | undefined}
-                        aria-invalid={fieldState.invalid}
-                      />
-                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                    </FieldContent>
-                  </Field>
-                )}
-              />
 
               <div className="flex flex-col gap-2 pt-4">
                 <Button className="w-full" type="submit">

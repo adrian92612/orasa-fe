@@ -6,7 +6,7 @@ import AppointmentDialog from "@/components/features/appointments/AppointmentDia
 
 // --- Mock Hooks ---
 vi.mock("@/hooks/useServices", () => ({
-  useBranchServices: vi.fn(),
+  useServices: vi.fn(),
 }));
 
 vi.mock("@/hooks/useReminders", () => ({
@@ -36,10 +36,14 @@ Object.defineProperty(window, "ResizeObserver", {
   value: ResizeObserver,
 });
 
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = vi.fn();
+}
+
 // Mock simple text elements instead of complex shadcn selects/calendars if needed,
 // but let's try rendering them first. If we run into issues, we can mock them.
 
-import { useBranchServices } from "@/hooks/useServices";
+import { useServices } from "@/hooks/useServices";
 import { useReminders } from "@/hooks/useReminders";
 import { useCreateAppointment, useUpdateAppointment } from "@/hooks/useAppointments";
 import { useBranches } from "@/hooks/useBranches";
@@ -57,13 +61,13 @@ describe("AppointmentDialog", () => {
       isLoading: false,
     } as unknown as ReturnType<typeof useBranches>);
 
-    vi.mocked(useBranchServices).mockReturnValue({
+    vi.mocked(useServices).mockReturnValue({
       data: [
-        { id: "srv-1", name: "Service A", durationMinutes: 30, price: 100 },
-        { id: "srv-2", name: "Service B", durationMinutes: 60, price: 200 },
+        { id: "srv-1", name: "Service A" },
+        { id: "srv-2", name: "Service B" },
       ],
       isLoading: false,
-    } as unknown as ReturnType<typeof useBranchServices>);
+    } as unknown as ReturnType<typeof useServices>);
 
     vi.mocked(useReminders).mockReturnValue({
       data: [
