@@ -73,6 +73,7 @@ describe("useAppointments Hooks", () => {
         customerPhone: "1234567890",
         startDateTime: "2024-01-01T10:00:00",
         serviceIds: ["srv-1"],
+        remindersEnabled: true,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -105,6 +106,7 @@ describe("useAppointments Hooks", () => {
         customerPhone: "1234567890",
         startDateTime: "2024-01-01T10:00:00",
         serviceIds: ["srv-1"],
+        remindersEnabled: true,
       });
 
       await waitFor(() => expect(result.current.isError).toBe(true));

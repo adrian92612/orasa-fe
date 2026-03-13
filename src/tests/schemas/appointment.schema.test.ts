@@ -9,6 +9,7 @@ describe("Appointment Zod Schema", () => {
     startDateTime: new Date("2024-01-01T10:00:00"),
     isWalkin: false,
     serviceIds: ["srv-1"],
+    remindersEnabled: true,
   };
 
   it("should validate a completely valid appointment", () => {
@@ -66,9 +67,7 @@ describe("Appointment Zod Schema", () => {
     it("should allow optional fields to be present", () => {
       const withOptionals = {
         ...validBaseAppointment,
-        endDateTime: new Date("2024-01-01T11:00:00"),
         notes: "Some notes right here",
-        selectedReminderIds: ["rem-1", "rem-2"],
         customReminderEnabled: true,
         additionalReminderMinutes: 60,
         additionalReminderTemplate: "Hello",

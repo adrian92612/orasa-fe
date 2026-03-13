@@ -36,7 +36,6 @@ describe("useServices Hooks", () => {
 
     // Prime the cache so optimistic updates run
     queryClient.setQueryData([Q_KEYS.SERVICES, { branchId: null }], [{ id: "existing-service" }]);
-    queryClient.setQueryData([Q_KEYS.SERVICES, "branch", "branch-1"], [{ serviceId: "existing-service" }]);
   });
 
   const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -56,15 +55,13 @@ describe("useServices Hooks", () => {
 
       const { result } = renderHook(() => useCreateService(), { wrapper });
 
-      result.current.mutate({ name: "New Service", description: "Desc", basePrice: 100, durationMinutes: 30 });
+      result.current.mutate({ name: "New Service", description: "Desc" });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
       expect(serviceService.createService).toHaveBeenCalledWith({
         name: "New Service",
         description: "Desc",
-        basePrice: 100,
-        durationMinutes: 30,
       });
 
       // Check Optimistic Update
@@ -72,8 +69,6 @@ describe("useServices Hooks", () => {
 
       // Check Cache Invalidations
       expect(invalidateQueriesSpy).toHaveBeenCalledWith({ queryKey: [Q_KEYS.SERVICES] });
-      expect(invalidateQueriesSpy).toHaveBeenCalledWith({ queryKey: [Q_KEYS.SERVICES, "branch"] });
-      expect(invalidateQueriesSpy).toHaveBeenCalledWith({ queryKey: [Q_KEYS.BRANCHES] });
 
       expect(toast.success).toHaveBeenCalledWith("Service created successfully");
     });
@@ -85,7 +80,7 @@ describe("useServices Hooks", () => {
 
       const { result } = renderHook(() => useCreateService(), { wrapper });
 
-      result.current.mutate({ name: "Error Service", description: "", basePrice: 0, durationMinutes: 0 });
+      result.current.mutate({ name: "Error Service", description: "" });
 
       await waitFor(() => expect(result.current.isError).toBe(true));
 
@@ -118,8 +113,6 @@ describe("useServices Hooks", () => {
 
       // Check Cache Invalidations
       expect(invalidateQueriesSpy).toHaveBeenCalledWith({ queryKey: [Q_KEYS.SERVICES] });
-      expect(invalidateQueriesSpy).toHaveBeenCalledWith({ queryKey: [Q_KEYS.SERVICES, "branch"] });
-      expect(invalidateQueriesSpy).toHaveBeenCalledWith({ queryKey: [Q_KEYS.BRANCHES] });
 
       expect(toast.success).toHaveBeenCalledWith("Service updated successfully");
     });
@@ -163,8 +156,6 @@ describe("useServices Hooks", () => {
       expect(setQueryDataSpy).toHaveBeenCalledWith([Q_KEYS.SERVICES, { branchId: null }], expect.any(Function));
 
       expect(invalidateQueriesSpy).toHaveBeenCalledWith({ queryKey: [Q_KEYS.SERVICES] });
-      expect(invalidateQueriesSpy).toHaveBeenCalledWith({ queryKey: [Q_KEYS.BRANCHES] });
-      expect(invalidateQueriesSpy).toHaveBeenCalledWith({ queryKey: [Q_KEYS.SERVICES, "branch"] });
 
       expect(toast.success).toHaveBeenCalledWith("Service deleted successfully");
     });

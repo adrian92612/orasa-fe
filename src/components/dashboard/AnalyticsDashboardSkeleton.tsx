@@ -10,8 +10,7 @@ export default function AnalyticsDashboardSkeleton() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Skeleton className="col-span-4 h-87.5 w-full rounded-xl" />
-        <Skeleton className="col-span-3 h-87.5 w-full rounded-xl" />
+        <Skeleton className="col-span-full lg:col-span-7 h-87.5 w-full rounded-xl" />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">

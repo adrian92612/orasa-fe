@@ -8,7 +8,6 @@ type ServiceListProps = {
   checkIsSaving?: (serviceId: string) => boolean;
   onEdit: (service: ServiceResponse) => void;
   onDelete?: (service: ServiceResponse) => void;
-  onToggleActive?: (service: ServiceResponse) => void;
   emptyTitle?: string;
   emptyDescription?: string;
 };
@@ -19,7 +18,6 @@ const ServiceList = ({
   checkIsSaving,
   onEdit,
   onDelete,
-  onToggleActive,
   emptyTitle = "No services found",
   emptyDescription = "You haven't created any services yet. Services you add will appear here.",
 }: ServiceListProps) => {
@@ -50,7 +48,6 @@ const ServiceList = ({
           showSaving={service.isOptimistic || checkIsSaving?.(service.id)}
           onEdit={onEdit}
           onDelete={onDelete}
-          onToggleActive={onToggleActive}
         />
       ))}
     </div>

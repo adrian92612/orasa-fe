@@ -15,11 +15,10 @@ export type AppointmentResponse = {
   customerName: string;
   customerPhone: string;
   startDateTime: string;
-  endDateTime: string;
   status: AppointmentStatus;
   notes?: string;
   services: AppointmentServiceInfo[];
-  selectedReminderIds: string[];
+  remindersEnabled: boolean;
   additionalReminderMinutes?: number;
   additionalReminderTemplate?: string;
   createdAt: string;
@@ -32,10 +31,9 @@ export type CreateAppointmentRequest = {
   customerName: string;
   customerPhone: string;
   startDateTime: string;
-  endDateTime?: string;
   isWalkin: boolean;
   serviceIds: string[];
-  selectedReminderIds?: string[];
+  remindersEnabled: boolean;
   notes?: string;
   additionalReminderMinutes?: number;
   additionalReminderTemplate?: string;
@@ -45,10 +43,9 @@ export type UpdateAppointmentRequest = {
   customerName?: string;
   customerPhone?: string;
   startDateTime?: string;
-  endDateTime?: string;
   status?: AppointmentStatus;
   serviceIds?: string[];
-  selectedReminderIds?: string[];
+  remindersEnabled?: boolean;
   notes?: string;
   additionalReminderMinutes?: number;
   additionalReminderTemplate?: string;

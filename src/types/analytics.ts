@@ -1,20 +1,19 @@
-export interface DailyStatsDTO {
+export type DailyStatsDTO = {
   date: string;
   totalAppointments: number;
   completedAppointments: number;
-  estimatedRevenue: number;
-}
+};
 
-export interface ServiceStatsDTO {
+export type ServiceStatsDTO = {
   serviceName: string;
   count: number;
   percentage: number;
-}
+};
 
-export interface StatusStatsDTO {
+export type StatusStatsDTO = {
   status: string;
   count: number;
-}
+};
 
 export type DashboardStats = {
   totalAppointments: number;

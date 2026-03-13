@@ -39,12 +39,28 @@ test.describe("Critical Onboarding Flow", () => {
       }
     });
 
-    // 3. Mock service creation
-    await page.route("**/api/services", async (route) => {
+    // 3. Mock service creation and listing
+    await page.route("**/api/services**", async (route) => {
+      console.log("Mocking service request (onboarding):", route.request().method(), route.request().url());
       if (route.request().method() === "POST") {
         await route.fulfill({
           status: 201,
           json: { success: true },
+        });
+      } else if (route.request().method() === "GET") {
+        await route.fulfill({
+          status: 200,
+          json: {
+            success: true,
+            data: [
+              {
+                id: "srv-1",
+                name: "Consultation",
+                durationMinutes: 30,
+                price: 500,
+              },
+            ],
+          },
         });
       } else {
         await route.continue();
@@ -61,6 +77,28 @@ test.describe("Critical Onboarding Flow", () => {
       } else {
         await route.continue();
       }
+    });
+
+    // 5. Mock analytics for final dashboard load
+    await page.route("**/api/appointments/counts*", async (route) => {
+      await route.fulfill({
+        status: 200,
+        json: {
+          success: true,
+          data: {
+            todayCount: 0,
+            upcomingCount: 0,
+          },
+        },
+      });
+    });
+
+    // 6. Mock branches for final dashboard load
+    await page.route("**/api/branches", async (route) => {
+      await route.fulfill({
+        status: 200,
+        json: { success: true, data: [{ id: "branch-1", name: "Main Branch" }] },
+      });
     });
 
     // Start flow
@@ -95,8 +133,6 @@ test.describe("Critical Onboarding Flow", () => {
     await expect(page.getByText("Add your services")).toBeVisible();
     await page.getByLabel("Service Name").fill("Consultation");
     await page.getByLabel("Description").fill("Basic checkup");
-    await page.getByLabel("Base Price").fill("500");
-    await page.getByLabel("Duration (min)").fill("30");
     await page.getByRole("button", { name: "Create & Continue" }).click();
 
     // --- STEP 4: STAFF ONBOARDING ---
@@ -107,7 +143,7 @@ test.describe("Critical Onboarding Flow", () => {
     await page.getByRole("button", { name: "Create & Finish" }).click();
 
     // --- FINAL REDIRECT ---
-    await page.waitForURL(/.*\/dashboard\/analytics/);
+    await page.waitForURL(/.*\/dashboard\/analytics/, { timeout: 10000 });
     expect(page.url()).toMatch(/.*\/dashboard\/analytics/);
   });
 });
