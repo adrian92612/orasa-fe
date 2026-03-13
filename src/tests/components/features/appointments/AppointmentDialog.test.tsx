@@ -122,19 +122,19 @@ describe("AppointmentDialog", () => {
     expect(screen.queryByText(/Reminders/i)).not.toBeInTheDocument();
   });
 
-  it("shows extra reminder settings when 'Extra Reminder' is checked", async () => {
+  it("shows extra reminder settings when 'Custom Reminder' is checked", async () => {
     renderDialog();
     const user = userEvent.setup();
 
     // Wait until Reminders label is up
-    const addCustomReminderCheckbox = screen.getByLabelText(/Extra Reminder/i);
-    expect(screen.queryByText(/Extra Reminder Settings/i)).not.toBeInTheDocument();
+    const addCustomReminderCheckbox = screen.getByLabelText(/Custom Reminder/i);
+    expect(screen.queryByText(/Custom Reminder Settings/i)).not.toBeInTheDocument();
 
     await user.click(addCustomReminderCheckbox);
 
     // Should now show extra fields
     await waitFor(() => {
-      expect(screen.getByText(/Extra Reminder Settings/i)).toBeInTheDocument();
+      expect(screen.getByText(/Custom Reminder Settings/i)).toBeInTheDocument();
       expect(screen.getByText(/Message Template/i)).toBeInTheDocument();
     });
   });
