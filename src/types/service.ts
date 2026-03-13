@@ -5,6 +5,7 @@ export type ServiceResponse = {
   description?: string;
   createdAt: string;
   updatedAt: string;
+  isOptimistic?: boolean;
 };
 
 export type CreateServiceRequest = {

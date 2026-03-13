@@ -5,11 +5,7 @@ import type {
   CreateBranchRequest,
   UpdateBranchRequest,
 } from "@/types/branch";
-import type {
-  AssignServiceToBranchRequest,
-  BranchServiceResponse,
-  UpdateBranchServiceRequest,
-} from "@/types/service";
+import type { ServiceResponse } from "@/types/service";
 
 export const branchService = {
   updateBranch: async (
@@ -47,8 +43,8 @@ export const branchService = {
     return response.data!;
   },
 
-  getServices: async (branchId: string): Promise<BranchServiceResponse[]> => {
-    const response = await apiClient.get<BranchServiceResponse[]>(
+  getServices: async (branchId: string): Promise<ServiceResponse[]> => {
+    const response = await apiClient.get<ServiceResponse[]>(
       API_ROUTES.BRANCHES.SERVICES.BASE(branchId),
     );
     return response.data || [];
@@ -56,9 +52,9 @@ export const branchService = {
 
   assignService: async (
     branchId: string,
-    data: AssignServiceToBranchRequest,
-  ): Promise<ApiResponse<BranchServiceResponse>> => {
-    const response = await apiClient.post<BranchServiceResponse>(
+    data: { serviceId: string },
+  ): Promise<ApiResponse<ServiceResponse>> => {
+    const response = await apiClient.post<ServiceResponse>(
       API_ROUTES.BRANCHES.SERVICES.BASE(branchId),
       data,
     );
@@ -69,17 +65,8 @@ export const branchService = {
     return await apiClient.delete<void>(API_ROUTES.BRANCHES.BY_ID(id));
   },
 
-  updateService: async (
-    branchId: string,
-    serviceLinkId: string,
-    data: UpdateBranchServiceRequest,
-  ): Promise<ApiResponse<BranchServiceResponse>> => {
-    const response = await apiClient.put<BranchServiceResponse>(
-      API_ROUTES.BRANCHES.SERVICES.BY_ID(branchId, serviceLinkId),
-      data,
-    );
-    return response;
-  },
+  // Placeholder for update service on branch if needed in future
+  // For now, it's just a simple link/unlink or covered by global service update
 
   removeService: async (
     branchId: string,

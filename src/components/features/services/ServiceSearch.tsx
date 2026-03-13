@@ -12,7 +12,7 @@ const ServiceSearch = ({ value, onChange }: ServiceSearchProps) => {
       <div className="relative w-full">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Search name, description, or price..."
+          placeholder="Search name or description..."
           className="pl-9 h-10 rounded-xl"
           value={value}
           onChange={(e) => onChange(e.target.value)}
