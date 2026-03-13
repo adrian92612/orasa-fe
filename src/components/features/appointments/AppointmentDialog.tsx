@@ -402,19 +402,59 @@ const AppointmentDialog = ({
               />
 
               {/* Reminders Toggle */}
-              {!isWalkin && reminders.length > 0 && (
-                <div className="flex items-center justify-between space-x-2 rounded-md border border-primary p-4">
-                  <div className="flex flex-col gap-1">
-                    <FieldLabel htmlFor="remindersEnabled">Send SMS Reminders</FieldLabel>
-                    <span className="text-xs text-muted-foreground">Global reminder settings will be used</span>
+              {!isWalkin && (
+                <div className="flex flex-col gap-2 rounded-md border border-primary p-4 bg-primary/5">
+                  <div className="flex items-center justify-between space-x-2">
+                    <div className="flex flex-col gap-1">
+                      <FieldLabel htmlFor="remindersEnabled">Send SMS Reminders</FieldLabel>
+                      <span className="text-xs text-muted-foreground">
+                        {reminders.length > 0
+                          ? "Global reminder settings will be used"
+                          : "No global reminder settings found"}
+                      </span>
+                    </div>
+                    {reminders.length > 0 ? (
+                      <Controller
+                        name="remindersEnabled"
+                        control={control}
+                        render={({ field }) => (
+                          <Switch id="remindersEnabled" checked={field.value} onCheckedChange={field.onChange} />
+                        )}
+                      />
+                    ) : null}
                   </div>
-                  <Controller
-                    name="remindersEnabled"
-                    control={control}
-                    render={({ field }) => (
-                      <Switch id="remindersEnabled" checked={field.value} onCheckedChange={field.onChange} />
-                    )}
-                  />
+                  {reminders.length === 0 && (
+                    <div className="mt-2 text-sm">
+                      <p className="text-muted-foreground text-xs leading-relaxed">
+                        To automatically notify customers, you need to create at least one global reminder configuration.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onOpenChange(false);
+                          window.location.href = "/dashboard/settings?tab=reminders";
+                        }}
+                        className="mt-2 text-primary hover:underline font-medium flex items-center gap-1 cursor-pointer"
+                      >
+                        Set up reminders now
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                          <polyline points="15 3 21 3 21 9" />
+                          <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -430,7 +470,7 @@ const AppointmentDialog = ({
                         htmlFor="customReminderEnabled"
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
-                        Extra Reminder
+                        Custom Reminder
                       </Label>
                     </div>
                   )}
@@ -440,7 +480,7 @@ const AppointmentDialog = ({
               {/* Extra Reminder Fields */}
               {!isWalkin && customReminderEnabled && (
                 <div className="space-y-4 rounded-md border p-4 border-primary animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="text-sm font-medium text-foreground">Extra Reminder Settings</div>
+                  <div className="text-sm font-medium text-foreground">Custom Reminder Settings</div>
                   <div className="grid grid-cols-2 gap-4">
                     <Controller
                       name="reminderLeadTimeHours"
