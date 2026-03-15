@@ -5,8 +5,6 @@ export type BranchResponse = {
   address?: string;
   phoneNumber?: string;
   staffIds: string[];
-  serviceCount: number;
-  activeServiceIds: string[];
 };
 
 export type CreateBranchRequest = {
@@ -14,7 +12,6 @@ export type CreateBranchRequest = {
   address?: string;
   phoneNumber?: string;
   staffIds?: string[];
-  serviceIds?: string[];
 };
 
 export type UpdateBranchRequest = Partial<CreateBranchRequest>;

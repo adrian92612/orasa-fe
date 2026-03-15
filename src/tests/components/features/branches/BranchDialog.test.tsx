@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
 import { type StaffResponse } from "@/types/staff";
-import { type ServiceResponse } from "@/types/service";
+
 import BranchDialog from "@/components/features/branches/BranchDialog";
 import { useCreateBranch, useUpdateBranch, useDeleteBranch } from "@/hooks/useBranches";
 import { useStaff } from "@/hooks/useStaff";
@@ -36,11 +36,6 @@ if (!Element.prototype.scrollIntoView) {
 const mockStaffList = [
   { id: "staff-1", username: "Staff One", role: "STAFF" } as unknown,
   { id: "staff-2", username: "Staff Two", role: "STAFF" } as unknown,
-];
-
-const mockServiceList = [
-  { id: "srv-1", name: "Service One" } as unknown,
-  { id: "srv-2", name: "Service Two" } as unknown,
 ];
 
 describe("BranchDialog", () => {
@@ -76,7 +71,6 @@ describe("BranchDialog", () => {
         open={true}
         onOpenChange={onOpenChangeMock}
         staffList={mockStaffList as unknown as StaffResponse[]}
-        serviceList={mockServiceList as unknown as ServiceResponse[]}
         {...props}
       />,
     );
@@ -127,8 +121,6 @@ describe("BranchDialog", () => {
           address: "123 Test St.",
           phoneNumber: "09123456789",
           staffIds: [],
-          // By default, it selects all service IDs on create
-          serviceIds: ["srv-1", "srv-2"],
         },
         expect.any(Object),
       );
@@ -195,7 +187,6 @@ describe("BranchDialog", () => {
             address: "456 Exist Ave",
             phoneNumber: "09987654321",
             staffIds: ["staff-1"],
-            serviceIds: ["srv-1"],
           },
         },
         expect.any(Object),
@@ -210,7 +201,6 @@ describe("BranchDialog", () => {
       address: "",
       phoneNumber: "",
       staffIds: [],
-      activeServiceIds: [],
       businessId: "biz-1",
     };
 
