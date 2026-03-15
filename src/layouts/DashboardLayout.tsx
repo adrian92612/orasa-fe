@@ -22,12 +22,17 @@ const DashboardLayout = () => {
   const currentBranch = branches?.find((b) => b.id === selectedBranchId);
   const branchName = currentBranch ? currentBranch.name : "All Branches";
   const isStaffNoBranches = user?.role === "STAFF" && !branches?.length;
+  const isBranchAware = currentItem?.isBranchAware ?? true;
 
   return (
     <SidebarProvider>
       <AppSidebar onLogout={logout} />
       <SidebarInset>
-        <DashboardHeader pageTitle={pageTitle} branchName={branchName} />
+        <DashboardHeader
+          pageTitle={pageTitle}
+          branchName={branchName}
+          isBranchAware={isBranchAware}
+        />
 
         <SubscriptionBanner />
 

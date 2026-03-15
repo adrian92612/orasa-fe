@@ -41,7 +41,7 @@ const AppSidebar = ({ onLogout, ...props }: AppSidebarProps) => {
           title={displayBusinessName}
           subtitle={`${user?.role === "OWNER" ? "Owner" : "Staff"} ${user?.username}`}
         >
-          {(user?.role === "OWNER" || branches.length > 1) && (
+          {!!branches.length && (
             <div className="mt-2">
               <BranchSwitcher />
             </div>

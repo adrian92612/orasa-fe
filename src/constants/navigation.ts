@@ -18,6 +18,7 @@ type NavItem = {
   url: string;
   icon: LucideIcon;
   allowedRoles: roles[];
+  isBranchAware: boolean;
 };
 
 export const NAV_ITEMS: NavItem[] = [
@@ -26,47 +27,55 @@ export const NAV_ITEMS: NavItem[] = [
     url: APP_ROUTES.DASHBOARD.ANALYTICS,
     icon: BarChart3,
     allowedRoles: ["OWNER", "ADMIN"],
+    isBranchAware: true,
   },
   {
     title: "Appointments",
     url: APP_ROUTES.DASHBOARD.APPOINTMENTS,
     icon: Calendar,
     allowedRoles: ["OWNER", "ADMIN", "STAFF"],
+    isBranchAware: true,
   },
   {
     title: "Services",
     url: APP_ROUTES.DASHBOARD.SERVICES,
     icon: UserCheck,
     allowedRoles: ["OWNER", "ADMIN"],
+    isBranchAware: false,
   },
   {
     title: "Branches",
     url: APP_ROUTES.DASHBOARD.BRANCHES,
     icon: Building2,
     allowedRoles: ["OWNER", "ADMIN"],
+    isBranchAware: false,
   },
   {
     title: "Staff",
     url: APP_ROUTES.DASHBOARD.STAFF,
     icon: Users,
     allowedRoles: ["OWNER", "ADMIN"],
+    isBranchAware: true,
   },
   {
     title: "Activity Logs",
     url: APP_ROUTES.DASHBOARD.ACTIVITY_LOGS,
     icon: FileText,
     allowedRoles: ["OWNER", "ADMIN"],
+    isBranchAware: true,
   },
   {
     title: "SMS Logs",
     url: APP_ROUTES.DASHBOARD.SMS_LOGS,
     icon: MessageCircle,
     allowedRoles: ["OWNER", "ADMIN", "STAFF"],
+    isBranchAware: true,
   },
   {
     title: "Settings",
     url: APP_ROUTES.DASHBOARD.SETTINGS,
     icon: Settings,
     allowedRoles: ["OWNER", "ADMIN", "STAFF"],
+    isBranchAware: false,
   },
 ];

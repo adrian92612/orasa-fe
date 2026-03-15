@@ -8,7 +8,6 @@ import { BranchListSkeleton } from "@/components/features/branches/BranchListSke
 import type { BranchResponse } from "@/types/branch";
 
 import { useSuspenseBranches } from "@/hooks/useBranches";
-import { useSuspenseServices } from "@/hooks/useServices";
 import { useSuspenseStaff } from "@/hooks/useStaff";
 
 import { useMutationState } from "@tanstack/react-query";
@@ -29,7 +28,6 @@ type BranchesDataSectionProps = {
 const BranchesDataSection = ({ selectedBranch, onEdit, isSheetOpen, setIsSheetOpen }: BranchesDataSectionProps) => {
   const { data: branches } = useSuspenseBranches();
   const { data: staffList = [] } = useSuspenseStaff();
-  const { data: serviceList = [] } = useSuspenseServices();
 
   const pendingUpdateMutations = useMutationState({
     filters: {
@@ -69,7 +67,6 @@ const BranchesDataSection = ({ selectedBranch, onEdit, isSheetOpen, setIsSheetOp
           onOpenChange={setIsSheetOpen}
           branchToEdit={selectedBranch}
           staffList={staffList}
-          serviceList={serviceList}
         />
       </Suspense>
     </>

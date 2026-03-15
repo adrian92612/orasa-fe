@@ -40,12 +40,6 @@ const SmsLogsPageContent = ({
 const SmsLogsPageBody = () => {
   const { selectedBranchId } = useUser();
 
-  useSuspenseSmsLogs({
-    page: 1,
-    size: 1,
-    branchId: (selectedBranchId as string) || undefined,
-  });
-
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [status, setStatus] = useState<string>("ALL");

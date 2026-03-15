@@ -5,6 +5,7 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { z } from "zod";
 
 import { useBranches } from "@/hooks/useBranches";
+import { useUser } from "@/context/UserContext";
 import { useCreateStaff, useUpdateStaff } from "@/hooks/useStaff";
 
 import type { StaffResponse } from "@/types/staff";
@@ -59,6 +60,7 @@ type StaffDialogProps = {
 const StaffDialog = ({ open, onOpenChange, staff }: StaffDialogProps) => {
   const isEditing = !!staff;
   const [showPassword, setShowPassword] = useState(false);
+  const { selectedBranchId } = useUser();
 
   const { data: branches = [] } = useBranches();
   const createMutation = useCreateStaff();
@@ -88,11 +90,15 @@ const StaffDialog = ({ open, onOpenChange, staff }: StaffDialogProps) => {
           username: "",
           temporaryPassword: "",
           confirmPassword: "",
-          branchIds: branches.length === 1 ? [branches[0].id] : [],
+          branchIds: selectedBranchId
+            ? [selectedBranchId]
+            : branches.length === 1
+              ? [branches[0].id]
+              : [],
         });
       }
     }
-  }, [open, staff, reset, branches]);
+  }, [open, staff, reset, branches, selectedBranchId]);
 
   const isPending = createMutation.isPending || updateMutation.isPending;
 
