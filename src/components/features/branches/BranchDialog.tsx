@@ -29,7 +29,6 @@ import LoadingButton from "@/components/common/LoadingButton";
 import BranchDeleteDialog from "./BranchDeleteDialog";
 import type { BranchResponse } from "@/types/branch";
 import type { StaffResponse } from "@/types/staff";
-import type { ServiceResponse } from "@/types/service";
 import { useCreateBranch, useUpdateBranch } from "@/hooks/useBranches";
 import { arraysEqual, isValidPHPhone } from "@/lib/utils";
 
@@ -49,7 +48,6 @@ const schema = z.object({
       message: "Phone number must start with 09 and be 11 digits long",
     }),
   staffIds: z.array(z.string()),
-  serviceIds: z.array(z.string()),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -59,10 +57,9 @@ type Props = {
   onOpenChange: (open: boolean) => void;
   branchToEdit?: BranchResponse | null;
   staffList: StaffResponse[];
-  serviceList: ServiceResponse[];
 };
 
-const BranchDialog = ({ open, onOpenChange, branchToEdit, staffList, serviceList }: Props) => {
+const BranchDialog = ({ open, onOpenChange, branchToEdit, staffList }: Props) => {
   const createMutation = useCreateBranch();
   const updateMutation = useUpdateBranch();
 
@@ -75,7 +72,6 @@ const BranchDialog = ({ open, onOpenChange, branchToEdit, staffList, serviceList
       address: branchToEdit?.address || "",
       phoneNumber: branchToEdit?.phoneNumber || "",
       staffIds: branchToEdit?.staffIds || [],
-      serviceIds: branchToEdit?.activeServiceIds || serviceList.map((s) => s.id),
     },
   });
 
@@ -93,7 +89,6 @@ const BranchDialog = ({ open, onOpenChange, branchToEdit, staffList, serviceList
     if ((currentValues.phoneNumber || "").trim() !== (branchToEdit.phoneNumber || "").trim()) return true;
 
     if (!arraysEqual(currentValues.staffIds || [], branchToEdit.staffIds || [])) return true;
-    if (!arraysEqual(currentValues.serviceIds || [], branchToEdit.activeServiceIds || [])) return true;
 
     return false;
   };
@@ -109,7 +104,6 @@ const BranchDialog = ({ open, onOpenChange, branchToEdit, staffList, serviceList
         address: branchToEdit.address || "",
         phoneNumber: branchToEdit.phoneNumber || "",
         staffIds: branchToEdit.staffIds || [],
-        serviceIds: branchToEdit.activeServiceIds || [],
       });
     } else {
       reset({
@@ -117,10 +111,9 @@ const BranchDialog = ({ open, onOpenChange, branchToEdit, staffList, serviceList
         address: "",
         phoneNumber: "",
         staffIds: [],
-        serviceIds: serviceList.map((s) => s.id),
       });
     }
-  }, [open, branchToEdit, reset, serviceList]);
+  }, [open, branchToEdit, reset]);
 
   const onSubmit = (data: FormValues) => {
     const trimmedData: FormValues = {
@@ -256,46 +249,6 @@ const BranchDialog = ({ open, onOpenChange, branchToEdit, staffList, serviceList
                 }}
               />
 
-              <Controller
-                name="serviceIds"
-                control={control}
-                render={({ field, fieldState }) => {
-                  const allServiceIds = serviceList.map((s) => s.id);
-
-                  return (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel className="flex items-center gap-2">Services</FieldLabel>
-
-                      <div className="flex gap-2 mb-2">
-                        <Button type="button" size="sm" variant="outline" onClick={() => field.onChange(allServiceIds)}>
-                          Select all
-                        </Button>
-
-                        <Button type="button" size="sm" variant="ghost" onClick={() => field.onChange([])}>
-                          Clear
-                        </Button>
-                      </div>
-
-                      <MultiSelect values={field.value} onValuesChange={field.onChange}>
-                        <MultiSelectTrigger>
-                          <MultiSelectValue placeholder="Select services" />
-                        </MultiSelectTrigger>
-
-                        <MultiSelectContent>
-                          <MultiSelectGroup heading="Services">
-                            {serviceList.map((s) => (
-                              <MultiSelectItem key={s.id} value={s.id}>
-                                {s.name}
-                              </MultiSelectItem>
-                            ))}
-                          </MultiSelectGroup>
-                        </MultiSelectContent>
-                      </MultiSelect>
-                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                    </Field>
-                  );
-                }}
-              />
             </FieldGroup>
 
             <DialogFooter>
