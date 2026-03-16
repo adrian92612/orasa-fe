@@ -59,18 +59,19 @@ const HomePage = () => {
           <div className="max-w-7xl mx-auto px-4 text-center space-y-8">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 text-slate-200 text-sm font-medium animate-in fade-in slide-in-from-bottom-2 duration-500">
               <Zap className="size-4" />
-              <span>Modernize your appointment logs</span>
+              <span>No more manual texting</span>
             </div>
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-tight animate-in fade-in slide-in-from-bottom-4 duration-700">
-              Stop using paper logs. <span className="text-slate-300 italic">Start growing your business.</span>
+              Ditch the paper logs. <span className="text-slate-300 italic">Let Orasa handle the reminders.</span>
             </h1>
             <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-6 duration-1000">
-              <span className="font-urbanist text-brand-light">ORASA</span> helps service-based businesses track
-              appointments and automate SMS reminders with zero hassle. Simple, structured, and effective.
+              <span className="font-urbanist text-brand-light">ORASA</span> replaces your manual logbooks with a
+              digital system that automatically texts your clients. Your staff focuses on the service; we focus on the
+              schedule.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 animate-in fade-in slide-in-from-bottom-8 duration-1000">
               <Button size="lg" className="h-12 px-8 text-base shadow-lg shadow-black/10" onClick={handleGetStarted}>
-                Get Started for Free
+                Get Started
                 <ArrowRight className="ml-2 size-4" />
               </Button>
               <Button
@@ -305,20 +306,21 @@ const HomePage = () => {
               {[
                 {
                   icon: Calendar,
-                  title: "Appointment Tracking",
+                  title: "Digital Logbook",
                   description:
-                    "Manage all your appointments in a clean, organized list. No more messy logbooks and missed entries.",
+                    "Replace messy pens and paper. A clean, searchable list of every client that anyone on your team can manage instantly.",
                 },
                 {
                   icon: MessageSquare,
-                  title: "Automated Reminders",
+                  title: "Hands-free Reminders",
                   description:
-                    "Send automated SMS reminders to your clients to reduce no-shows and keep your schedule full.",
+                    "Stop asking employees to send individual texts. Orasa sends professional SMS reminders automatically so you don't have to.",
                 },
                 {
                   icon: LayoutDashboard,
-                  title: "Multi-branch Ready",
-                  description: "Manage multiple branches under one account with branch-specific staff and analytics.",
+                  title: "Total Visibility",
+                  description:
+                    "See exactly which clients were notified and track the status of your SMS reminders without chasing down staff for updates.",
                 },
               ].map((feature, i) => (
                 <div
@@ -342,25 +344,25 @@ const HomePage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div className="space-y-8">
                 <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
-                  Built for the real-world small business workflow
+                  Built to end the manual logbook headache
                 </h2>
 
                 <div className="space-y-6">
                   {[
                     {
                       icon: ShieldCheck,
-                      title: "Secure & Reliable",
-                      desc: "Built with modern technology to ensure your business data is always safe.",
+                      title: "Set and Forget",
+                      desc: "Input the appointment once and the automation takes over. No manual follow-ups required.",
                     },
                     {
                       icon: Clock,
-                      title: "Save 5+ Hours Weekly",
-                      desc: "Automate the manual tasks of tracking and reminding clients.",
+                      title: "Zero Manual Texting",
+                      desc: "Save hours of staff time every week by removing the need for manual SMS confirmations.",
                     },
                     {
                       icon: Users,
-                      title: "Staff Friendly",
-                      desc: "Designed for ease of use. Your staff can pick it up in minutes.",
+                      title: "Dead Simple for Staff",
+                      desc: "Designed for ease of use. If your staff can use a smartphone, they can use Orasa. No complex training needed.",
                     },
                   ].map((item, i) => (
                     <div key={i} className="flex gap-4">
@@ -376,36 +378,48 @@ const HomePage = () => {
                 </div>
               </div>
 
-              <div className="relative">
-                <div className="bg-primary rounded-3xl p-8 text-primary-foreground space-y-8 shadow-2xl overflow-hidden relative">
-                  <div className="absolute top-0 right-0 -mr-16 -mt-16 size-64 bg-white/5 rounded-full blur-3xl" />
+              <div className="relative group max-w-md mx-auto">
+                {/* Glow highlight behind card */}
+                <div className="absolute -inset-1 bg-linear-to-r from-primary/20 to-brand-light/20 rounded-[2.5rem] blur-xl opacity-25 group-hover:opacity-40 transition duration-1000"></div>
 
-                  <h3 className="text-2xl font-bold relative z-10">Simple Pricing</h3>
-                  <div className="flex items-baseline gap-2 relative z-10">
-                    <span className="text-5xl font-extrabold text-white">₱299</span>
-                    <span className="text-slate-400">/ month</span>
+                <div className="relative bg-slate-900/40 backdrop-blur-xl rounded-3xl p-8 border border-white/5 shadow-2xl space-y-8 overflow-hidden">
+                  {/* Decorative background circle */}
+                  <div className="absolute top-0 right-0 -mr-16 -mt-16 size-48 bg-primary/10 rounded-full blur-3xl" />
+                  <div className="absolute bottom-0 left-0 -ml-16 -mb-16 size-48 bg-brand-light/10 rounded-full blur-3xl transition-all duration-1000 group-hover:scale-150" />
+
+                  <div className="space-y-2 relative z-10">
+                    <h3 className="text-xl font-semibold text-slate-400">Monthly Plan</h3>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-6xl font-black text-white tracking-tight">₱299</span>
+                      <span className="text-slate-500 font-medium">/month</span>
+                    </div>
                   </div>
-                  <p className="text-slate-300 relative z-10">
-                    One subscription covers your entire business, regardless of branches or staff.
+
+                  <p className="text-slate-400 relative z-10 leading-relaxed">
+                    One simple price to automate your entire business. No hidden fees, no "per-staff" charges.
                   </p>
+
+                  <div className="h-px bg-linear-to-r from-transparent via-slate-700 to-transparent relative z-10" />
 
                   <ul className="space-y-4 relative z-10">
                     {[
-                      "100 Free SMS monthly",
-                      "Unlimited Appointments",
+                      "100 Automated SMS monthly",
+                      "Simple Digital Logbook",
                       "Multi-branch support",
                       "Staff dashboards",
                       "Activity & SMS Logs",
                     ].map((item, i) => (
-                      <li key={i} className="flex items-center gap-3">
-                        <CheckCircle2 className="size-5 text-white" />
+                      <li key={i} className="flex items-center gap-3 text-sm font-medium text-slate-300">
+                        <div className="bg-primary/10 p-1 rounded-full border border-primary/20">
+                          <CheckCircle2 className="size-4 text-primary" />
+                        </div>
                         <span>{item}</span>
                       </li>
                     ))}
                   </ul>
 
                   <Button
-                    className="w-full h-12 text-lg font-bold shadow-lg shadow-black/40 relative z-10 bg-white text-black hover:bg-slate-100"
+                    className="w-full h-14 text-lg font-bold shadow-xl shadow-primary/10 relative z-10 transition-all duration-300 hover:scale-[1.02] active:scale-95"
                     onClick={handleGetStarted}
                   >
                     Start Your Journey
