@@ -6,7 +6,8 @@ import { AppointmentsTrendChart } from "./charts/AppointmentsTrendChart";
 import { PopularServicesChart } from "./charts/PopularServicesChart";
 import { StatusDistributionChart } from "./charts/StatusDistributionChart";
 import { BusiestDaysChart } from "./charts/BusiestDaysChart";
-import { PeakHoursChart } from "./charts/PeakHoursChart";
+import { WalkInVsScheduledChart } from "./charts/WalkInVsScheduledChart";
+import { ServiceNoShowChart } from "./charts/ServiceNoShowChart";
 
 interface AnalyticsDashboardProps {
   stats: DashboardStats;
@@ -14,9 +15,7 @@ interface AnalyticsDashboardProps {
 
 export function AnalyticsDashboard({ stats }: AnalyticsDashboardProps) {
   const scheduledRate =
-    stats.totalAppointments > 0
-      ? Math.round((stats.scheduledCount / stats.totalAppointments) * 100)
-      : 0;
+    stats.totalAppointments > 0 ? Math.round((stats.scheduledCount / stats.totalAppointments) * 100) : 0;
 
   return (
     <div className="space-y-6">
@@ -42,30 +41,27 @@ export function AnalyticsDashboard({ stats }: AnalyticsDashboardProps) {
         <StatCard
           title="SMS Delivered"
           value={stats.smsDelivered}
-          description={
-            stats.smsFailed > 0
-              ? `${stats.smsFailed} failed messages`
-              : "All messages delivered"
-          }
+          description={stats.smsFailed > 0 ? `${stats.smsFailed} failed messages` : "All messages delivered"}
           icon={MessageSquare}
         />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <AppointmentsTrendChart data={stats.dailyStats} />
+        <PopularServicesChart data={stats.serviceStats} />
+        <StatusDistributionChart data={stats.statusStats} totalAppointments={stats.totalAppointments} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <PeakHoursChart data={stats.peakHourStats} />
+        <ServiceNoShowChart data={stats.serviceNoShowStats} />
+        <WalkInVsScheduledChart scheduledCount={stats.scheduledCount} walkInCount={stats.walkInCount} />
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <BusiestDaysChart data={stats.busiestDayStats} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <PopularServicesChart data={stats.serviceStats} />
-        <StatusDistributionChart
-          data={stats.statusStats}
-          totalAppointments={stats.totalAppointments}
-        />
+        <AppointmentsTrendChart data={stats.dailyStats} />
       </div>
     </div>
   );

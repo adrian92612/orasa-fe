@@ -2,58 +2,55 @@ import { Cell, Label, Pie, PieChart } from "recharts";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  type ChartConfig,
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
   type ChartLegendItem,
 } from "@/components/ui/chart";
-import type { StatusStatsDTO } from "@/types/analytics";
 
 const chartConfig = {
   count: {
     label: "Count",
+    color: "var(--muted)",
   },
-  COMPLETED: {
-    label: "Completed",
-    color: "var(--chart-1)",
+  SCHEDULED: {
+    label: "Scheduled",
+    color: "var(--primary)",
   },
-  CANCELLED: {
-    label: "Cancelled",
+  WALK_IN: {
+    label: "Walk-in",
     color: "var(--chart-2)",
-  },
-  NO_SHOW: {
-    label: "No Show",
-    color: "var(--chart-3)",
-  },
-  PENDING: {
-    label: "Pending",
-    color: "var(--chart-5)",
-  },
-  CONFIRMED: {
-    label: "Confirmed",
-    color: "var(--chart-4)",
   },
 } satisfies ChartConfig;
 
-interface StatusDistributionChartProps {
-  data: StatusStatsDTO[];
-  totalAppointments: number;
+interface WalkInVsScheduledChartProps {
+  scheduledCount: number;
+  walkInCount: number;
 }
 
-export function StatusDistributionChart({ data, totalAppointments }: StatusDistributionChartProps) {
-  const chartData = data.map((d) => ({
-    ...d,
-    percentage: totalAppointments > 0 ? Math.round((d.count / totalAppointments) * 100) : 0,
-  }));
+export function WalkInVsScheduledChart({ scheduledCount, walkInCount }: WalkInVsScheduledChartProps) {
+  const total = scheduledCount + walkInCount;
+  const data = [
+    {
+      type: "SCHEDULED",
+      count: scheduledCount,
+      percentage: total > 0 ? Math.round((scheduledCount / total) * 100) : 0,
+    },
+    {
+      type: "WALK_IN",
+      count: walkInCount,
+      percentage: total > 0 ? Math.round((walkInCount / total) * 100) : 0,
+    },
+  ];
 
   return (
     <Card className="col-span-full lg:col-span-3">
       <CardHeader>
-        <CardTitle>Appointment Status</CardTitle>
-        <CardDescription>Distribution by status</CardDescription>
+        <CardTitle>Walk-in vs Scheduled</CardTitle>
+        <CardDescription>Ratio of booking methods</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="mx-auto aspect-square h-[250px]">
@@ -86,7 +83,7 @@ export function StatusDistributionChart({ data, totalAppointments }: StatusDistr
             <ChartLegend
               content={
                 <ChartLegendContent
-                  nameKey="status"
+                  nameKey="type"
                   formatter={(value, item: ChartLegendItem) => (
                     <span className="flex items-baseline gap-1">
                       {value}
@@ -97,16 +94,16 @@ export function StatusDistributionChart({ data, totalAppointments }: StatusDistr
                   )}
                 />
               }
-              className="-translate-y-2 flex-wrap gap-2 *:basis-[calc(50%-0.5rem)] sm:*:basis-1/4 *:justify-center"
+              className="-translate-y-2 flex-wrap gap-2 *:basis-[calc(50%-0.5rem)] *:justify-center"
             />
-            <Pie data={chartData} dataKey="count" nameKey="status" innerRadius={60} outerRadius={80} strokeWidth={5}>
+            <Pie data={data} dataKey="count" nameKey="type" innerRadius={60} outerRadius={80} strokeWidth={5}>
               <Label
                 content={({ viewBox }) => {
                   if (viewBox && "cx" in viewBox && "cy" in viewBox) {
                     return (
                       <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
                         <tspan x={viewBox.cx} y={viewBox.cy} className="fill-foreground text-3xl font-bold">
-                          {totalAppointments.toLocaleString()}
+                          {total.toLocaleString()}
                         </tspan>
                         <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 24} className="fill-muted-foreground">
                           Total
@@ -116,15 +113,9 @@ export function StatusDistributionChart({ data, totalAppointments }: StatusDistr
                   }
                 }}
               />
-              {chartData.map((entry, index) => {
-                const config = chartConfig[entry.status as keyof typeof chartConfig];
-                return (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={(config && "color" in config ? config.color : undefined) || "var(--muted)"}
-                  />
-                );
-              })}
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={chartConfig[entry.type as keyof typeof chartConfig].color} />
+              ))}
             </Pie>
           </PieChart>
         </ChartContainer>

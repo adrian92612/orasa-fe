@@ -15,14 +15,16 @@ export type StatusStatsDTO = {
   count: number;
 };
 
-export type HourStatsDTO = {
-  hour: number;
-  count: number;
-};
-
 export type WeekdayStatsDTO = {
   dayOfWeek: number;
   count: number;
+};
+
+export type ServiceNoShowStatsDTO = {
+  serviceName: string;
+  totalAppointments: number;
+  noShowCount: number;
+  noShowRate: number;
 };
 
 export type DashboardStats = {
@@ -36,6 +38,6 @@ export type DashboardStats = {
   dailyStats: DailyStatsDTO[];
   serviceStats: ServiceStatsDTO[];
   statusStats: StatusStatsDTO[];
-  peakHourStats: HourStatsDTO[];
   busiestDayStats: WeekdayStatsDTO[];
+  serviceNoShowStats: ServiceNoShowStatsDTO[];
 };

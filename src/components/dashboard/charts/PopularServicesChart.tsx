@@ -1,18 +1,7 @@
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import type { ServiceStatsDTO } from "@/types/analytics";
 
 const chartConfig = {
@@ -28,7 +17,7 @@ interface PopularServicesChartProps {
 
 export function PopularServicesChart({ data }: PopularServicesChartProps) {
   return (
-    <Card className="col-span-4">
+    <Card className="col-span-full lg:col-span-4">
       <CardHeader>
         <CardTitle>Popular Services</CardTitle>
         <CardDescription>Most booked services</CardDescription>
@@ -52,17 +41,8 @@ export function PopularServicesChart({ data }: PopularServicesChartProps) {
               width={150}
             />
             <XAxis dataKey="count" type="number" hide />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Bar
-              dataKey="count"
-              layout="vertical"
-              fill="var(--color-count)"
-              radius={5}
-              maxBarSize={50}
-            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+            <Bar dataKey="count" layout="vertical" fill="var(--color-count)" radius={5} maxBarSize={50} />
           </BarChart>
         </ChartContainer>
       </CardContent>
