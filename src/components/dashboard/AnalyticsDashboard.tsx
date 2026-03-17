@@ -5,6 +5,8 @@ import { StatCard } from "./StatCard";
 import { AppointmentsTrendChart } from "./charts/AppointmentsTrendChart";
 import { PopularServicesChart } from "./charts/PopularServicesChart";
 import { StatusDistributionChart } from "./charts/StatusDistributionChart";
+import { BusiestDaysChart } from "./charts/BusiestDaysChart";
+import { PeakHoursChart } from "./charts/PeakHoursChart";
 
 interface AnalyticsDashboardProps {
   stats: DashboardStats;
@@ -51,6 +53,11 @@ export function AnalyticsDashboard({ stats }: AnalyticsDashboardProps) {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <AppointmentsTrendChart data={stats.dailyStats} />
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <PeakHoursChart data={stats.peakHourStats} />
+        <BusiestDaysChart data={stats.busiestDayStats} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
