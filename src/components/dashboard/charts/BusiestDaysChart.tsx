@@ -7,7 +7,7 @@ import type { WeekdayStatsDTO } from "@/types/analytics";
 const chartConfig = {
   count: {
     label: "Appointments",
-    color: "var(--chart-1)",
+    color: "var(--chart-5)",
   },
 } satisfies ChartConfig;
 
@@ -29,7 +29,7 @@ export function BusiestDaysChart({ data }: BusiestDaysChartProps) {
   const maxCount = Math.max(...chartData.map((d) => d.count));
 
   return (
-    <Card className="col-span-3">
+    <Card className="col-span-full">
       <CardHeader>
         <CardTitle>Busiest Days</CardTitle>
         <CardDescription>Most active days of the week</CardDescription>
@@ -44,7 +44,7 @@ export function BusiestDaysChart({ data }: BusiestDaysChartProps) {
               {chartData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={entry.count === maxCount && maxCount > 0 ? "var(--primary)" : "var(--color-count)"}
+                  fill={entry.count === maxCount && maxCount > 0 ? "var(--chart-1)" : "var(--color-count)"}
                 />
               ))}
             </Bar>

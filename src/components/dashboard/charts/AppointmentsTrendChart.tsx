@@ -1,19 +1,8 @@
 import { format } from "date-fns";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import type { DailyStatsDTO } from "@/types/analytics";
 
 const chartConfig = {
@@ -36,9 +25,7 @@ export function AppointmentsTrendChart({ data }: AppointmentsTrendChartProps) {
     <Card className="col-span-full lg:col-span-7">
       <CardHeader>
         <CardTitle>Appointments Trend</CardTitle>
-        <CardDescription>
-          Daily volume of total vs. completed appointments
-        </CardDescription>
+        <CardDescription>Daily volume of total vs. completed appointments</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -58,10 +45,7 @@ export function AppointmentsTrendChart({ data }: AppointmentsTrendChartProps) {
               tickMargin={8}
               tickFormatter={(value) => format(new Date(value), "MMM dd")}
             />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="dot" />}
-            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
             <Area
               dataKey="completedAppointments"
               type="natural"
