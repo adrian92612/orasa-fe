@@ -137,7 +137,6 @@ const AppointmentDialog = ({
     name: "customReminderEnabled",
   });
 
-
   const onSubmit = (data: AppointmentFormValues) => {
     if (!user?.businessId) return;
 
@@ -304,16 +303,11 @@ const AppointmentDialog = ({
                         search={{ placeholder: "Search services...", emptyMessage: "No service found." }}
                       >
                         <MultiSelectGroup>
-                          {services
-                            .map((service) => (
-                              <MultiSelectItem
-                                key={service.id}
-                                value={service.id}
-                                badgeLabel={service.name}
-                              >
-                                {service.name}
-                              </MultiSelectItem>
-                            ))}
+                          {services.map((service) => (
+                            <MultiSelectItem key={service.id} value={service.id} badgeLabel={service.name}>
+                              {service.name}
+                            </MultiSelectItem>
+                          ))}
                         </MultiSelectGroup>
                       </MultiSelectContent>
                     </MultiSelect>
@@ -426,7 +420,8 @@ const AppointmentDialog = ({
                   {reminders.length === 0 && (
                     <div className="mt-2 text-sm">
                       <p className="text-muted-foreground text-xs leading-relaxed">
-                        To automatically notify customers, you need to create at least one global reminder configuration.
+                        To automatically notify customers, you need to create at least one global reminder
+                        configuration.
                       </p>
                       <button
                         type="button"
@@ -548,6 +543,32 @@ const AppointmentDialog = ({
                 </div>
               )}
             </FieldGroup>
+
+            {isEditing && appointmentToEdit && (
+              <div className="mt-8 pt-4 border-t border-border flex flex-col gap-1.5 px-1">
+                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground/70 uppercase font-bold tracking-wider">
+                  Audit Information
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-foreground text-[10px]">
+                  <div className="flex flex-col">
+                    <span>Created by</span>
+                    <span className="text-xs text-muted-foreground">{appointmentToEdit.createdBy || "System"} </span>
+                    <span>Created at</span>
+                    <span className="text-xs text-muted-foreground">
+                      {format(new Date(appointmentToEdit.createdAt), "MMM d, yyyy h:mm a")}
+                    </span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span>Last updated by</span>
+                    <span className="text-xs text-muted-foreground">{appointmentToEdit.updatedBy || "System"}</span>
+                    <span>Last updated at</span>
+                    <span className="text-xs text-muted-foreground">
+                      {format(new Date(appointmentToEdit.updatedAt), "MMM d, yyyy h:mm a")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <DialogFooter className="pt-4">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>

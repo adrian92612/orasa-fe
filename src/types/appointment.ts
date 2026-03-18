@@ -23,6 +23,8 @@ export type AppointmentResponse = {
   additionalReminderTemplate?: string;
   createdAt: string;
   updatedAt: string;
+  createdBy?: string;
+  updatedBy?: string;
 };
 
 export type CreateAppointmentRequest = {
