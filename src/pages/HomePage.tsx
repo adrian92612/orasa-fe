@@ -216,8 +216,8 @@ const HomePage = () => {
                         <Zap className="size-6 text-blue-500" />
                       </div>
                       <div className="text-left">
-                        <p className="text-sm font-bold text-white">+12% Growth</p>
-                        <p className="text-xs text-slate-400">Monthly Revenue Increase</p>
+                        <p className="text-sm font-bold text-white">98% Show Rate</p>
+                        <p className="text-xs text-slate-400">Improved Attendance</p>
                       </div>
                     </div>
                   </div>
@@ -279,8 +279,8 @@ const HomePage = () => {
                         <Zap className="size-4 text-blue-500" />
                       </div>
                       <div className="text-left">
-                        <p className="text-[10px] font-bold text-white leading-tight">+12% Growth</p>
-                        <p className="text-[8px] text-slate-400">Revenue Update</p>
+                        <p className="text-[10px] font-bold text-white leading-tight">98% Success</p>
+                        <p className="text-[8px] text-slate-400">Show Rate</p>
                       </div>
                     </div>
                   </div>

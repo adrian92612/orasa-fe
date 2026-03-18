@@ -1,4 +1,4 @@
-import { Users, CalendarCheck, CalendarX, MessageSquare } from "lucide-react";
+import { Users, CheckCircle2, CalendarX, MessageSquare } from "lucide-react";
 
 import type { DashboardStats } from "@/types/analytics";
 import { StatCard } from "./StatCard";
@@ -14,8 +14,9 @@ interface AnalyticsDashboardProps {
 }
 
 export function AnalyticsDashboard({ stats }: AnalyticsDashboardProps) {
-  const scheduledRate =
-    stats.totalAppointments > 0 ? Math.round((stats.scheduledCount / stats.totalAppointments) * 100) : 0;
+  const completedCount = stats.statusStats.find((s) => s.status === "COMPLETED")?.count || 0;
+  const totalAttendedOrNoShow = completedCount + stats.noShowCount;
+  const showRate = totalAttendedOrNoShow > 0 ? Math.round((completedCount / totalAttendedOrNoShow) * 100) : 0;
 
   return (
     <div className="space-y-6">
@@ -27,10 +28,10 @@ export function AnalyticsDashboard({ stats }: AnalyticsDashboardProps) {
           icon={Users}
         />
         <StatCard
-          title="Scheduled Rate"
-          value={`${scheduledRate}%`}
-          description="Appointments booked in advance"
-          icon={CalendarCheck}
+          title="Show Rate"
+          value={`${showRate}%`}
+          description="Percentage of clients who show up"
+          icon={CheckCircle2}
         />
         <StatCard
           title="No-Show / Cancelled"
