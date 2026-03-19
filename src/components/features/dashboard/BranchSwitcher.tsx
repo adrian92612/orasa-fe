@@ -19,22 +19,6 @@ export const BranchSwitcher = () => {
 
   const selectedBranch = branches.find((b) => b.id === selectedBranchId);
 
-  if (!isLoading && branches.length === 1) {
-    return (
-      <Button
-        variant="outline"
-        role="combobox"
-        disabled
-        className="w-50 justify-between opacity-100 disabled:opacity-100 text-background dark:text-foreground"
-      >
-        <div className="flex items-center">
-          <Store className="mr-2 h-4 w-4" />
-          <span className="truncate">{branches[0].name}</span>
-        </div>
-      </Button>
-    );
-  }
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
